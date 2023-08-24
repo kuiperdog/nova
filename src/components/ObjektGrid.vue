@@ -4,8 +4,12 @@ import { RouterLink } from 'vue-router';
 
 <template>
     <div class="objektGrid">
-        <RouterLink v-for="objekt in objekts" :to="objekt.thumbnail">
-            <img class="objektPreview" :src="objekt.thumbnail">
+        <RouterLink class="objekt" v-for="objekt in objekts" :to="'/objekt/' + objekt.id + (objekt.serial ? '/' + objekt.serial : '')">
+            <img class="objektThumbnail" :src="objekt.thumbnail">
+            <p class="objektNumber">
+                <b>{{ objekt.number }}</b>
+                <span v-if="objekt.serial">{{ '#' + String(objekt.serial).padStart(5, '0') }}</span>
+            </p>
         </RouterLink>
     </div>
 </template>
@@ -25,12 +29,27 @@ export default {
     max-width: 1080px;
 }
 
-.objektPreview {
+.objektThumbnail {
     width: 100%;
+}
+
+.objektNumber {
+    position: absolute;
+    writing-mode: vertical-lr;
+    top: 50%;
+    left: 89%;
+    display: inline-block;
+    vertical-align: middle;
+    transform: translateY(-50%);
+    color: initial;
+}
+
+.objekt {
+    position: relative;
     transition: transform 0.25s ease-in-out;
 }
 
-.objektPreview:hover {
+.objekt:hover {
     transform: scale(1.05);
 }
 </style>
