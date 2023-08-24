@@ -8,7 +8,7 @@ import { RouterLink } from 'vue-router';
             <img class="objektThumbnail" :src="objekt.thumbnail">
             <p class="objektNumber">
                 <b>{{ objekt.number }}</b>
-                <span v-if="objekt.serial">{{ '#' + String(objekt.serial).padStart(5, '0') }}</span>
+                <span class="objektSerial" v-if="objekt.serial">{{ '#' + String(objekt.serial).padStart(5, '0') }}</span>
             </p>
         </RouterLink>
     </div>
@@ -42,6 +42,11 @@ export default {
     vertical-align: middle;
     transform: translateY(-50%);
     color: initial;
+    font-family: 'Pretendard Bold';
+}
+
+.objektSerial {
+    font-family: 'Dot-Matrix';
 }
 
 .objekt {

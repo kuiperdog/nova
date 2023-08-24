@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+@font-face {
+  font-family: 'Dot-Matrix';
+  src: url(dot_matrix_normal.ttf);
+}
+
+@font-face {
+  font-family: 'Halvar Breit';
+  src: url(halvarbreit_rg.ttf);
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Halvar Breit Bold';
+  src: url(halvarbreit_bd.ttf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Halvar Breit Black';
+  src: url(halvarbreit_blk.ttf);
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url(pretendard_regular.otf);
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Pretendard Bold';
+  src: url(pretendard_bold.otf);
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Pretendard Black';
+  src: url(pretendard_black.otf);
+  font-weight: 900;
+}

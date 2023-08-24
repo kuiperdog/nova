@@ -1,4 +1,4 @@
-@import './base.css';
+@import './fonts/fonts.css';
 
 *, *::before, *::after {
   box-sizing: border-box;

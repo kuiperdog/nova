@@ -42,6 +42,7 @@ nav a {
   text-decoration: none;
   transition: color .2s, border-color .2s;
   border-bottom: 2px solid #00000000;
+  font-family: 'Halvar Breit Bold';
 }
 
 nav > * {
