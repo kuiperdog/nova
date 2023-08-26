@@ -1,7 +1,7 @@
 <template>
     <div class="modal">
         <div id="indicator" v-if="!data">
-            <img id="spinner" src="@/assets/spinner.svg">
+            <img id="spinner" src="@/assets/icons/spinner.svg">
         </div>
         <div id="content" v-if="data">
             <div id="imageView">
@@ -11,7 +11,7 @@
                         3D View
                     </p>
                     <a :href="data.front" :download="collection + '.avif'">
-                        <img src="@/assets/download.svg">
+                        <img src="@/assets/icons/download.svg">
                         Download HD
                     </a>
                 </div>
@@ -20,7 +20,7 @@
                 </div>
                 <div id="tooltipContainer">
                     <p id="tooltip">
-                        <img src="@/assets/tap.svg">
+                        <img src="@/assets/icons/tap.svg">
                         Click Objekt to flip
                     </p>
                 </div>
