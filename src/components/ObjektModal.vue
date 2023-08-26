@@ -5,7 +5,25 @@
         </div>
         <div id="content" v-if="data">
             <div id="imageView">
-                <img :src="data.front">
+                <div id="controls">
+                    <p>
+                        <input type="checkbox">
+                        3D View
+                    </p>
+                    <a :href="data.front" :download="collection + '.avif'">
+                        <img src="@/assets/download.svg">
+                        Download HD
+                    </a>
+                </div>
+                <div id="card">
+                    <img @click="back = !back" :src="back ? data.back : data.front">
+                </div>
+                <div id="tooltipContainer">
+                    <p id="tooltip">
+                        <img src="@/assets/tap.svg">
+                        Click Objekt to flip
+                    </p>
+                </div>
             </div>
             <div id="detailView">
             </div>
@@ -17,7 +35,8 @@
 export default {
     data() {
         return {
-            data: null
+            data: null,
+            back: false
         }
     },
     props: {
@@ -100,13 +119,57 @@ export default {
     height: 100%;
     width: 50%;
     background-color: #171C20;
+    overflow: hidden;
+}
+
+#controls {
+    height: 12.5%;
+    width: 100%;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#controls a {
+    color: inherit;
+    text-decoration: none;
+    padding: 10px;
+    background-color: #232A30;
+    border-radius: 5px;
+    line-height: 1.25;
+}
+
+#card {
+    height: 75%;
+}
+
+#card img {
+    height: 100%;
+    display: block;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+#tooltipContainer {
+    height: 12.5%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-img {
-    height: 75%;
+#tooltip {
+    padding: 10px 20px;
+    background-color: #232A30;
+    border-radius: 50px;
+    line-height: 1.25;
+}
+
+#tooltip img, #controls a img {
+    height: 1.25em;
+    vertical-align: middle;
+    display: inline-block;
 }
 
 #detailView {
