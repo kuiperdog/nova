@@ -19,6 +19,7 @@ import { RouterLink, RouterView } from 'vue-router'
   </header>
 
   <router-view/>
+  <router-view name="modal"/>
 </template>
 
 <style scoped>
