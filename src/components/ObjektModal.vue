@@ -16,7 +16,14 @@
                     </a>
                 </div>
                 <div id="card">
-                    <img @click="back = !back" :src="back ? data.back : data.front">
+                    <div id="image" @click="flipped = !flipped" :class="{ flipped: flipped }">
+                        <div class="side">
+                            <img :src="data.front">
+                        </div>
+                        <div class="side" id="back">
+                            <img :src="data.back">
+                        </div>
+                    </div>
                 </div>
                 <div id="tooltipContainer">
                     <p id="tooltip">
@@ -36,7 +43,7 @@ export default {
     data() {
         return {
             data: null,
-            back: false
+            flipped: false
         }
     },
     props: {
@@ -144,11 +151,35 @@ export default {
     height: 75%;
 }
 
-#card img {
+#image {
     height: 100%;
-    display: block;
-    margin: 0 auto;
+    width: 100%;
+    perspective: 500px;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+}
+
+.flipped {
+    transform: rotateY(180deg);
+}
+
+.side {
+    height: 100%;
+    width: 100%;
+    position: absolute;
     cursor: pointer;
+    backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.side img {
+    max-height: 100%;
+}
+
+#back {
+    transform: rotateY(180deg);
 }
 
 #tooltipContainer {
