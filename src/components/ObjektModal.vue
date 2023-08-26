@@ -1,5 +1,8 @@
 <template>
     <div class="modal">
+        <div id="indicator" v-if="!data">
+            <img id="spinner" src="@/assets/spinner.svg">
+        </div>
         <div id="content" v-if="data">
             <div id="imageView">
                 <img :src="data.front">
@@ -31,6 +34,7 @@ export default {
     },
     methods: {
         init() {
+            this.data = null
             fetch('https://squid.subsquid.io/cosmo/v/v1/graphql', {
                 method: 'POST',
                 headers: {
@@ -72,6 +76,18 @@ export default {
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 20px;
     background-color: #232A30;
     overflow: auto;
+}
+
+#indicator {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#spinner {
+    height: 100px;
 }
 
 #content {
