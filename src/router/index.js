@@ -27,8 +27,10 @@ const router = createRouter({
         modal: ObjektModal
       },
       beforeEnter: (to, from, next) => {
-        if (from.matched[0])
+        if (from.matched[0]) {
           to.matched[0].components.default = from.matched[0].components.default
+          to.params.lastRoute = from.fullPath
+        }
         next()
       }
     },

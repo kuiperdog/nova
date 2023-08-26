@@ -1,47 +1,52 @@
 <template>
-    <div class="modal">
-        <div id="indicator" v-if="!data">
-            <img id="spinner" src="@/assets/icons/spinner.svg">
-        </div>
-        <div id="content" v-if="data">
-            <div id="imageView">
-                <div id="controls">
-                    <p>
-                        <input type="checkbox">
-                        3D View
-                    </p>
-                    <a :href="data.front" :download="collection + '.avif'">
-                        <img src="@/assets/icons/download.svg">
-                        Download HD
-                    </a>
-                </div>
-                <div id="card">
-                    <div id="image" @click="flipped = !flipped" :class="{ flipped: flipped }">
-                        <div class="side">
-                            <img :src="data.front">
-                        </div>
-                        <div class="side" id="back">
-                            <img :src="data.back">
+    <div class="blur" @click.self="$router.push(lastRoute)">
+        <div class="modal">
+            <div id="indicator" v-if="!data">
+                <img id="spinner" src="@/assets/icons/spinner.svg">
+            </div>
+            <div id="content" v-if="data">
+                <div id="imageView">
+                    <div id="controls">
+                        <p>
+                            <input type="checkbox">
+                            3D View
+                        </p>
+                        <a :href="data.front" :download="collection + '.avif'">
+                            <img src="@/assets/icons/download.svg">
+                            Download HD
+                        </a>
+                    </div>
+                    <div id="card">
+                        <div id="image" @click="flipped = !flipped" :class="{ flipped: flipped }">
+                            <div class="side">
+                                <img :src="data.front">
+                            </div>
+                            <div class="side" id="back">
+                                <img :src="data.back">
+                            </div>
                         </div>
                     </div>
+                    <div id="tooltipContainer">
+                        <p id="tooltip">
+                            <img src="@/assets/icons/tap.svg">
+                            Click Objekt to flip
+                        </p>
+                    </div>
                 </div>
-                <div id="tooltipContainer">
-                    <p id="tooltip">
-                        <img src="@/assets/icons/tap.svg">
-                        Click Objekt to flip
-                    </p>
+                <div id="detailView">
+                    <RouterLink id="closeBtn" :to="lastRoute">
+                        <img src="@/assets/icons/close.svg">
+                    </RouterLink>
+                    <p><b>Artist</b>: {{ data.artists[0] }}</p>
+                    <p><b>Member</b>: {{ data.member }}</p>
+                    <p><b>Season</b>: {{ data.season }}</p>
+                    <p><b>Class</b>: {{ data.class }}</p>
+                    <p><b>Collection</b>: {{ data.number }}</p>
+                    <hr>
+                    <p><b>Copies</b>:</p>
+                    <p><b>Serial</b>:</p>
+                    <p><b>Owner</b>:</p>
                 </div>
-            </div>
-            <div id="detailView">
-                <p><b>Artist</b>: {{ data.artists[0] }}</p>
-                <p><b>Member</b>: {{ data.member }}</p>
-                <p><b>Season</b>: {{ data.season }}</p>
-                <p><b>Class</b>: {{ data.class }}</p>
-                <p><b>Collection</b>: {{ data.number }}</p>
-                <hr>
-                <p><b>Copies</b>:</p>
-                <p><b>Serial</b>:</p>
-                <p><b>Owner</b>:</p>
             </div>
         </div>
     </div>
@@ -57,7 +62,11 @@ export default {
     },
     props: {
         collection: String,
-        serial: Number
+        serial: Number,
+        lastRoute: {
+            type: String,
+            default: '/'
+        }
     },
     mounted() {
         this.init()
@@ -100,17 +109,27 @@ export default {
 </script>
 
 <style scoped>
+.blur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+}
+
 .modal {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     width: 900px;
     height: 600px;
     border-radius: 20px;
     box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 20px;
     background-color: #232A30;
     overflow: auto;
+    cursor: auto;
 }
 
 #indicator {
@@ -217,6 +236,7 @@ export default {
     width: 50%;
     padding: 20px;
     font-size: 22px;
+    position: relative;
 }
 
 #detailView p {
@@ -225,5 +245,16 @@ export default {
 
 b {
     font-weight: bold;
+}
+
+#closeBtn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+#closeBtn img {
+    width: 30px;
+    height: 30px;
 }
 </style>
