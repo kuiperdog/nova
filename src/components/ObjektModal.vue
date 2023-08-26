@@ -33,6 +33,15 @@
                 </div>
             </div>
             <div id="detailView">
+                <p><b>Artist</b>: {{ data.artists[0] }}</p>
+                <p><b>Member</b>: {{ data.member }}</p>
+                <p><b>Season</b>: {{ data.season }}</p>
+                <p><b>Class</b>: {{ data.class }}</p>
+                <p><b>Collection</b>: {{ data.number }}</p>
+                <hr>
+                <p><b>Copies</b>:</p>
+                <p><b>Serial</b>:</p>
+                <p><b>Owner</b>:</p>
             </div>
         </div>
     </div>
@@ -206,5 +215,15 @@ export default {
 #detailView {
     height: 100%;
     width: 50%;
+    padding: 20px;
+    font-size: 22px;
+}
+
+#detailView p {
+    margin: 10px 0px;
+}
+
+b {
+    font-weight: bold;
 }
 </style>
