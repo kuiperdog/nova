@@ -42,8 +42,8 @@
                     <p><b>Season</b>: {{ data.season }}</p>
                     <p><b>Class</b>: {{ data.class }}</p>
                     <p><b>Collection</b>: {{ data.number }}</p>
+                    <p><b>Copies</b>: {{ totalObjekts.toLocaleString('en-US') }}</p>
                     <hr>
-                    <p><b>Copies</b>:</p>
                     <p><b>Serial</b>:</p>
                     <p><b>Owner</b>:</p>
                 </div>
@@ -57,6 +57,7 @@ export default {
     data() {
         return {
             data: null,
+            totalObjekts: 0,
             flipped: false
         }
     },
@@ -96,12 +97,17 @@ export default {
                                 number
                                 season
                             }
+                            objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${this.collection}"}}) {
+                                totalCount
+                            }
                         }
 
                     `
                 })
             }).then(async (res) => {
-                this.data = (await res.json()).data.collectionById
+                const json = await res.json()
+                this.data = json.data.collectionById
+                this.totalObjekts = json.data.objektsConnection.totalCount
             })
         }
     }
