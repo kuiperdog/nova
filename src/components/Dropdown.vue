@@ -1,5 +1,5 @@
 <template>
-    <div class="dropdown">
+    <div class="dropdown" ref="dropdown">
         <div class="option selected" @click="open = !open">
             <img class="icon" v-if="selection.icon" :src="selection.icon">
             <p>{{ selection.label }}</p>
@@ -27,6 +27,7 @@ export default {
     created() {
         if (!this.selection)
             this.selection = this.options[0]
+        document.addEventListener('click', this.handleClick)
     },
     props: {
         options: {
@@ -43,6 +44,10 @@ export default {
             this.open = false
             this.selection = option
             this.$emit('valueChanged', option.value)
+        },
+        handleClick(event) {
+            if (!this.$refs.dropdown.contains(event.target))
+                this.open = false
         }
     },
     emits: ['valueChanged']
