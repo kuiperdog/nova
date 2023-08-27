@@ -80,7 +80,7 @@ export default {
     methods: {
         init() {
             this.data = null
-            fetch('https://squid.subsquid.io/cosmo/v/v1/graphql', {
+            fetch(this.SUBSQUID_API, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
