@@ -7,7 +7,7 @@ import defaultIcon from '@/assets/images/cosmo.png'
 <template>
     <div id="objektView">
         <div id="status">
-            <h2>{{ results }} results</h2>
+            <h2>{{ results.toLocaleString('en-US') }} results</h2>
             <h3>Sort by</h3>
             <Dropdown @valueChanged="x => update('sort', x)" :options="[ {value: '', label: 'Newest'}, {value: 'oldest', label: 'Oldest'}, {value: 'number', label: 'Number'} ]"/>
         </div>
