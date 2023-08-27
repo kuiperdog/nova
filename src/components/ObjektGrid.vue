@@ -6,12 +6,14 @@ import { RouterLink } from 'vue-router';
     <div class="objektGrid">
         <RouterLink class="objekt" v-for="objekt in objekts" :to="'/objekt/' + objekt.id + (objekt.serial ? '/' + objekt.serial : '')">
             <img class="objektThumbnail" :src="objekt.thumbnail">
-            <p class="objektNumber" :style="{ color: objekt.textColor }">
-                <b>{{ objekt.number }}</b>
-                <span class="objektSerial" v-if="objekt.serial">
-                    #{{ String(objekt.serial).padStart(5, '0') }}
-                </span>
-            </p>
+            <div class="objektNumber">
+                <p :style="{ color: objekt.textColor }">
+                    <b>{{ objekt.number }}</b>
+                    <span class="objektSerial" v-if="objekt.serial">
+                        #{{ String(objekt.serial).padStart(5, '0') }}
+                    </span>
+                </p>
+            </div>
         </RouterLink>
     </div>
 </template>
@@ -37,13 +39,14 @@ export default {
 .objektNumber {
     position: absolute;
     writing-mode: vertical-lr;
-    top: 50%;
-    left: 89%;
-    display: inline-block;
-    vertical-align: middle;
-    transform: translateY(-50%);
-    color: initial;
+    top: 0;
+    right: 0;
     font-family: 'Pretendard Bold';
+    width: 11%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .objektSerial {
