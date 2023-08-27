@@ -6,9 +6,11 @@
             <img class="indicator" src="@/assets/icons/dropdown.svg" :class="{ turned: open }">
         </div>
         <div class="options" :style="{ 'max-height': open ? Math.min(options.length * 50, 500) + 'px' : 0 }">
-            <div class="option" v-for="option in options" @click="select(option)">
-                <img class="icon" v-if="option.icon" :src="option.icon">
-                <p>{{ option.label }}</p>
+            <div class="optionsContent">
+                <div class="option" v-for="option in options" @click="select(option)">
+                    <img class="icon" v-if="option.icon" :src="option.icon">
+                    <p>{{ option.label }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -65,6 +67,11 @@ export default {
     max-height: 0;
     transition: max-height 0.25s;
     overflow: hidden;
+}
+
+.optionsContent {
+    overflow-y: scroll;
+    height: 500px;
 }
 
 .option {
