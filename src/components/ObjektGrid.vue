@@ -8,7 +8,9 @@ import { RouterLink } from 'vue-router';
             <img class="objektThumbnail" :src="objekt.thumbnail">
             <p class="objektNumber">
                 <b>{{ objekt.number }}</b>
-                <span class="objektSerial" v-if="objekt.serial">{{ '#' + String(objekt.serial).padStart(5, '0') }}</span>
+                <span class="objektSerial" v-if="objekt.serial" :style="{ color: objekt.textColor }">
+                    #{{ String(objekt.serial).padStart(5, '0') }}
+                </span>
             </p>
         </RouterLink>
     </div>
