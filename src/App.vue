@@ -11,7 +11,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <router-link to="/users" :class="{'router-link-active': $route.path.startsWith('/@')}">Users</router-link>
         <router-link to="/bookmarks">Bookmarks</router-link>
         <p style="margin-left: auto;">
-          v1.0.0
+          v{{ version }}
           <br>
           by @kuipertwt
         </p>
@@ -21,6 +21,16 @@ import { RouterLink, RouterView } from 'vue-router'
   <router-view/>
   <router-view name="modal"/>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      version: __PACKAGE_VERSION__
+    }
+  }
+}
+</script>
 
 <style scoped>
 nav {
