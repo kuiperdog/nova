@@ -6,9 +6,9 @@ import { RouterLink } from 'vue-router';
     <div class="objektGrid">
         <RouterLink class="objekt" v-for="objekt in objekts" :to="'/objekt/' + objekt.id + (objekt.serial ? '/' + objekt.serial : '')">
             <img class="objektThumbnail" :src="objekt.thumbnail">
-            <p class="objektNumber">
+            <p class="objektNumber" :style="{ color: objekt.textColor }">
                 <b>{{ objekt.number }}</b>
-                <span class="objektSerial" v-if="objekt.serial" :style="{ color: objekt.textColor }">
+                <span class="objektSerial" v-if="objekt.serial">
                     #{{ String(objekt.serial).padStart(5, '0') }}
                 </span>
             </p>
@@ -27,7 +27,6 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(calc(100% / 3 - 20px), 200px), 1fr));
     gap: 20px;
-    margin: 20px;
     max-width: 1080px;
 }
 
