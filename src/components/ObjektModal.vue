@@ -1,3 +1,7 @@
+<script setup>
+import getArtists from '../utils/artists'
+</script>
+
 <template>
     <div class="blur" @click.self="$router.push(lastRoute)">
         <div class="modal">
@@ -37,15 +41,37 @@
                     <RouterLink id="closeBtn" :to="lastRoute">
                         <img src="@/assets/icons/close.svg">
                     </RouterLink>
-                    <p><b>Artist</b>: {{ data.artists[0] }}</p>
-                    <p><b>Member</b>: {{ data.member }}</p>
-                    <p><b>Season</b>: {{ data.season }}</p>
-                    <p><b>Class</b>: {{ data.class }}</p>
-                    <p><b>Collection</b>: {{ data.number }}</p>
-                    <p><b>Copies</b>: {{ totalObjekts.toLocaleString('en-US') }}</p>
+                    <div class="detail" v-if="artists.length">
+                        <p><b>Artist</b>:</p>
+                        <div class="chip" v-for="artist in data.artists">
+                            <img :src="artists.find(a => a.name === artist).logoImageUrl">
+                            <p>{{ artists.find(a => a.name === artist).title }}</p>
+                        </div>
+                    </div>
+                    <div class="detail" v-if="members.length">
+                        <p><b>Member</b>:</p>
+                        <div class="chip">
+                            <img :src="members.find(m => m.name === data.member).profileImageUrl">
+                            <p>{{ data.member }}</p>
+                        </div>
+                    </div>
+                    <div class="detail">
+                        <p><b>Season</b>:</p>
+                        <p>{{ data.season }}</p>
+                    </div>
+                    <div class="detail">
+                        <p><b>Class</b>:</p>
+                        <p>{{ data.class }}</p>
+                    </div>
+                    <div class="detail">
+                        <p><b>Collection</b>:</p>
+                        {{ data.number }}
+                    </div>
+                    <div class="detail">
+                        <p><b>Copies</b>:</p>
+                        <p>{{ totalObjekts.toLocaleString('en-US') }}</p>
+                    </div>
                     <hr>
-                    <p><b>Serial</b>:</p>
-                    <p><b>Owner</b>:</p>
                 </div>
             </div>
         </div>
@@ -58,7 +84,9 @@ export default {
         return {
             data: null,
             totalObjekts: 0,
-            flipped: false
+            flipped: false,
+            artists: [],
+            members: []
         }
     },
     props: {
@@ -69,7 +97,9 @@ export default {
             default: '/'
         }
     },
-    mounted() {
+    async mounted() {
+        this.artists = await getArtists()
+        this.members = this.artists.flatMap(artist => artist.members)
         this.init()
     },
     watch: {
@@ -241,13 +271,36 @@ export default {
 #detailView {
     height: 100%;
     width: 50%;
-    padding: 20px;
+    padding: 30px 20px;
     font-size: 22px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-#detailView p {
-    margin: 10px 0px;
+.detail {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chip {
+    height: 40px;
+    border-radius: 20px;
+    padding: 0 10px;
+    background-color: #9756FF;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 18px;
+}
+
+.chip img {
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
 }
 
 b {
