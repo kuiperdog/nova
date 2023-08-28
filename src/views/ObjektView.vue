@@ -18,7 +18,7 @@ import defaultIcon from '@/assets/images/cosmo.png'
             <Dropdown @valueChanged="x => update('type', x)" :value="$route.query.type" :options="[ {value: '', label: 'Any Type'}, {value: 'A', label: 'Physical'}, {value: 'Z', label: 'Digital'} ]"/>
         </div>
         <ObjektGrid :objekts='collections'></ObjektGrid>
-        <div ref="loader" id="nextPage" v-if="loading || hasNext">
+        <div ref="loader" id="nextPage" :style="{ display: (loading || hasNext) ? 'block' : 'none' }">
             <img id="dots" src="@/assets/icons/dots.svg">
         </div>
     </div>
@@ -154,7 +154,7 @@ export default {
             }
         },
         handleIntersection(entries) {
-            if (entries[0].isIntersecting && !this.loading) {
+            if (entries[0].isIntersecting && this.hasNext && !this.loading) {
                 this.loading = true
                 this.load()
             }
