@@ -47,36 +47,28 @@ import getArtists from '../utils/artists'
                     <RouterLink id="closeBtn" :to="lastRoute">
                         <img src="@/assets/icons/close.svg">
                     </RouterLink>
-                    <div class="detail" v-if="artists.length">
-                        <p><b>Artist</b>:</p>
+                    <p><b>Artists</b>:</p>
+                    <div class="chipList" v-if="artists.length">
                         <div class="chip" v-for="artist in data.artists">
                             <img :src="artists.find(a => a.name === artist).logoImageUrl">
                             <p>{{ artists.find(a => a.name === artist).title }}</p>
                         </div>
                     </div>
-                    <div class="detail" v-if="members.length">
-                        <p><b>Member</b>:</p>
+                    <p><b>Member</b>:</p>
+                    <div class="chipList" v-if="members.length">
                         <div class="chip">
                             <img :src="members.find(m => m.name === data.member).profileImageUrl">
                             <p>{{ data.member }}</p>
                         </div>
                     </div>
-                    <div class="detail">
-                        <p><b>Season</b>:</p>
-                        <p>{{ data.season }}</p>
-                    </div>
-                    <div class="detail">
-                        <p><b>Class</b>:</p>
-                        <p>{{ data.class }}</p>
-                    </div>
-                    <div class="detail">
-                        <p><b>Collection</b>:</p>
-                        {{ data.number }}
-                    </div>
-                    <div class="detail">
-                        <p><b>Copies</b>:</p>
-                        <p>{{ totalObjekts.toLocaleString('en-US') }}</p>
-                    </div>
+                    <p><b>Season</b>:</p>
+                    <p>{{ data.season }}</p>
+                    <p><b>Class</b>:</p>
+                    <p>{{ data.class }}</p>
+                    <p><b>Collection</b>:</p>
+                    <p>{{ data.number }}</p>
+                    <p><b>Copies</b>:</p>
+                    <p>{{ totalObjekts.toLocaleString('en-US') }}</p>
                     <hr>
                 </div>
             </div>
@@ -298,15 +290,15 @@ export default {
     padding: 30px 20px;
     font-size: 22px;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-auto-rows: 40px;
+    gap: 10px 40px;
+    align-items: center;
 }
 
-.detail {
-    height: 40px;
+.chipList {
     display: flex;
-    align-items: center;
     gap: 10px;
 }
 
@@ -329,6 +321,10 @@ export default {
 
 b {
     font-weight: bold;
+}
+
+hr {
+    grid-column: span 2;
 }
 
 #closeBtn {
