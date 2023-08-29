@@ -1,4 +1,5 @@
 <script setup>
+import Objekt3DView from './Objekt3DView.vue'
 import getArtists from '../utils/artists'
 </script>
 
@@ -9,10 +10,11 @@ import getArtists from '../utils/artists'
                 <img id="spinner" src="@/assets/icons/spinner.svg">
             </div>
             <div id="content" v-if="data">
-                <div id="imageView">
+                <div id="imageView" :class="{ 'view3D': view3D }">
+                    <Objekt3DView v-if="view3D" id="objekt3DView" :front="data.front" :back="data.back"/>
                     <div id="controls">
                         <p>
-                            <input type="checkbox">
+                            <input type="checkbox" v-model="view3D">
                             3D View
                         </p>
                         <a :href="data.front" :download="collection + '.avif'">
@@ -20,7 +22,7 @@ import getArtists from '../utils/artists'
                             Download HD
                         </a>
                     </div>
-                    <div id="card">
+                    <div v-if="!view3D" id="card">
                         <div id="image" @click="flipped = !flipped" :class="{ flipped: flipped }">
                             <div class="side">
                                 <img :src="data.front">
@@ -31,9 +33,13 @@ import getArtists from '../utils/artists'
                         </div>
                     </div>
                     <div id="tooltipContainer">
-                        <p id="tooltip">
+                        <p v-if="!view3D" id="tooltip">
                             <img src="@/assets/icons/tap.svg">
                             Click Objekt to flip
+                        </p>
+                        <p v-if="view3D" id="tooltip">
+                            <img src="@/assets/icons/3d.svg">
+                            Drag Objekt to pan
                         </p>
                     </div>
                 </div>
@@ -85,6 +91,7 @@ export default {
             data: null,
             totalObjekts: 0,
             flipped: false,
+            view3D: false,
             artists: [],
             members: []
         }
@@ -188,10 +195,16 @@ export default {
 }
 
 #imageView {
+    position: relative;
     height: 100%;
     width: 50%;
     background-color: #171C20;
     overflow: hidden;
+}
+
+.view3D #controls {
+    position: absolute;
+    top: 0;
 }
 
 #controls {
@@ -210,6 +223,12 @@ export default {
     background-color: #232A30;
     border-radius: 5px;
     line-height: 1.25;
+}
+
+#controls p {
+    padding: 10px;
+    background-color: #232A30;
+    border-radius: 5px;
 }
 
 #card {
@@ -253,6 +272,11 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.view3D #tooltipContainer {
+    position: absolute;
+    bottom: 0;
 }
 
 #tooltip {
@@ -316,5 +340,10 @@ b {
 #closeBtn img {
     width: 30px;
     height: 30px;
+}
+
+#objekt3DView {
+    width: 100%;
+    height: 100%;
 }
 </style>
