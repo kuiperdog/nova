@@ -44,9 +44,6 @@ import getArtists from '../utils/artists'
                     </div>
                 </div>
                 <div id="detailView">
-                    <RouterLink id="closeBtn" :to="lastRoute">
-                        <img src="@/assets/icons/close.svg">
-                    </RouterLink>
                     <p><b>Artists</b>:</p>
                     <div class="chipList" v-if="artists.length">
                         <div class="chip" v-for="artist in data.artists">
@@ -72,6 +69,9 @@ import getArtists from '../utils/artists'
                     <hr>
                 </div>
             </div>
+            <RouterLink id="closeBtn" :to="lastRoute">
+                <img src="@/assets/icons/close.svg">
+            </RouterLink>
         </div>
     </div>
 </template>
@@ -166,6 +166,7 @@ export default {
     background-color: #232A30;
     overflow: auto;
     cursor: auto;
+    position: relative;
 }
 
 #indicator {
@@ -289,7 +290,6 @@ export default {
     width: 50%;
     padding: 30px 20px;
     font-size: 22px;
-    position: relative;
     display: grid;
     grid-template-columns: auto 1fr;
     grid-auto-rows: 40px;
