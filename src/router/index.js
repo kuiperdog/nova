@@ -19,7 +19,7 @@ const router = createRouter({
       component: ObjektView
     },
     {
-      path: '/objekt/:collection',
+      path: '/objekt/:collection/:serial?',
       name: 'objektmodal',
       props: true,
       components: {

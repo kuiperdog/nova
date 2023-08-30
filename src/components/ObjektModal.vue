@@ -67,6 +67,13 @@ import getArtists from '../utils/artists'
                     <p><b>Copies</b>:</p>
                     <p>{{ totalObjekts.toLocaleString('en-US') }}</p>
                     <hr>
+                    <p><b>Serial</b>:</p>
+                    <div class="serialField">
+                        #<input v-model="nextSerial" type="number" placeholder="00000" size="5" min="0">
+                        <RouterLink id="nextBtn" :to="{ name: 'objektmodal', params: { collection: collection, serial: nextSerial } }">
+                            <img src="@/assets/icons/next.svg">
+                        </RouterLink>
+                    </div>
                 </div>
             </div>
             <RouterLink id="closeBtn" :to="lastRoute">
@@ -85,12 +92,13 @@ export default {
             flipped: false,
             view3D: false,
             artists: [],
-            members: []
+            members: [],
+            nextSerial: this.serial
         }
     },
     props: {
         collection: String,
-        serial: Number,
+        serial: String,
         lastRoute: {
             type: String,
             default: '/'
@@ -130,7 +138,6 @@ export default {
                                 totalCount
                             }
                         }
-
                     `
                 })
             }).then(async (res) => {
@@ -317,6 +324,37 @@ export default {
     height: 30px;
     width: 30px;
     border-radius: 15px;
+}
+
+.serialField {
+    display: flex;
+    align-items: center;
+}
+
+input[type=number] {
+    appearance: none;
+    border: none;
+    outline: none;
+    background: none;
+    border-bottom: 2px #FFFFFF solid;
+    color: #FFFFFF;
+    font-size: inherit;
+    font-weight: bold;
+}
+
+#nextBtn {
+    margin-left: 10px;
+    text-decoration: none;
+    color: #FFFFFF;
+    height: 30px;
+    width: 30px;
+    border-radius: 15px;
+    border: 2px #FFFFFF solid;
+}
+
+#nextBtn img {
+    margin: -2px;
+    height: inherit;
 }
 
 b {
