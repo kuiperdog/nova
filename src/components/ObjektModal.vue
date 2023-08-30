@@ -1,6 +1,8 @@
 <script setup>
 import Objekt3DView from './Objekt3DView.vue'
+import getOwner from '../utils/owner'
 import getArtists from '../utils/artists'
+import getUser from '../utils/user'
 </script>
 
 <template>
@@ -74,6 +76,14 @@ import getArtists from '../utils/artists'
                             <img src="@/assets/icons/next.svg">
                         </RouterLink>
                     </div>
+                    <p v-if="serial"><b>Owner</b>:</p>
+                    <RouterLink class="owner" v-if="serial && owner" :to="{ name: 'profile', params: { id: owner.address } }">
+                        <div class="chip">
+                            <img :src="owner.profileImageUrl">
+                            <p>{{ owner.nickname }}</p>
+                        </div>
+                    </RouterLink>
+                    <p v-if="serial && !owner">Loading...</p>
                 </div>
             </div>
             <RouterLink id="closeBtn" :to="lastRoute">
@@ -93,6 +103,8 @@ export default {
             view3D: false,
             artists: [],
             members: [],
+            owner: null,
+            token: null,
             nextSerial: this.serial
         }
     },
@@ -137,6 +149,11 @@ export default {
                             objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${this.collection}"}}) {
                                 totalCount
                             }
+                            ${this.serial ? `
+                                objekts(limit: 1, where: {collection: {id_eq: "${this.collection}"}, serial_eq: ${this.serial}}) {
+                                    id
+                                }    
+                            ` : ``}
                         }
                     `
                 })
@@ -144,6 +161,12 @@ export default {
                 const json = await res.json()
                 this.data = json.data.collectionById
                 this.totalObjekts = json.data.objektsConnection.totalCount
+
+                if (json.data.objekts) {
+                    this.token = json.data.objekts[0].id
+                    const owner = await getOwner(json.data.collectionById.artists[0], this.token)
+                    this.owner = await getUser(owner)
+                }
             })
         }
     }
@@ -340,6 +363,11 @@ input[type=number] {
     color: #FFFFFF;
     font-size: inherit;
     font-weight: bold;
+}
+
+.owner {
+    color: inherit;
+    display: flex;
 }
 
 #nextBtn {

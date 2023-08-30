@@ -1,12 +1,11 @@
-import { getCurrentInstance } from "vue"
+import { app } from '@/main.js'
 let artists = null
 
 async function getArtists() {
     if (artists)
         return artists
 
-    const app = getCurrentInstance()
-    const api = app.appContext.config.globalProperties.COSMO_API
+    const api = app.config.globalProperties.COSMO_API
 
     const _artists = []
     const res = await fetch(api + '/artist/v1')
