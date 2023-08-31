@@ -125,12 +125,19 @@ export default {
     },
     watch: {
         collection() {
+            this.data = null
+            this.owner = null
+            this.token = null
+            this.init()
+        },
+        serial() {
+            this.owner = null
+            this.token = null
             this.init()
         }
     },
     methods: {
         init() {
-            this.data = null
             fetch(this.SUBSQUID_API, {
                 method: 'POST',
                 headers: {
@@ -139,18 +146,20 @@ export default {
                 body: JSON.stringify({
                     query: `
                         query {
-                            collectionById(id: "${this.collection}") {
-                                artists
-                                back
-                                class
-                                front
-                                member
-                                number
-                                season
-                            }
-                            objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${this.collection}"}}) {
-                                totalCount
-                            }
+                            ${this.data ? `` : `
+                                collectionById(id: "${this.collection}") {
+                                    artists
+                                    back
+                                    class
+                                    front
+                                    member
+                                    number
+                                    season
+                                }
+                                objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${this.collection}"}}) {
+                                    totalCount
+                                }
+                            `}
                             ${this.serial ? `
                                 objekts(limit: 1, where: {collection: {id_eq: "${this.collection}"}, serial_eq: ${this.serial}}) {
                                     id
@@ -161,12 +170,15 @@ export default {
                 })
             }).then(async (res) => {
                 const json = await res.json()
-                this.data = json.data.collectionById
-                this.totalObjekts = json.data.objektsConnection.totalCount
+
+                if (json.data.collectionById) {
+                    this.data = json.data.collectionById
+                    this.totalObjekts = json.data.objektsConnection.totalCount
+                }
 
                 if (json.data.objekts) {
                     this.token = json.data.objekts[0].id
-                    const owner = await getOwner(json.data.collectionById.artists[0], this.token)
+                    const owner = await getOwner(this.data.artists[0], this.token)
                     this.owner = await getUser(owner)
                 }
             })
