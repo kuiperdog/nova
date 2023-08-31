@@ -325,6 +325,7 @@ export default {
     font-size: 22px;
     display: grid;
     grid-template-columns: auto 1fr;
+    grid-auto-rows: max-content;
     gap: 20px 40px;
     align-items: center;
     overflow: auto;
