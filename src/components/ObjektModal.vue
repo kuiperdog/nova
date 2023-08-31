@@ -1,5 +1,6 @@
 <script setup>
 import Objekt3DView from './Objekt3DView.vue'
+import ObjektHistory from './ObjektHistory.vue'
 import getOwner from '../utils/owner'
 import getArtists from '../utils/artists'
 import getUser from '../utils/user'
@@ -84,6 +85,7 @@ import getUser from '../utils/user'
                         </div>
                     </RouterLink>
                     <p v-if="serial && !owner">Loading...</p>
+                    <ObjektHistory id="history" v-if="token" :token="token"/>
                 </div>
             </div>
             <RouterLink id="closeBtn" :to="lastRoute">
@@ -215,6 +217,7 @@ export default {
     width: 100%;
     height: 100%;
     display: flex;
+    overflow: auto;
 }
 
 #imageView {
@@ -322,9 +325,14 @@ export default {
     font-size: 22px;
     display: grid;
     grid-template-columns: auto 1fr;
-    grid-auto-rows: 40px;
-    gap: 10px 40px;
+    gap: 20px 40px;
     align-items: center;
+    overflow: auto;
+}
+
+#detailView > p {
+    height: 40px;
+    line-height: 40px;
 }
 
 .chipList {
@@ -359,10 +367,9 @@ input[type=number] {
     border: none;
     outline: none;
     background: none;
-    border-bottom: 2px #FFFFFF solid;
+    border-bottom: 1px #FFFFFF solid;
     color: #FFFFFF;
     font-size: inherit;
-    font-weight: bold;
 }
 
 .owner {
@@ -377,11 +384,11 @@ input[type=number] {
     height: 30px;
     width: 30px;
     border-radius: 15px;
-    border: 2px #FFFFFF solid;
+    border: 1px #FFFFFF solid;
 }
 
 #nextBtn img {
-    margin: -2px;
+    margin: -1spx;
     height: inherit;
 }
 
@@ -389,7 +396,7 @@ b {
     font-weight: bold;
 }
 
-hr {
+#history, hr {
     grid-column: span 2;
 }
 
