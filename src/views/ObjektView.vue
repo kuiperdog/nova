@@ -165,15 +165,14 @@ export default {
 <style scoped>
 #objektView {
     display: flex;
-    align-items: center;
     flex-direction: column;
     margin: 20px;
     gap: 20px;
+    max-width: 1080px;
 }
 
 #filters, #status {
     width: 100%;
-    max-width: 1080px;
     display: flex;
     gap: 20px;
     align-items: center;

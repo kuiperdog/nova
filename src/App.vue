@@ -33,8 +33,11 @@ export default {
 </script>
 
 <style scoped>
-nav {
+header {
   width: 100%;
+}
+
+nav {
   height: 50px;
   display: flex;
   align-items: center;
