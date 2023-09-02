@@ -405,10 +405,6 @@ input[type=number] {
     height: inherit;
 }
 
-b {
-    font-weight: bold;
-}
-
 #history, hr {
     grid-column: span 2;
 }
