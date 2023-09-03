@@ -29,6 +29,9 @@ export default {
             this.selection = this.options[0]
         document.addEventListener('click', this.handleClick)
     },
+    unmounted() {
+        document.removeEventListener('click', this.handleClick)
+    },
     props: {
         options: {
             type: Array,
