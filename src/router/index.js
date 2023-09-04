@@ -35,8 +35,9 @@ const router = createRouter({
       }
     },
     {
-      path: '/gravity',
+      path: '/gravity/:artist?/:gravityId?/:index?',
       name: 'gravity',
+      props: true,
       component: GravityView
     },
     {

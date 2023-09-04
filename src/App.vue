@@ -7,7 +7,7 @@ import { RouterLink, RouterView } from 'vue-router'
       <nav>
         <h1>Nova</h1>
         <router-link to="/objekt">Objekts</router-link>
-        <router-link to="/gravity">Gravity</router-link>
+        <router-link :to="{ name: 'gravity' }">Gravity</router-link>
         <router-link to="/users" :class="{'router-link-active': $route.path.startsWith('/@')}">Users</router-link>
         <router-link to="/bookmarks">Bookmarks</router-link>
         <p style="margin-left: auto;">
