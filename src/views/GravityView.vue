@@ -76,7 +76,8 @@ export default {
             slots: [],
             timer: null,
             countdown: 0,
-            pulse: false
+            pulse: false,
+            restartPulse: false
         }
     },
     async mounted() {
