@@ -21,19 +21,31 @@ import abi from '../utils/abi/Governor.json'
                     <div class="headerItem">
                         <h2 v-if="gravity.polls.length > 1" :poll="pollId"><b>{{ poll.title }}</b></h2>
                         <h2>{{ currentComo.toLocaleString('en-us') }}/{{ totalComo.toLocaleString('en-us') }} COMO</h2>
-                        <h2 id="liveIndicator">LIVE</h2>
+                        <h2 v-if="timer" id="liveIndicator">
+                            <span id="liveCircle" :class="{ pulse: pulse }" :key="restartPulse" @animationend="pulse = false">●</span>
+                            LIVE
+                        </h2>
                     </div>
                 </div>
             </div>
-            <VoteChart v-if="currentComo" :poll="pollId" :contract="contract.target"/>
-            <div class="progress">
+            <div v-if="countdown > 0" class="timer">
+                <h2>Counting will begin in</h2>
+                <h1>
+                    {{ String(Math.floor(countdown / (24 * 60 * 60 * 1000))).padStart(2, '0') }}<!--
+                    -->:{{ String(Math.floor((countdown % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))).padStart(2, '0') }}<!--
+                    -->:{{ String(Math.floor((countdown % (60 * 60 * 1000)) / (60 * 1000))).padStart(2, '0') }}<!--
+                    -->:{{ String(Math.floor((countdown % (60 * 1000)) / 1000)).padStart(2, '0') }}
+                </h1>
+            </div>
+            <VoteChart v-if="countdown <= 0" :poll="pollId" :contract="contract.target"/>
+            <div v-if="countdown <= 0" class="progress">
                 <p class="progressLabel">
                     {{ currentVotes.toLocaleString('en-us') }}/{{ totalVotes.toLocaleString('en-us') }} Votes
                     ({{ Math.floor(currentVotes/totalVotes) * 100 }}%)
                 </p>
                 <div class="progressBar" :style="{ width: Math.floor(currentVotes/totalVotes * 100) + '%'}"></div>
             </div>
-            <div id="polls">
+            <div v-if="countdown <= 0" id="polls">
                 <div class="poll" v-for="slot in slots">
                     <h2 v-if="slots.length > 1"><b>{{ slot.name }}</b></h2>
                     <div class="progress choice" v-for="choice in slot.choices">
@@ -61,7 +73,10 @@ export default {
             currentVotes: 0,
             totalVotes: 0,
             candidates: [],
-            slots: []
+            slots: [],
+            timer: null,
+            countdown: 0,
+            pulse: false
         }
     },
     async mounted() {
@@ -140,7 +155,23 @@ export default {
 
             this.totalVotes = 0
 
+            this.timer = null
+            this.countdown = new Date(this.poll.endDate).getTime() - Date.now()
             await this.getVotes()
+
+            if (this.currentComo < this.totalComo || this.totalComo === 0) {
+                this.timer = setInterval(async () => {
+                    if (this.countdown > 0)
+                        this.countdown = new Date(this.poll.endDate).getTime() - Date.now()
+                    else
+                        await this.getVotes()
+
+                    this.pulse = false
+                    this.restartPulse = !this.restartPulse // Forcing a re-render
+                    this.pulse = true
+                }, 1000)
+            }
+
             this.loading = false
         },
         async getVotes() {
@@ -162,6 +193,9 @@ export default {
             this.currentVotes = ethers.toNumber(poll[5])
             if (!this.currentVotes || !this.totalVotes)
                 this.totalVotes = ethers.toNumber(await this.contract.totalVotes(this.pollId))
+            
+            if (this.currentComo === this.totalComo && this.totalComo > 0 && this.timer)
+                clearInterval(this.timer)
         }
     },
     props: {
@@ -195,7 +229,6 @@ export default {
 #header {
     display: flex;
     align-items: center;
-
 }
 
 #title {
@@ -229,6 +262,38 @@ export default {
     color: #FFFFFF;
     padding: 5px 10px;
     border-radius: 10px;
+}
+
+#liveCircle {
+    opacity: 0;
+}
+
+.pulse {
+    animation: pulse 1s;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.timer {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 24px;
+    gap: 20px;
+}
+
+.timer h1 {
+    font-family: 'Dot-Matrix';
+    font-size: 56px;
 }
 
 #progressBar {
