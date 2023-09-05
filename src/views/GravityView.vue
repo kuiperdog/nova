@@ -161,14 +161,19 @@ export default {
 
             if (this.currentComo < this.totalComo || this.totalComo === 0) {
                 this.timer = setInterval(async () => {
-                    if (this.countdown > 0)
-                        this.countdown = new Date(this.poll.endDate).getTime() - Date.now()
-                    else
-                        await this.getVotes()
-
+                    await this.getVotes()
                     this.pulse = false
                     this.restartPulse = !this.restartPulse // Forcing a re-render
                     this.pulse = true
+                }, 1000)
+            }
+
+            if (this.countdown > 0) {
+                const countdownTimer = setInterval(() => {
+                    if (this.countdown > 0)
+                        this.countdown = new Date(this.poll.endDate).getTime() - Date.now()
+                    else
+                        clearInterval(countdownTimer)
                 }, 1000)
             }
 
