@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from 'vue-router'
 <template>
   <header>
       <nav>
-        <h1>Nova</h1>
+        <img id="appLogo" src="@/assets/images/logo.svg">
         <router-link to="/objekt">Objekts</router-link>
         <router-link :to="{ name: 'gravity' }">Gravity</router-link>
         <router-link to="/users" :class="{'router-link-active': $route.path.startsWith('/@')}">Users</router-link>
@@ -45,7 +45,11 @@ nav {
   padding-right: 15px;
   gap: 15px;
   border-bottom: 2px solid #171C20;
-} 
+}
+
+#appLogo {
+  height: 20px;
+}
 
 nav a {
   height: 100%;
