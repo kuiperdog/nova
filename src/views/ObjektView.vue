@@ -168,7 +168,7 @@ export default {
     flex-direction: column;
     margin: 20px;
     gap: 20px;
-    max-width: 1080px;
+    align-items: center;
 }
 
 #filters, #status {

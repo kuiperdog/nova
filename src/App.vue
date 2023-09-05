@@ -18,7 +18,7 @@ import { RouterLink, RouterView } from 'vue-router'
       </nav>
   </header>
 
-  <router-view/>
+  <router-view class="routerView"/>
   <router-view name="modal"/>
 </template>
 
@@ -67,5 +67,10 @@ nav > * {
 .router-link-active {
   color: #FFFFFF;
   border-bottom-color: #FFFFFF;
+}
+
+.routerView {
+  width: 100%;
+  max-width: 1080px;
 }
 </style>

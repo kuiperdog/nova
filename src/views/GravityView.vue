@@ -8,38 +8,38 @@ import abi from '../utils/abi/Governor.json'
 </script>
 
 <template>
-    <div v-if="loading" id="loading">
-        <img id="spinner" src="@/assets/icons/spinner.svg">
-    </div>
-    <div v-if="!loading" id="gravityView">
-        <div id="header">
-            <h1 id="title">{{ gravity.title }}</h1>
-            <div class="headerItems">
-                <div class="headerItem">
-                    <Dropdown id="artistDropdown" @valueChanged="x => $router.push(`/gravity/${x}`)" :value="gravity.artist" :options="artists"/>
-                    <img id="history" src="@/assets/icons/history.svg">
-                </div>
-                <div class="headerItem">
-                    <h2 v-if="gravity.polls.length > 1" :poll="pollId"><b>{{ poll.title }}</b></h2>
-                    <h2>{{ currentComo.toLocaleString('en-us') }}/{{ totalComo.toLocaleString('en-us') }} COMO</h2>
-                    <h2 id="liveIndicator">LIVE</h2>
+    <div id="gravityView">
+        <img v-if="loading" id="spinner" src="@/assets/icons/spinner.svg">
+        <div v-if="!loading" id="content">
+            <div id="header">
+                <h1 id="title">{{ gravity.title }}</h1>
+                <div class="headerItems">
+                    <div class="headerItem">
+                        <Dropdown id="artistDropdown" @valueChanged="x => $router.push(`/gravity/${x}`)" :value="gravity.artist" :options="artists"/>
+                        <img id="history" src="@/assets/icons/history.svg">
+                    </div>
+                    <div class="headerItem">
+                        <h2 v-if="gravity.polls.length > 1" :poll="pollId"><b>{{ poll.title }}</b></h2>
+                        <h2>{{ currentComo.toLocaleString('en-us') }}/{{ totalComo.toLocaleString('en-us') }} COMO</h2>
+                        <h2 id="liveIndicator">LIVE</h2>
+                    </div>
                 </div>
             </div>
-        </div>
-        <VoteChart v-if="currentComo" :poll="pollId" :contract="contract.target"/>
-        <div class="progress">
-            <p class="progressLabel">
-                {{ currentVotes.toLocaleString('en-us') }}/{{ totalVotes.toLocaleString('en-us') }} Votes
-                ({{ Math.floor(currentVotes/totalVotes) * 100 }}%)
-            </p>
-            <div class="progressBar" :style="{ width: Math.floor(currentVotes/totalVotes * 100) + '%'}"></div>
-        </div>
-        <div id="polls">
-            <div class="poll" v-for="slot in slots">
-                <h2 v-if="slots.length > 1"><b>{{ slot.name }}</b></h2>
-                <div class="progress choice" v-for="choice in slot.choices">
-                    <p class="progressLabel">{{ choice.name }} - {{ choice.como.toLocaleString('en-US') }} COMO</p>
-                    <div class="progressBar" :style="{ width: Math.round(choice.como / totalComo * 100) + '%' }"></div>
+            <VoteChart v-if="currentComo" :poll="pollId" :contract="contract.target"/>
+            <div class="progress">
+                <p class="progressLabel">
+                    {{ currentVotes.toLocaleString('en-us') }}/{{ totalVotes.toLocaleString('en-us') }} Votes
+                    ({{ Math.floor(currentVotes/totalVotes) * 100 }}%)
+                </p>
+                <div class="progressBar" :style="{ width: Math.floor(currentVotes/totalVotes * 100) + '%'}"></div>
+            </div>
+            <div id="polls">
+                <div class="poll" v-for="slot in slots">
+                    <h2 v-if="slots.length > 1"><b>{{ slot.name }}</b></h2>
+                    <div class="progress choice" v-for="choice in slot.choices">
+                        <p class="progressLabel">{{ choice.name }} - {{ choice.como.toLocaleString('en-US') }} COMO</p>
+                        <div class="progressBar" :style="{ width: Math.round(choice.como / totalComo * 100) + '%' }"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -173,22 +173,22 @@ export default {
 </script>
 
 <style scoped>
-#loading {
+#gravityView {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
 }
 
 #spinner {
+    margin: auto;
     width: 100px;
 }
 
-#gravityView {
+#content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 30px;
-    width: 1080px;
     padding: 40px 20px;
 }
 
