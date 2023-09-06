@@ -6,7 +6,7 @@ import router from './router'
 
 export const app = createApp(App)
 
-app.config.globalProperties.SUBSQUID_API = 'https://squid.subsquid.io/cosmo/v/v1/graphql'
+app.config.globalProperties.SUBSQUID_API = 'https://squid.subsquid.io/cosmo/graphql'
 app.config.globalProperties.COSMO_API = 'https://api.cosmo.fans'
 app.config.globalProperties.POLYGON_RPC = 'https://polygon-rpc.com'
 
