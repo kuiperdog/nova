@@ -236,6 +236,7 @@ export default {
 #content > div {
     flex: 1;
     min-width: 350px;
+    height: 100%;
 }
 
 #imageView {
@@ -435,9 +436,10 @@ input[type=number] {
     }
     #content > div {
         min-width: 100%;
+        height: initial;
     }
     #imageView {
-        height: 75%;
+        min-height: 75%;
     }
     #controls {
         padding-right: 70px;
