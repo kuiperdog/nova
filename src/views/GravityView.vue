@@ -20,7 +20,7 @@ import abi from '../utils/abi/Governor.json'
                     </div>
                     <div class="headerItem">
                         <h2 v-if="gravity.polls.length > 1" :poll="pollId"><b>{{ poll.title }}</b></h2>
-                        <h2>{{ currentComo.toLocaleString('en-us') }}/{{ totalComo.toLocaleString('en-us') }} COMO</h2>
+                        <h2><span v-if="countdown <= 0">{{ currentComo.toLocaleString('en-us') }}/</span>{{ totalComo.toLocaleString('en-us') }} COMO</h2>
                         <h2 v-if="timer" id="liveIndicator">
                             <span id="liveCircle" :class="{ pulse: pulse }" :key="restartPulse" @animationend="pulse = false">●</span>
                             LIVE
@@ -41,17 +41,19 @@ import abi from '../utils/abi/Governor.json'
             <div v-if="countdown <= 0" class="progress">
                 <p class="progressLabel">
                     {{ currentVotes.toLocaleString('en-us') }}/{{ totalVotes.toLocaleString('en-us') }} Votes
-                    ({{ Math.floor(currentVotes/totalVotes) * 100 }}%)
+                    ({{ Math.floor(currentVotes/totalVotes * 100) }}%)
                 </p>
                 <div class="progressBar" :style="{ width: Math.floor(currentVotes/totalVotes * 100) + '%'}"></div>
             </div>
             <div v-if="countdown <= 0" id="polls">
                 <div class="poll" v-for="slot in slots">
                     <h2 v-if="slots.length > 1"><b>{{ slot.name }}</b></h2>
-                    <div class="progress choice" v-for="choice in slot.choices">
-                        <p class="progressLabel">{{ choice.name }} - {{ choice.como.toLocaleString('en-US') }} COMO</p>
-                        <div class="progressBar" :style="{ width: Math.round(choice.como / totalComo * 100) + '%' }"></div>
-                    </div>
+                    <TransitionGroup name="list">
+                        <div class="progress choice" v-for="choice in slot.choices" :key="choice.name">
+                            <p class="progressLabel">{{ choice.name }} - {{ choice.como.toLocaleString('en-US') }} COMO</p>
+                            <div class="progressBar" :style="{ width: Math.round(choice.como / totalComo * 100) + '%' }"></div>
+                        </div>
+                    </TransitionGroup>
                 </div>
             </div>
         </div>
@@ -200,8 +202,10 @@ export default {
             if (!this.currentVotes || !this.totalVotes)
                 this.totalVotes = ethers.toNumber(await this.contract.totalVotes(this.pollId))
             
-            if (this.currentComo === this.totalComo && this.totalComo > 0 && this.timer)
+            if (this.currentComo === this.totalComo && this.totalComo > 0 && this.timer) {
                 clearInterval(this.timer)
+                this.timer = null
+            }
         }
     },
     props: {
@@ -235,6 +239,8 @@ export default {
 #header {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
 #title {
@@ -257,6 +263,7 @@ export default {
     align-items: center;
     justify-content: end;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 #history {
@@ -268,6 +275,7 @@ export default {
     color: #FFFFFF;
     padding: 5px 10px;
     border-radius: 10px;
+    margin-left: auto;
 }
 
 #liveCircle {
@@ -295,6 +303,7 @@ export default {
     flex-direction: column;
     font-size: 24px;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .timer h1 {
@@ -345,5 +354,31 @@ export default {
     height: 100%;
     width: 0;
     background-color: #9756FF;
+    transition: width 0.5s ease;
+}
+
+.list-move {
+  transition: all 0.5s ease;
+}
+
+@media only screen and (max-width: 600px) {
+    #title {
+        font-size: 30px;
+    }
+}
+
+@media only screen and (max-width: 500px) {
+    #content {
+        padding: 20px 10px;
+    }
+    #polls {
+        gap: 10px;
+    }
+    .headerItems {
+        flex: 1
+    }
+    .headerItem {
+        justify-content: space-between;
+    }
 }
 </style>

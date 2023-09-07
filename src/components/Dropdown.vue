@@ -86,7 +86,7 @@ export default {
     height: 50px;
     display: flex;
     align-items: center;
-    padding: 0px 15px;
+    padding: 0px 10px;
     gap: 10px;
     cursor: pointer;
     transition: background-color 0.25s;

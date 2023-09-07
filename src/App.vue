@@ -10,11 +10,7 @@ import { RouterLink, RouterView } from 'vue-router'
         <router-link :to="{ name: 'gravity' }">Gravity</router-link>
         <router-link to="/users" :class="{'router-link-active': $route.path.startsWith('/@')}">Users</router-link>
         <router-link to="/bookmarks">Bookmarks</router-link>
-        <p style="margin-left: auto;">
-          v{{ version }}
-          <br>
-          by @kuipertwt
-        </p>
+        <router-link id="rocket" to="/info">🚀</router-link>
       </nav>
   </header>
 
@@ -38,21 +34,25 @@ header {
 }
 
 nav {
-  height: 50px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   padding-left: 15px;
   padding-right: 15px;
-  gap: 15px;
+  gap: 0px 15px;
   border-bottom: 2px solid #171C20;
 }
 
 #appLogo {
-  height: 20px;
+  height: 15px;
+}
+
+#rocket {
+  margin-left: auto;
 }
 
 nav a {
-  height: 100%;
   line-height: 50px;
   color: #49565E;
   font-size: 20px;
@@ -60,6 +60,7 @@ nav a {
   text-decoration: none;
   transition: color .2s, border-color .2s;
   border-bottom: 2px solid #00000000;
+  margin-bottom: -2px;
   font-family: 'Halvar Breit Bold';
 }
 
@@ -75,6 +76,19 @@ nav > * {
 
 .routerView {
   width: 100%;
-  max-width: 1080px;
+  max-width: 1120px;
+  padding: 20px;
+}
+
+@media only screen and (max-width: 500px) {
+  .routerView {
+    padding: 10px;
+  }
+}
+
+@media only screen and (max-width: 700px) {
+  #rocket {
+    margin-left: 0;
+  }
 }
 </style>

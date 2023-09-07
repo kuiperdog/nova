@@ -57,15 +57,17 @@ export default {
         let momentumX = 0
         let momentumY = 0
 
-        this.$refs.view.addEventListener('mousedown', (event) => {
+        const dragStart = (event) => {
             dragging = true
             previousMouseX = event.clientX
             previousMouseY = event.clientY
             momentumX = 0
             momentumY = 0
-        });
+        }
+        this.$refs.view.addEventListener('mousedown', (e) => dragStart(e))
+        this.$refs.view.addEventListener('touchstart', (e) => dragStart(e.touches[0]))
 
-        this.$refs.view.addEventListener('mousemove', (event) => {
+        const drag = (event) => {
             if (dragging) {
                 const deltaX = event.clientX - previousMouseX
                 const deltaY = event.clientY - previousMouseY
@@ -77,15 +79,17 @@ export default {
                     multiple = -1
                 card.rotation.y += deltaX * 0.01 * multiple
 
-                momentumX = deltaX
+                momentumX = deltaX * multiple
                 momentumY = deltaY
 
                 previousMouseX = event.clientX
                 previousMouseY = event.clientY
             }
-        });
+        }
+        this.$refs.view.addEventListener('mousemove', e => drag(e))
+        this.$refs.view.addEventListener('touchmove', e => drag(e.touches[0]))
 
-        window.addEventListener('mouseup', () => {
+        const stopDrag = () => {
             if (dragging) {
                 dragging = false;
 
@@ -101,7 +105,9 @@ export default {
 
                 applyMomentum()
             }
-        });
+        }
+        window.addEventListener('mouseup', stopDrag)
+        window.addEventListener('touchend', stopDrag)
 
         const animate = () => {
             requestAnimationFrame(animate)

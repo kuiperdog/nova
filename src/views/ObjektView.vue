@@ -18,7 +18,7 @@ import getArtists from '../utils/artists.js'
             <Dropdown @valueChanged="x => update('class', x)" :value="$route.query.class" :options="[ {value: '', label: 'Any Class'}, {value: 'First', label: 'First'}, {value: 'Special', label: 'Special'}, {value: 'Welcome', label: 'Welcome'}, {value: 'Double', label: 'Double'}, {value: 'Zero', label: 'Zero'} ]"/>
             <Dropdown @valueChanged="x => update('type', x)" :value="$route.query.type" :options="[ {value: '', label: 'Any Type'}, {value: 'A', label: 'Physical'}, {value: 'Z', label: 'Digital'} ]"/>
         </div>
-        <ObjektGrid :objekts='collections'></ObjektGrid>
+        <ObjektGrid class="objektGrid" :objekts='collections'></ObjektGrid>
         <div ref="loader" id="nextPage" :style="{ display: (loading || hasNext) ? 'block' : 'none' }">
             <img id="dots" src="@/assets/icons/dots.svg">
         </div>
@@ -166,7 +166,6 @@ export default {
 #objektView {
     display: flex;
     flex-direction: column;
-    margin: 20px;
     gap: 20px;
     align-items: center;
 }
@@ -176,6 +175,7 @@ export default {
     display: flex;
     gap: 20px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 #status h2 {
@@ -184,5 +184,16 @@ export default {
 
 #dots {
     width: 50px;
+}
+
+.objektGrid {
+    width: 100%;
+}
+
+@media only screen and (max-width: 500px) {
+    .objektGrid, #filters, #status {
+        gap: 10px;
+        font-size: .9em;
+    }
 }
 </style>

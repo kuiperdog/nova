@@ -81,7 +81,7 @@ export default {
 <style scoped>
 .voteChart {
     display: flex;
-    gap: 10px;
+    gap: 1%;
     align-items: end;
 }
 
@@ -104,4 +104,5 @@ img {
 .voteChart, .voteChartLoading {
     margin-bottom: -20px;
 }
+
 </style>

@@ -29,7 +29,6 @@ export default {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(calc(100% / 3 - 20px), 200px), 1fr));
     gap: 20px;
-    max-width: 1080px;
 }
 
 .objektThumbnail {
@@ -47,6 +46,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 50%;
 }
 
 .objektSerial {

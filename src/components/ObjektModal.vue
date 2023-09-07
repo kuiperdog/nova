@@ -230,12 +230,16 @@ export default {
     height: 100%;
     display: flex;
     overflow: auto;
+    flex-wrap: wrap;
+}
+
+#content > div {
+    flex: 1;
+    min-width: 350px;
 }
 
 #imageView {
     position: relative;
-    height: 100%;
-    width: 50%;
     background-color: #171C20;
     overflow: hidden;
 }
@@ -331,9 +335,7 @@ export default {
 }
 
 #detailView {
-    height: 100%;
-    width: 50%;
-    padding: 30px 20px;
+    padding: 20px;
     font-size: 22px;
     display: grid;
     grid-template-columns: auto 1fr;
@@ -423,5 +425,28 @@ input[type=number] {
 #objekt3DView {
     width: 100%;
     height: 100%;
+    touch-action: none;
+}
+
+@media only screen and (max-width: 700px) {
+    .modal {
+        height: 100%;
+        border-radius: 0;
+    }
+    #content > div {
+        min-width: 100%;
+    }
+    #imageView {
+        height: 75%;
+    }
+    #controls {
+        padding-right: 70px;
+    }
+    #closeBtn {
+        background-color: #232A30;
+        border-radius: 20px;
+        padding: 5px;
+        display: flex;
+    }
 }
 </style>
