@@ -2,6 +2,7 @@
 import { ethers } from 'ethers'
 import Dropdown from '../components/Dropdown.vue'
 import VoteChart from '../components/VoteChart.vue'
+import PollSelector from '../components/PollSelector.vue'
 import getArtists from '../utils/artists'
 import getSlots from '../utils/slots'
 import abi from '../utils/abi/Governor.json'
@@ -9,6 +10,7 @@ import abi from '../utils/abi/Governor.json'
 
 <template>
     <div id="gravityView">
+        <PollSelector v-if="selectorOpen" :artist="gravity.artist" @closed="selectorOpen = false"/>
         <img v-if="loading" id="spinner" src="@/assets/icons/spinner.svg">
         <div v-if="!loading" id="content">
             <div id="header">
@@ -16,7 +18,7 @@ import abi from '../utils/abi/Governor.json'
                 <div class="headerItems">
                     <div class="headerItem">
                         <Dropdown id="artistDropdown" @valueChanged="x => $router.push(`/gravity/${x}`)" :value="gravity.artist" :options="artists"/>
-                        <img id="history" src="@/assets/icons/history.svg">
+                        <img @click="selectorOpen = true" id="history" src="@/assets/icons/history.svg">
                     </div>
                     <div class="headerItem">
                         <h2 v-if="gravity.polls.length > 1" :poll="pollId"><b>{{ poll.title }}</b></h2>
@@ -79,7 +81,8 @@ export default {
             timer: null,
             countdown: 0,
             pulse: false,
-            restartPulse: false
+            restartPulse: false,
+            selectorOpen: false
         }
     },
     async mounted() {
@@ -97,10 +100,14 @@ export default {
         },
         gravityId() {
             this.getGravity()
+        },
+        index() {
+            this.getGravity()
         }
     },
     methods: {
         async getGravity() {
+            this.selectorOpen = false
             this.loading = true
             const endpoint = this.COSMO_API + '/gravity/v3/'
 
@@ -268,6 +275,7 @@ export default {
 
 #history {
     height: 30px;
+    cursor: pointer;
 }
 
 #liveIndicator {
