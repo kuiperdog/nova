@@ -8,6 +8,11 @@ import * as THREE from 'three'
 
 <script>
 export default {
+    data () {
+        return {
+            stopDrag: null
+        }
+    },
     mounted() {
         const scene = new THREE.Scene()
         const camera = new THREE.PerspectiveCamera(
@@ -89,9 +94,9 @@ export default {
         this.$refs.view.addEventListener('mousemove', e => drag(e))
         this.$refs.view.addEventListener('touchmove', e => drag(e.touches[0]))
 
-        const stopDrag = () => {
+        this.stopDrag = () => {
             if (dragging) {
-                dragging = false;
+                dragging = false
 
                 const applyMomentum = () => {
                     if (Math.abs(momentumX) > 0.1 || Math.abs(momentumY) > 0.1) {
@@ -101,20 +106,24 @@ export default {
                         momentumY *= 0.98
                         requestAnimationFrame(applyMomentum)
                     }
-                };
+                }
 
                 applyMomentum()
             }
         }
-        window.addEventListener('mouseup', stopDrag)
-        window.addEventListener('touchend', stopDrag)
+        window.addEventListener('mouseup', this.stopDrag)
+        window.addEventListener('touchend', this.stopDrag)
 
         const animate = () => {
             requestAnimationFrame(animate)
             renderer.render(scene, camera)
-        };
+        }
 
         animate()
+    },
+    unmounted() {
+        window.removeEventListener('mouseup', this.stopDrag)
+        window.removeEventListener('touchend', this.stopDrag)
     },
     props: {
         front: String,
