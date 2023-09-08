@@ -3,6 +3,7 @@ import { ethers } from 'ethers'
 import Dropdown from '../components/Dropdown.vue'
 import VoteChart from '../components/VoteChart.vue'
 import PollSelector from '../components/PollSelector.vue'
+import Spinner from '../components/Spinner.vue'
 import getArtists from '../utils/artists'
 import getSlots from '../utils/slots'
 import abi from '../utils/abi/Governor.json'
@@ -11,7 +12,7 @@ import abi from '../utils/abi/Governor.json'
 <template>
     <div id="gravityView">
         <PollSelector v-if="selectorOpen" :artist="gravity.artist" @closed="selectorOpen = false"/>
-        <img v-if="loading" id="spinner" src="@/assets/icons/spinner.svg">
+        <Spinner v-if="loading"/>
         <div v-if="!loading" id="content">
             <div id="header">
                 <h1 id="title">{{ gravity.title }}</h1>
@@ -228,11 +229,6 @@ export default {
     flex: 1;
     display: flex;
     justify-content: center;
-}
-
-#spinner {
-    margin: auto;
-    width: 100px;
 }
 
 #content {

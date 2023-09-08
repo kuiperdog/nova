@@ -1,6 +1,7 @@
 <script setup>
 import Objekt3DView from './Objekt3DView.vue'
 import ObjektHistory from './ObjektHistory.vue'
+import Spinner from './Spinner.vue'
 import getOwner from '../utils/owner'
 import getArtists from '../utils/artists'
 import getUser from '../utils/user'
@@ -9,9 +10,7 @@ import getUser from '../utils/user'
 <template>
     <div class="blur" @click.self="$router.push(lastRoute)">
         <div class="modal">
-            <div id="indicator" v-if="!data">
-                <img id="spinner" src="@/assets/icons/spinner.svg">
-            </div>
+            <Spinner v-if="!data"/>
             <div id="content" v-if="data">
                 <div id="imageView" :class="{ 'view3D': view3D }">
                     <Objekt3DView v-if="view3D" id="objekt3DView" :front="data.front" :back="data.back"/>
@@ -213,17 +212,6 @@ export default {
     position: relative;
 }
 
-#indicator {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#spinner {
-    height: 100px;
-}
 
 #content {
     width: 100%;

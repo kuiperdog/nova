@@ -1,10 +1,12 @@
+<script setup>
+import Spinner from './Spinner.vue'
+</script>
+
 <template>
     <div class="blur" @click.self="$emit('closed')">
         <div class="modal">
             <img @click="$emit('closed')" id="closeBtn" src="@/assets/icons/close.svg">
-            <div v-if="!data" class="loading">
-                <img class="spinner" src="@/assets/icons/spinner.svg">
-            </div>
+            <Spinner v-if="!data"/>
             <div class="list" v-if="data" v-for="category in Object.keys(data)">
                 <h1 v-if="data[category].length">{{ category }}</h1>
                 <div class="gravity" v-for="gravity in data[category]">
@@ -65,13 +67,17 @@ export default {
     width: 400px;
     height: 600px;
     position: relative;
-    padding: 20px;
 }
 
 .list {
     display: flex;
     gap: 40px;
     flex-direction: column;
+    padding: 20px;
+}
+
+.list:empty {
+    padding: 0;
 }
 
 #closeBtn {
@@ -80,17 +86,6 @@ export default {
     top: 20px;
     right: 20px;
     cursor: pointer;
-}
-
-.loading {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-}
-
-.spinner {
-    width: 100px;
 }
 
 h1 {
