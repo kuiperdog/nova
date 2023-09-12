@@ -18,6 +18,7 @@ export default {
         return {
             objekts: [],
             loading: false,
+            nextStartAfter: 0,
             total: 0
         }
     },
@@ -31,7 +32,7 @@ export default {
             this.loading = true
 
             const query = this.$route.query
-            let options = []
+            let options = [`start_after=${this.nextStartAfter}`]
             
             switch (query.sort) {
                 case 'oldest':
@@ -67,11 +68,13 @@ export default {
                 serial: o.objektNo,
                 textColor: o.textColor
             })))
+            this.nextStartAfter = data.nextStartAfter
             this.loading = false
         },
         reset() {
             this.objekts = []
             this.total = 0
+            this.nextStartAfter = 0
             this.load()
         }
     },
