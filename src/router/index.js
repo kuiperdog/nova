@@ -31,6 +31,8 @@ const router = createRouter({
             beforeEnter: (to, from, next) => {
                 if (from.matched[0]) {
                     to.matched[0].components.default = from.matched[0].components.default
+                    if (from.matched[1])
+                        to.matched[1] = from.matched[1]
                     to.params.lastRoute = from.fullPath
                 }
                 next()
