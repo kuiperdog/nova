@@ -31,6 +31,7 @@ import defaultIcon from '@/assets/images/cosmo.png'
                     </p>
                 </div>
             </RouterLink>
+            <span /> <span /> <span /> <span /> <span />
         </div>
         <div ref="loader" class="nextPage" :style="{ display: (loading || total > objekts.length) ? 'block' : 'none' }">
             <img class="dots" src="@/assets/icons/dots.svg">
