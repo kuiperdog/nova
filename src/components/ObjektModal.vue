@@ -77,7 +77,7 @@ import getUser from '../utils/user'
                         </RouterLink>
                     </div>
                     <p v-if="serial"><b>Owner</b>:</p>
-                    <RouterLink class="owner" v-if="serial && owner && !owner.nobody" :to="{ name: 'profile', params: { id: owner.address } }">
+                    <RouterLink class="owner" v-if="serial && owner && !owner.nobody" :to="{ name: 'profile', params: { user: owner.address } }">
                         <div class="chip">
                             <img :src="owner.profileImageUrl">
                             <p>{{ owner.nickname }}</p>
