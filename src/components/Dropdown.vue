@@ -32,6 +32,11 @@ export default {
     unmounted() {
         document.removeEventListener('click', this.handleClick)
     },
+    watch: {
+        options() {
+            this.selection = this.options.find(o => o.value === this.value)
+        }
+    },
     props: {
         options: {
             type: Array,

@@ -4,7 +4,7 @@ async function getSlots(gravity, pollId) {
     const api = app.config.globalProperties.COSMO_API
     const res = await fetch(
         `${api}/gravity/v3/${gravity.artist}/gravity/${gravity.id}/polls/${pollId}`,
-        { headers: { "Authorization": "Bearer " + app.config.globalProperties.COSMO_TOKEN } }
+        { headers: { "Authorization": "Bearer " + import.meta.env.VITE_COSMO_TOKEN } }
     )
     const data = await res.json()
 

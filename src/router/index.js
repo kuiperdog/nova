@@ -5,6 +5,7 @@ import UsersView from '../views/UsersView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import BookmarksView from '../views/BookmarksView.vue'
 import InfoView from '../views/InfoView.vue'
+import CollectionView from '../views/profile/CollectionView.vue'
 import ObjektModal from '../components/ObjektModal.vue'
 
 const router = createRouter({
@@ -47,9 +48,17 @@ const router = createRouter({
             component: UsersView
         },
         {
-            path: '/@:id',
+            path: '/@:user',
             name: 'profile',
-            component: ProfileView
+            props: true,
+            component: ProfileView,
+            children: [
+                {
+                    path: 'collection',
+                    component: CollectionView,
+                    alias: ''
+                }
+            ]
         },
         {
             path: '/bookmarks',

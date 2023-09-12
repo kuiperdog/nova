@@ -77,13 +77,14 @@ import getUser from '../utils/user'
                         </RouterLink>
                     </div>
                     <p v-if="serial"><b>Owner</b>:</p>
-                    <RouterLink class="owner" v-if="serial && owner" :to="{ name: 'profile', params: { id: owner.address } }">
+                    <RouterLink class="owner" v-if="serial && owner && !owner.nobody" :to="{ name: 'profile', params: { id: owner.address } }">
                         <div class="chip">
                             <img :src="owner.profileImageUrl">
                             <p>{{ owner.nickname }}</p>
                         </div>
                     </RouterLink>
                     <p v-if="serial && !owner">Loading...</p>
+                    <i v-if="serial && owner && owner.nobody">None (unminted)</i>
                     <ObjektHistory id="history" v-if="token" :token="token"/>
                 </div>
             </div>
@@ -175,10 +176,12 @@ export default {
                     this.totalObjekts = json.data.objektsConnection.totalCount
                 }
 
-                if (json.data.objekts) {
+                if (json.data.objekts && json.data.objekts[0]) {
                     this.token = json.data.objekts[0].id
                     const owner = await getOwner(this.data.artists[0], this.token)
                     this.owner = await getUser(owner)
+                } else if (this.serial) {
+                    this.owner = { nobody: true }
                 }
             })
         }

@@ -1,70 +1,36 @@
 <script setup>
 import ObjektGrid from '../components/ObjektGrid.vue'
-import Dropdown from '../components/Dropdown.vue'
-import defaultIcon from '@/assets/images/cosmo.png'
-import getArtists from '../utils/artists.js'
+import getArtists from '../utils/artists'
 </script>
 
 <template>
-    <div id="objektView">
-        <div id="status">
-            <h2>{{ results.toLocaleString('en-US') }} results</h2>
-            <h3>Sort by</h3>
-            <Dropdown @valueChanged="x => update('sort', x)" :options="[ {value: '', label: 'Newest'}, {value: 'oldest', label: 'Oldest'}, {value: 'number', label: 'Number'} ]"/>
-        </div>
-        <div id="filters">
-            <Dropdown @valueChanged="x => update('artist', x)" :value="$route.query.artist" :options="artists"/>
-            <Dropdown @valueChanged="x => update('season', x)" :value="$route.query.season" :options="[ {value: '', label: 'Any Season'}, {value: 'Atom01', label: 'Atom01'}, {value: 'Binary01', label: 'Binary01'} ]"/>
-            <Dropdown @valueChanged="x => update('class', x)" :value="$route.query.class" :options="[ {value: '', label: 'Any Class'}, {value: 'First', label: 'First'}, {value: 'Special', label: 'Special'}, {value: 'Welcome', label: 'Welcome'}, {value: 'Double', label: 'Double'}, {value: 'Zero', label: 'Zero'} ]"/>
-            <Dropdown @valueChanged="x => update('type', x)" :value="$route.query.type" :options="[ {value: '', label: 'Any Type'}, {value: 'A', label: 'Physical'}, {value: 'Z', label: 'Digital'} ]"/>
-        </div>
-        <ObjektGrid class="objektGrid" :objekts='collections'></ObjektGrid>
-        <div ref="loader" id="nextPage" :style="{ display: (loading || hasNext) ? 'block' : 'none' }">
-            <img id="dots" src="@/assets/icons/dots.svg">
-        </div>
-    </div>
+    <ObjektGrid
+        :objekts="collections"
+        :total="results"
+        :loading="loading"
+        @loadNext="load()"
+        @updated="reset()"/>
 </template>
 
 <script>
 export default {
     data() {
         return {
-            hasNext: false,
             endCursor: 0,
             results: 0,
             collections: [],
-            artists: [{
-                value: '',
-                label: 'Any Artist',
-                icon: defaultIcon
-            }],
-            loading: true
+            loading: false
         }
     },
-    async mounted() {
-        if (this.artists.length <= 1) {
-            const list = await getArtists()
-            for (const artist of list) {
-                this.artists.push({
-                    value: artist.name,
-                    label: artist.title,
-                    icon: artist.logoImageUrl,
-                    member: false
-                }, ...artist.members.map(member => Object({
-                    value: member.name,
-                    label: member.name,
-                    icon: member.profileImageUrl,
-                    member: true
-                })))
-            }
-        }
+    mounted() {
         this.load()
-
-        const observer = new IntersectionObserver(this.handleIntersection, { threshold: 1 })
-        observer.observe(this.$refs.loader)
     },
     methods: {
-        load() {
+        async load() {
+            if (this.loading)
+                return
+            this.loading = true
+
             const query = this.$route.query
             const options = []
 
@@ -91,16 +57,16 @@ export default {
             if (query.type)
                 filters.push('number_contains: "' + query.type + '"')
             if (query.artist) {
-                if (this.artists.find(artist => artist.value === query.artist).member)
-                    filters.push('member_eq: "' + query.artist + '"')
-                else
+                if ((await getArtists()).find(artist => artist.name === query.artist))
                     filters.push('artists_containsAll: "' + query.artist + '"')
+                else
+                    filters.push('member_eq: "' + query.artist + '"')
             }
 
             if (filters)
                 options.push('where: {' + filters.join(', ') + '}')
 
-            fetch(this.SUBSQUID_API, {
+            const res = await fetch(this.SUBSQUID_API, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -112,7 +78,6 @@ export default {
                                 totalCount
                                 pageInfo {
                                     endCursor
-                                    hasNextPage
                                 }
                                 edges {
                                     node {
@@ -127,73 +92,22 @@ export default {
 
                     `
                 })
-            }).then(async (res) => {
-                const json = await res.json()
-                const data = json.data.collectionsConnection
-
-                this.loading = false
-                this.endCursor = data.pageInfo.endCursor
-                this.hasNext = data.pageInfo.hasNextPage
-                this.results = data.totalCount
-                this.collections.push(...data.edges.map(edge => edge.node))
             })
-        },
-        async update(parameter, value) {
-            const query = { ...this.$route.query }
-            query[parameter] = value
-            if (!query[parameter])
-                delete query[parameter]
-            await this.$router.push({ path: 'objekt', query: query })
 
+            const json = await res.json()
+            const data = json.data.collectionsConnection
+
+            this.endCursor = data.pageInfo.endCursor
+            this.results = data.totalCount
+            this.collections.push(...data.edges.map(edge => edge.node))
+            this.loading = false
+        },
+        reset() {
             this.collections = []
             this.endCursor = 0
-            this.hasNext = false
             this.results = 0
-            this.loading = true
             this.load()
-        },
-        handleIntersection(entries) {
-            if (entries[0].isIntersecting && this.hasNext && !this.loading) {
-                this.loading = true
-                this.load()
-            }
         }
     }
 }
 </script>
-
-<style scoped>
-#objektView {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-}
-
-#filters, #status {
-    width: 100%;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-#status h2 {
-    flex: 1;
-}
-
-#dots {
-    width: 50px;
-}
-
-.objektGrid {
-    width: 100%;
-}
-
-@media only screen and (max-width: 500px) {
-    .objektGrid, #filters, #status {
-        gap: 10px;
-        font-size: .9em;
-    }
-}
-</style>
