@@ -21,7 +21,7 @@ import getArtists from '../utils/artists'
                 <div class="chipItems">
                     <span class="como" v-for="artist in artists">
                         <img :src="artist.comoIcon">
-                        0
+                        {{ como ? como[artist.contracts.Como].toLocaleString('en-US') : 0 }}
                     </span>
                 </div>
                 <div class="chipItems">
@@ -45,7 +45,8 @@ export default {
     data() {
         return {
             profile: null,
-            artists: null
+            artists: null,
+            como: null
         }
     },
     async mounted() {
@@ -55,6 +56,7 @@ export default {
     methods: {
         async getUser() {
             this.profile = null
+            this.como = null
 
             if (this.user.startsWith('0x')) {
                 this.profile = await getUser(this.user)
@@ -66,6 +68,23 @@ export default {
                 if (!this.profile.profileImageUrl)
                     this.profile.profileImageUrl = 'https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png'
             }
+
+            const res = await fetch(`https://polygon-mainnet.g.alchemy.com/v2/${import.meta.env.VITE_ALCHEMY_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'method': 'alchemy_getTokenBalances',
+                    'params': [
+                        this.profile.address,
+                        this.artists.map(a => a.contracts.Como)
+                    ]
+                })
+            })
+            const data = await res.json()
+            this.como = data.result.tokenBalances.reduce((list, token) => {
+                list[token.contractAddress] = parseInt(token.tokenBalance, 16) / Math.pow(10, 18)
+                return list
+            }, {})
         },
         copy(text) {
             navigator.clipboard.writeText(text)
