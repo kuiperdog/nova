@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ObjektView from '../views/ObjektView.vue'
 import GravityView from '../views/GravityView.vue'
 import UserView from '../views/UserView.vue'
-import BookmarksView from '../views/BookmarksView.vue'
 import InfoView from '../views/InfoView.vue'
 import CollectionView from '../views/profile/CollectionView.vue'
 import ObjektModal from '../components/ObjektModal.vue'
@@ -56,11 +55,6 @@ const router = createRouter({
                     alias: ''
                 }
             ]
-        },
-        {
-            path: '/bookmarks',
-            name: 'bookmarks',
-            component: BookmarksView
         },
         {
             path: '/info',

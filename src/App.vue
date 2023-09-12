@@ -9,7 +9,6 @@ import { RouterLink, RouterView } from 'vue-router'
                 <router-link to="/objekt">Objekts</router-link>
                 <router-link :to="{ name: 'gravity' }">Gravity</router-link>
                 <router-link to="/users" :class="{'router-link-active': $route.path.startsWith('/@')}">Users</router-link>
-                <router-link to="/bookmarks">Bookmarks</router-link>
                 <router-link id="rocket" to="/info">🚀</router-link>
             </nav>
     </header>
