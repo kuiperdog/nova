@@ -383,6 +383,16 @@ export default {
     }
     .headerItem {
         justify-content: space-between;
+        font-size: 14px;
+    }
+    #title {
+        font-size: 26px;
+    }
+    .timer h2 {
+        font-size: 32px;
+    }
+    .timer h1 {
+        font-size: 48px;
     }
 }
 </style>
