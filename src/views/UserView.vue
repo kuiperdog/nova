@@ -48,6 +48,10 @@ import getArtists from '../utils/artists'
                 </div>
             </div>
         </div>
+        <div class="routerLinks" v-if="profile">
+            <RouterLink :to="`/@${user}/collection`">Collection</RouterLink>
+            <RouterLink :to="`/@${user}/trades`">Trades</RouterLink>
+        </div>
         <RouterView v-if="profile" :address="profile.address"/>
     </div>
 </template>
@@ -175,12 +179,12 @@ export default {
     background-repeat: no-repeat;
     background-size: 25px 25px;
     background-position: 10px 10px;
-    max-width: 400px;
+    max-width: 350px;
 }
 
 .searchSuggestions {
     position: absolute;
-    width: 400px;
+    width: 350px;
     max-height: 250px;
     overflow-y: scroll;
     border-radius: 10px;
@@ -287,6 +291,30 @@ export default {
 .como {
     background-color: #2A333A;
     gap: 20px;
+}
+
+.routerLinks {
+    display: flex;
+    background-color: #171C20;
+    padding: 5px;
+    gap: 10px;
+    border-radius: 10px;
+    color: #7C8992
+}
+
+.routerLinks > a {
+    flex: 1;
+    text-align: center;
+    font-size: 18px;
+    line-height: 40px;
+    text-decoration: none;
+    transition: background-color .1s;
+    border-radius: 10px;
+}
+
+.router-link-active {
+    background-color: #2A333A;
+    color: #FFFFFF;
 }
 
 a {

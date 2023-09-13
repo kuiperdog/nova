@@ -4,6 +4,7 @@ import GravityView from '../views/GravityView.vue'
 import UserView from '../views/UserView.vue'
 import InfoView from '../views/InfoView.vue'
 import CollectionView from '../views/profile/CollectionView.vue'
+import TradesView from '../views/profile/TradesView.vue'
 import ObjektModal from '../components/ObjektModal.vue'
 
 const router = createRouter({
@@ -53,6 +54,10 @@ const router = createRouter({
                     path: 'collection',
                     component: CollectionView,
                     alias: ''
+                },
+                {
+                    path: 'trades',
+                    component: TradesView
                 }
             ]
         },
