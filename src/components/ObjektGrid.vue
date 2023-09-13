@@ -22,16 +22,12 @@ import defaultIcon from '@/assets/images/cosmo.png'
         <div class="grid">
             <RouterLink class="objekt" v-for="objekt in objekts" :to="'/objekt/' + objekt.id + (objekt.serial ? '/' + objekt.serial : '')">
                 <img class="objektThumbnail" :src="objekt.thumbnail">
-                <div class="objektNumber">
-                    <p :style="{ color: objekt.textColor }">
-                        <b>{{ objekt.number }}</b>
-                        <span class="objektSerial" v-if="objekt.serial">
-                            #{{ String(objekt.serial).padStart(5, '0') }}
-                        </span>
-                    </p>
+                <div class="objektNumber" :style="{ 'color': objekt.textColor, 'font-size': fontSize }">
+                    <b>{{ objekt.number }}</b>
+                    <p class="objektSerial" v-if="objekt.serial">#{{ String(objekt.serial).padStart(5, '0') }}</p>
                 </div>
             </RouterLink>
-            <span /> <span /> <span /> <span /> <span />
+            <span ref="previewSize" /> <span /> <span /> <span /> <span />
         </div>
         <div ref="loader" class="nextPage" :style="{ display: (loading || total > objekts.length) ? 'block' : 'none' }">
             <img class="dots" src="@/assets/icons/dots.svg">
@@ -47,12 +43,16 @@ export default {
                 value: '',
                 label: 'Any Artist',
                 icon: defaultIcon
-            }]
+            }],
+            fontSize: 'inherit'
         }
     },
     mounted() {
-        const observer = new IntersectionObserver(this.handleIntersection, { threshold: 1 })
-        observer.observe(this.$refs.loader)
+        const interactions = new IntersectionObserver(this.handleIntersection, { threshold: 1 })
+        interactions.observe(this.$refs.loader)
+
+        const resizing = new ResizeObserver(this.handleResize)
+        resizing.observe(this.$refs.previewSize)
 
         getArtists().then(list => {
             for (const artist of list) {
@@ -74,6 +74,10 @@ export default {
         handleIntersection(entries) {
             if (entries[0].isIntersecting && !this.loading)
                 this.$emit('loadNext')
+        },
+        handleResize(entries) {
+            if (entries[0].target === this.$refs.previewSize)
+                this.fontSize = entries[0].target.clientWidth * 0.066 + 'px'
         },
         async selectionChanged(parameter, value) {
             const query = { ...this.$route.query }
@@ -135,11 +139,12 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 50%;
 }
 
 .objektSerial {
     font-family: 'Dot-Matrix';
+    margin-top: 1%;
+    margin-left: -1%;
 }
 
 .objekt {
