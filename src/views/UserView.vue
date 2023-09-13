@@ -51,6 +51,7 @@ import getArtists from '../utils/artists'
         <div class="routerLinks" v-if="profile">
             <RouterLink :to="`/@${user}/collection`">Collection</RouterLink>
             <RouterLink :to="`/@${user}/trades`">Trades</RouterLink>
+            <RouterLink :to="`/@${user}/votes`">Votes</RouterLink>
         </div>
         <RouterView v-if="profile" :address="profile.address"/>
     </div>
