@@ -48,7 +48,11 @@ export default {
         }
     },
     mounted() {
-        const interactions = new IntersectionObserver(this.handleIntersection, { threshold: 1 })
+        const interactions = new IntersectionObserver(this.handleIntersection, {
+            threshold: 1,
+            root: document.body,
+            rootMargin: '0px'
+        })
         interactions.observe(this.$refs.loader)
 
         const resizing = new ResizeObserver(this.handleResize)

@@ -6,7 +6,12 @@
 }
 
 html, body {
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: auto;
 }
 
 h1, h2, h3, h4, h5, h6 {
