@@ -16,7 +16,10 @@ import { ethers } from 'ethers'
             </template>
             <br>
         </template>
-        <div class="loader" v-if="!polls.length">
+        <h3 class="emptyNotice" v-if="!loading && polls.length < 1">
+            No COMO has been voted yet.
+        </h3>
+        <div class="loader" v-if="loading">
             <img src="@/assets/icons/dots.svg" class="dots">
         </div>
     </div>
@@ -26,6 +29,7 @@ import { ethers } from 'ethers'
 export default {
     data() {
         return {
+            loading: true,
             artists: null,
             polls: []
         }
@@ -80,6 +84,8 @@ export default {
             }
             return acc
         }, [])
+
+        this.loading = false
     },
     methods: {
         getPoll(vote, gravity) {
@@ -137,5 +143,10 @@ export default {
 
 .title p {
     white-space: pre-wrap;
+}
+
+.emptyNotice {
+    text-align: center;
+    grid-column: span 2;
 }
 </style>
