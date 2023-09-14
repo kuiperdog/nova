@@ -7,7 +7,7 @@ import { ethers } from 'ethers'
         <img src="@/assets/icons/dots.svg">
     </div>
     <div v-if="bars.length" class="voteChart" :style="{ height: height + 'px' }">
-        <div class="bar" v-for="bar in bars" :style="{ height: Math.floor((bar / this.peak) * height) + 'px' }"></div>
+        <div class="bar" v-for="bar in bars" :style="{ height: Math.floor((bar / peak) * height) + 'px' }"></div>
     </div>
 </template>
 
