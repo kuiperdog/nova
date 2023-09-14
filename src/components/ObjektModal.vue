@@ -71,7 +71,8 @@ import getUser from '../utils/user'
                     <hr>
                     <p><b>Serial</b>:</p>
                     <div class="serialField">
-                        #<input v-model="nextSerial" type="number" placeholder="00000" size="5" min="0">
+                        #<input ref="serialInput" v-model="nextSerial" type="number" placeholder="00000" size="5" min="0" maxlength="5"
+                            @keyup.enter="$router.push({ name: 'objektmodal', params: { collection: collection, serial: nextSerial }}); defocusInput()">
                         <RouterLink id="nextBtn" :to="{ name: 'objektmodal', params: { collection: collection, serial: nextSerial } }">
                             <img src="@/assets/icons/next.svg">
                         </RouterLink>
@@ -184,6 +185,9 @@ export default {
                     this.owner = { nobody: true }
                 }
             })
+        },
+        defocusInput() {
+            this.$refs.serialInput.blur()
         }
     }
 }
@@ -377,6 +381,7 @@ input[type=number] {
     border-bottom: 1px #FFFFFF solid;
     color: #FFFFFF;
     font-size: inherit;
+    max-width: 125px;
 }
 
 .owner {
