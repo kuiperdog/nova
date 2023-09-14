@@ -56,7 +56,7 @@ import getUser from '../utils/user'
                     <p><b>Member</b>:</p>
                     <div class="chipList" v-if="members.length">
                         <div class="chip">
-                            <img :src="members.find(m => m.name === data.member).profileImageUrl">
+                            <img v-if="data.class !== 'Zero'" :src="members.find(m => m.name === data.member).profileImageUrl">
                             <p>{{ data.member }}</p>
                         </div>
                     </div>
