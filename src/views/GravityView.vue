@@ -112,6 +112,11 @@ export default {
             this.loading = true
             const endpoint = this.COSMO_API + '/gravity/v3/'
 
+            if (this.timer) {
+                clearInterval(this.timer)
+                this.timer = null
+            }
+
             if (this.artist) {
                 if (this.gravityId) {
                     const res = await fetch(endpoint + this.artist + '/gravity/' + this.gravityId)
