@@ -95,6 +95,10 @@ export default {
 
         await this.getGravity()
     },
+    unmounted() {
+        if (this.timer) 
+            clearInterval(this.timer)
+    },
     watch: {
         artist() {
             this.getGravity()
