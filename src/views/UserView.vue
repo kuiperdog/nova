@@ -6,18 +6,6 @@ import getArtists from '../utils/artists'
 
 <template>
     <div class="userView">
-        <div class="searchContainer" :style="{ flex: user ? 0 : 1 }" tr>
-            <div>
-                <input type="text" class="searchBox" placeholder="Search by nickname or address" ref="searchBox"
-                    @keyup.enter="e => $router.push(`/@${e.target.value}`)" @input="e => search(e.target.value)">
-                <div v-if="suggestions" class="searchSuggestions">
-                    <RouterLink v-for="suggestion in suggestions" :to="`/@${suggestion.nickname}`" class="suggestion">
-                        <img :src="suggestion.profileImageUrl ? suggestion.profileImageUrl : DEFAULT_PFP">
-                        <p>{{ suggestion.nickname }}</p>
-                    </RouterLink>
-                </div>
-            </div>
-        </div>
         <Spinner v-if="user && !profile" class="spinner"/>
         <div v-if="profile" class="profile">
             <img class="profileImage" :src="profile.profileImageUrl">
@@ -63,18 +51,12 @@ export default {
         return {
             profile: null,
             artists: null,
-            como: null,
-            searchTimeout: null,
-            suggestions: null
+            como: null
         }
     },
     mounted() {
         if (this.user)
             this.getUser()
-        document.addEventListener('click', this.handleClick)
-    },
-    unmounted() {
-        document.removeEventListener('click', this.handleClick)
     },
     methods: {
         async getUser() {
@@ -114,27 +96,6 @@ export default {
         },
         copy(text) {
             navigator.clipboard.writeText(text)
-        },
-        search(query) {
-            clearTimeout(this.searchTimeout)
-            this.searchTimeout = setTimeout(async () => {
-                if (!query && query.length < 4 && !query.startsWith('0x')) {
-                    this.suggestions = null
-                    return
-                }
-
-                const res = await fetch(`${this.COSMO_API}/user/v1/search?query=${query}`)
-                const data = await res.json()
-                this.suggestions = data.results
-
-                const selfSuggestion = this.suggestions.findIndex(s => s.address === this.profile.address)
-                if (selfSuggestion > -1)
-                    this.suggestions.splice(selfSuggestion, 1)
-            }, 500)
-        },
-        handleClick(event) {
-            if (!this.$refs.searchBox.contains(event.target))
-                this.suggestions = null
         }
     },
     watch: {
@@ -143,7 +104,6 @@ export default {
                 this.getUser()
             else if (this.$route.path === '/users')
                 this.profile = null
-            this.$refs.searchBox.value = null
             this.suggestions = null
         }
     },
@@ -160,57 +120,6 @@ export default {
     flex-direction: column;
     margin: 20px 0px;
     gap: 40px;
-}
-
-.searchContainer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.searchBox {
-    font-family: inherit;
-    font-size: 20px;
-    padding: 10px 20px;
-    padding-left: 40px;
-    border-radius: 10px;
-    border: none;
-    background-image: url('@/assets/icons/search.svg');
-    background-repeat: no-repeat;
-    background-size: 25px 25px;
-    background-position: 10px 10px;
-    max-width: 350px;
-}
-
-.searchSuggestions {
-    position: absolute;
-    width: 350px;
-    max-height: 250px;
-    overflow-y: scroll;
-    border-radius: 10px;
-    background-color: #FFFFFF;
-    color: #000000;
-    margin-top: 2px;
-    z-index: 1;
-}
-
-.suggestion {
-    width: 100%;
-    height: 50px;
-    display: flex;
-    padding: 10px;
-    gap: 10px;
-    align-items: center;
-    transition: background-color 0.1s;
-}
-
-.suggestion:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-.suggestion img {
-    height: 100%;
 }
 
 .spinner {
