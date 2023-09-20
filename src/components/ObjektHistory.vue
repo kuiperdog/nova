@@ -20,7 +20,7 @@ import getUser from '../utils/user'
                 }) }}
             </td>
             <td>
-                <RouterLink v-if="transfer.from.address !== nullAddress" :to="{ name: 'users', params: { user: transfer.from.address } }">
+                <RouterLink v-if="transfer.from.address !== nullAddress" :to="{ name: 'user', params: { user: transfer.from.address } }">
                     {{ transfer.from.nickname }}
                 </RouterLink>
                 <b v-if="transfer.from.address === nullAddress">
@@ -28,7 +28,7 @@ import getUser from '../utils/user'
                 </b>
             </td>
             <td>
-                <RouterLink v-if="transfer.to.address !== nullAddress" :to="{ name: 'users', params: { user: transfer.to.address } }">
+                <RouterLink v-if="transfer.to.address !== nullAddress" :to="{ name: 'user', params: { user: transfer.to.address } }">
                     {{ transfer.to.nickname }}
                 </RouterLink>
                 <b v-if="transfer.to.address === nullAddress">

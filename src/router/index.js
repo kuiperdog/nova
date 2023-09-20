@@ -46,9 +46,8 @@ const router = createRouter({
         },
         {
             path: '/@:user?',
-            name: 'users',
+            name: 'user',
             props: true,
-            alias: '/users',
             component: UserView,
             children: [
                 {
