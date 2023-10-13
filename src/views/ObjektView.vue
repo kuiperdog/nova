@@ -1,6 +1,6 @@
 <script setup>
-import ObjektGrid from '../components/ObjektGrid.vue'
-import getArtists from '../utils/artists'
+import ObjektGrid from '../components/ObjektGrid.vue';
+import getArtists from '../utils/artists';
 </script>
 
 <template>
@@ -54,13 +54,16 @@ export default {
                 filters.push('class_eq: "' + query.class + '"')
             if (query.season)
                 filters.push('season_eq: "' + query.season + '"')
-            if (query.type)
-                filters.push('number_contains: "' + query.type + '"')
             if (query.artist) {
                 if ((await getArtists()).find(artist => artist.name === query.artist))
                     filters.push('artists_containsAll: "' + query.artist + '"')
                 else
                     filters.push('member_eq: "' + query.artist + '"')
+            }
+
+            if (query.number || query.type) {
+                const numberFilter = `${query.number ? query.number : ""}${query.type ? query.type: ""}`
+                filters.push('number_contains: "' + numberFilter + '"')
             }
 
             if (filters)
