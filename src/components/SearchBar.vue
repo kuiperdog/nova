@@ -46,6 +46,7 @@ export default {
         clear() {
             clearTimeout(this.timeout)
             this.$refs.searchBox.value = null
+            this.suggestions = null
             if (this.$refs.searchBar.classList.contains('showBar'))
                 this.$refs.searchBar.classList.remove('showBar')
         },
@@ -124,6 +125,10 @@ a {
 
 .searchBar, .searchIcon {
     margin-left: auto;
+}
+
+.showBar + .searchIcon {
+    filter: brightness(500%);
 }
 
 @media only screen and (max-width: 700px) {
