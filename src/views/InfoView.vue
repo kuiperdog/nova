@@ -6,7 +6,7 @@
         <span class="gap"></span>
         <h1>Support the project</h1>
         <img id="qr" src="@/assets/images/support-qr.png">
-        <p>ETH: 0x661CB72daC01Fb6Ea7f62ab7f0315ae98a7713aF</p>
+        <p>ETH: 0x18ea10a741Bf3565D45Ba8E7d89B0b5469BeD3fF</p>
         <span class="gap"></span>
         <h2><a href="https://github.com/kuiperdog/nova">View source code</a></h2>
         <h2><a href="https://github.com/kuiperdog/nova/issues">Report a bug/<br>request a feature</a></h2>
