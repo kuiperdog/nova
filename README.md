@@ -18,7 +18,7 @@ And more.
 As a fully serverless web-app, Nova stores as little static data as possible on the client, instead aggregating data on-demand from a variety of sources. On-chain data is retrieved directly from Polygon using [RPC](https://polygon-rpc.com) with ethers,js for individual data points, or with a custom [Cosmo Subsquid indexer](https://github.com/kuiperdog/cosmo-indexer) for bulk archived data. Off-chain data is retrieved directly from the Cosmo API, with certain data-points being archived and pre-populated by the indexing engine as part of organizing tokens or events. The web-app itself is built with Vue 3 and Vite, with fonts and colour schemes extracted directly from Cosmo itself for added cohesion in design language.
 
 ## Contributions
-Currently, all infrastructure and registration fees incurred by Nova are paid out of pocket by the developer. If you are interested in supporting the future of this project, one-time and recurring donations are available via [GitHub Sponsors](https://github.com/sponsors/kuiperdog). 
+Currently, all infrastructure and registration fees incurred by Nova are paid out of pocket by the developer. If you are interested in supporting the future of this project, one-time and recurring donations are available via [GitHub Sponsors](https://github.com/sponsors/kuiperdog) and [Patreon](https://www.patreon.com/kuiperdog).
 
 Alternatively, tips are also gladly accepted via ETH.
 

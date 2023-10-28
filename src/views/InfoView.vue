@@ -5,6 +5,8 @@
         <h2>by <a href="https://twitter.com/kuipertwt">@kuipertwt</a></h2>
         <span class="gap"></span>
         <h1>Support the project</h1>
+        <h2><a href="https://github.com/sponsors/kuiperdog">GitHub Sponsors</a></h2>
+        <h2><a href="https://www.patreon.com/kuiperdog">Patreon</a></h2>
         <img id="qr" src="@/assets/images/support-qr.png">
         <p>ETH: 0x18ea10a741Bf3565D45Ba8E7d89B0b5469BeD3fF</p>
         <span class="gap"></span>
