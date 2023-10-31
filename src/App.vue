@@ -9,6 +9,7 @@ import SearchBar from './components/SearchBar.vue'
                 <img id="appLogo" src="@/assets/images/logo.svg">
                 <router-link to="/objekt">Objekts</router-link>
                 <router-link :to="{ name: 'gravity' }">Gravity</router-link>
+                <router-link to="/bookmarks">Bookmarks</router-link>
                 <SearchBar/>
                 <router-link to="/info">🚀</router-link>
             </nav>
