@@ -86,6 +86,8 @@ import getUser from '../utils/user'
                     </RouterLink>
                     <p v-if="serial && !owner">Loading...</p>
                     <i v-if="serial && owner && owner.nobody">None (unminted)</i>
+                    <p v-if="token"><b>Transferable</b>:</p>
+                    <p v-if="token">{{ transferable === null ? 'Loading' : transferable ? 'Yes' : 'No' }}</p>
                     <ObjektHistory id="history" v-if="token" :token="token"/>
                 </div>
             </div>
@@ -108,6 +110,7 @@ export default {
             members: [],
             owner: null,
             token: null,
+            transferable: null,
             nextSerial: this.serial
         }
     },
@@ -129,11 +132,13 @@ export default {
             this.data = null
             this.owner = null
             this.token = null
+            this.transferable = null
             this.init()
         },
         serial() {
             this.owner = null
             this.token = null
+            this.transferable = null
             this.init()
         }
     },
@@ -181,6 +186,11 @@ export default {
                     this.token = json.data.objekts[0].id
                     const owner = await getOwner(this.data.artists[0], this.token)
                     this.owner = await getUser(owner)
+
+                    const tokenReq = await fetch(`${this.COSMO_API}/objekt/v1/token/${this.token}`)
+                    const tokenRes = await tokenReq.json()
+                    if (tokenRes.objekt)
+                        this.transferable = tokenRes.objekt.transferable
                 } else if (this.serial) {
                     this.owner = { nobody: true }
                 }
