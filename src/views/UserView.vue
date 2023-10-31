@@ -102,8 +102,6 @@ export default {
         user() {
             if (this.user && (!this.profile || (this.profile.address !== this.user && this.profile.nickname !== this.user)))
                 this.getUser()
-            else if (!this.user)
-                this.profile = null
             this.suggestions = null
         }
     },
