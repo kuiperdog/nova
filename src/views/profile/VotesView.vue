@@ -69,9 +69,9 @@ export default {
         gravities = [].concat(...gravities.map(g => [...g.upcoming, ...g.ongoing, ...g.past]))
 
         this.polls = data.data.votes.reduce((acc, vote) => {
-            const entry = acc.find((poll) => poll.id === vote.poll)
+            const entry = acc.find((poll) => poll.id === vote.poll && poll.votes[0].contract === vote.contract)
             if (entry) {
-                entry.votes.push(vote)
+                entry.votes.unshift(vote)
             } else {
                 const artist = this.artists.find(a => vote.contract === a.contracts.Governor.toLowerCase())
                 const gravity = gravities.find(g => g.artist === artist.name && this.getPoll(vote, g))
