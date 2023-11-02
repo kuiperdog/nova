@@ -75,7 +75,7 @@ export default {
     background-size: 20px 20px;
     background-position: 6px 6px;
     height: 30px;
-    max-width: 300px;
+    width: 300px;
     background-color: #F4F5F7;
     color: #000000;
 }
