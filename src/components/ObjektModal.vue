@@ -10,18 +10,20 @@ import getUser from '../utils/user'
 <template>
     <div class="blur" @click.self="$router.push(lastRoute)">
         <div class="modal">
-            <Spinner v-if="!data"/>
+            <Spinner v-if="!data" />
             <div id="content" v-if="data">
                 <div id="imageView" :class="{ 'view3D': view3D }">
-                    <Objekt3DView v-if="view3D" id="objekt3DView" :front="data.front" :back="data.back"/>
+                    <Objekt3DView v-if="view3D" id="objekt3DView" :front="data.front" :back="data.back" />
                     <div id="controls">
                         <p>
                             <input type="checkbox" v-model="view3D">
                             3D View
                         </p>
+                        <img v-if="bookmarked" @click="bookmark()" src="@/assets/icons/heart.svg">
+                        <img v-else @click="bookmark()" src="@/assets/icons/heart_empty.svg">
                         <a :href="data.front" :download="collection + '.avif'">
                             <img src="@/assets/icons/download.svg">
-                            Download HD
+                            Download
                         </a>
                     </div>
                     <div v-if="!view3D" id="card">
@@ -56,7 +58,8 @@ import getUser from '../utils/user'
                     <p><b>Member</b>:</p>
                     <div class="chipList" v-if="members.length">
                         <div class="chip">
-                            <img v-if="data.class !== 'Zero'" :src="members.find(m => m.name === data.member).profileImageUrl">
+                            <img v-if="data.class !== 'Zero'"
+                                :src="members.find(m => m.name === data.member).profileImageUrl">
                             <p>{{ data.member }}</p>
                         </div>
                     </div>
@@ -71,14 +74,17 @@ import getUser from '../utils/user'
                     <hr>
                     <p><b>Serial</b>:</p>
                     <div class="serialField">
-                        #<input ref="serialInput" v-model="nextSerial" type="number" placeholder="00000" size="5" min="0" maxlength="5"
-                            @keyup.enter="$router.push({ name: 'objektmodal', params: { collection: collection, serial: nextSerial }}); defocusInput()">
-                        <RouterLink id="nextBtn" :to="{ name: 'objektmodal', params: { collection: collection, serial: nextSerial } }">
+                        #<input ref="serialInput" v-model="nextSerial" type="number" placeholder="00000" size="5" min="0"
+                            maxlength="5"
+                            @keyup.enter="$router.push({ name: 'objektmodal', params: { collection: collection, serial: nextSerial } }); defocusInput()">
+                        <RouterLink id="nextBtn"
+                            :to="{ name: 'objektmodal', params: { collection: collection, serial: nextSerial } }">
                             <img src="@/assets/icons/next.svg">
                         </RouterLink>
                     </div>
                     <p v-if="serial"><b>Owner</b>:</p>
-                    <RouterLink class="owner" v-if="serial && owner && !owner.nobody" :to="{ name: 'users', params: { user: owner.address } }">
+                    <RouterLink class="owner" v-if="serial && owner && !owner.nobody"
+                        :to="{ name: 'user', params: { user: owner.address } }">
                         <div class="chip">
                             <img :src="owner.profileImageUrl">
                             <p>{{ owner.nickname }}</p>
@@ -86,7 +92,9 @@ import getUser from '../utils/user'
                     </RouterLink>
                     <p v-if="serial && !owner">Loading...</p>
                     <i v-if="serial && owner && owner.nobody">None (unminted)</i>
-                    <ObjektHistory id="history" v-if="token" :token="token"/>
+                    <p v-if="token"><b>Transferable</b>:</p>
+                    <p v-if="token">{{ transferable === null ? 'Loading' : transferable ? 'Yes' : 'No' }}</p>
+                    <ObjektHistory id="history" v-if="token" :token="token" />
                 </div>
             </div>
             <RouterLink id="closeBtn" :to="lastRoute">
@@ -104,10 +112,12 @@ export default {
             totalObjekts: 0,
             flipped: false,
             view3D: false,
+            bookmarked: false,
             artists: [],
             members: [],
             owner: null,
             token: null,
+            transferable: null,
             nextSerial: this.serial
         }
     },
@@ -129,11 +139,13 @@ export default {
             this.data = null
             this.owner = null
             this.token = null
+            this.transferable = null
             this.init()
         },
         serial() {
             this.owner = null
             this.token = null
+            this.transferable = null
             this.init()
         }
     },
@@ -149,6 +161,7 @@ export default {
                         query {
                             ${this.data ? `` : `
                                 collectionById(id: "${this.collection}") {
+                                    id
                                     artists
                                     back
                                     class
@@ -156,6 +169,8 @@ export default {
                                     member
                                     number
                                     season
+                                    thumbnail
+                                    textColor
                                 }
                                 objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${this.collection}"}}) {
                                     totalCount
@@ -181,10 +196,30 @@ export default {
                     this.token = json.data.objekts[0].id
                     const owner = await getOwner(this.data.artists[0], this.token)
                     this.owner = await getUser(owner)
+
+                    const tokenReq = await fetch(`${this.COSMO_API}/objekt/v1/token/${this.token}`)
+                    const tokenRes = await tokenReq.json()
+                    if (tokenRes.objekt)
+                        this.transferable = tokenRes.objekt.transferable
                 } else if (this.serial) {
                     this.owner = { nobody: true }
                 }
             })
+            this.bookmarked = localStorage.bookmarks && JSON.parse(localStorage.bookmarks).find(i => i.id === this.collection)
+        },
+        bookmark() {
+            if (!localStorage.bookmarks)
+                localStorage.bookmarks = JSON.stringify([])
+
+            if (JSON.parse(localStorage.bookmarks).find(i => i.id === this.collection)) {
+                localStorage.bookmarks = JSON.stringify(JSON.parse(localStorage.bookmarks).filter(i => i.id !== this.collection))
+                this.bookmarked = false
+            } else {
+                localStorage.bookmarks = JSON.stringify([...JSON.parse(localStorage.bookmarks), this.data])
+                this.bookmarked = true
+            }
+            
+            window.dispatchEvent(new Event('storage'))
         },
         defocusInput() {
             this.$refs.serialInput.blur()
@@ -252,6 +287,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    text-align: center;
 }
 
 #controls a {
@@ -267,6 +303,11 @@ export default {
     padding: 10px;
     background-color: #232A30;
     border-radius: 5px;
+}
+
+#controls img {
+    height: 35px;
+    cursor: pointer;
 }
 
 #card {

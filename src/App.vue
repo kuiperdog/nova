@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import SearchBar from './components/SearchBar.vue'
 </script>
 
 <template>
@@ -8,8 +9,9 @@ import { RouterLink, RouterView } from 'vue-router'
                 <img id="appLogo" src="@/assets/images/logo.svg">
                 <router-link to="/objekt">Objekts</router-link>
                 <router-link :to="{ name: 'gravity' }">Gravity</router-link>
-                <router-link to="/users" :class="{'router-link-active': $route.path.startsWith('/@')}">Users</router-link>
-                <router-link id="rocket" to="/info">🚀</router-link>
+                <router-link to="/bookmarks">Bookmarks</router-link>
+                <SearchBar/>
+                <router-link to="/info">🚀</router-link>
             </nav>
     </header>
 
@@ -35,10 +37,6 @@ nav {
 
 #appLogo {
     height: 15px;
-}
-
-#rocket {
-    margin-left: auto;
 }
 
 nav a {
@@ -72,12 +70,6 @@ nav > * {
 @media only screen and (max-width: 500px) {
     .routerView {
         padding: 10px;
-    }
-}
-
-@media only screen and (max-width: 700px) {
-    #rocket {
-        margin-left: 0;
     }
 }
 </style>

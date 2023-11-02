@@ -8,15 +8,19 @@ import defaultIcon from '@/assets/images/cosmo.png'
 <template>
     <div class="objektGrid">
         <div class="status">
-            <h2>{{ total.toLocaleString('en-US') }} results</h2>
-            <h3>Sort by</h3>
-            <Dropdown @valueChanged="x => selectionChanged('sort', x)" :value="$route.query.sort" :options="[ {value: '', label: 'Newest'}, {value: 'oldest', label: 'Oldest'}, {value: 'number', label: 'Number'} ]"/>
+            <slot name="status">
+                <h2>{{ total.toLocaleString('en-US') }} results</h2>
+                <h3>Sort by</h3>
+                <Dropdown @valueChanged="x => selectionChanged('sort', x)" :value="$route.query.sort" :options="[ {value: '', label: 'Newest'}, {value: 'oldest', label: 'Oldest'}, {value: 'number', label: 'Number'} ]"/>
+            </slot>
         </div>
         <div class="filters">
-            <Dropdown @valueChanged="x => selectionChanged('artist', x)" :value="$route.query.artist" :options="[ ...artists ]"/>
-            <Dropdown @valueChanged="x => selectionChanged('season', x)" :value="$route.query.season" :options="[ {value: '', label: 'Any Season'}, {value: 'Atom01', label: 'Atom01'}, {value: 'Binary01', label: 'Binary01'}, {value: 'Cream01', label: 'Cream01'} ]"/>
-            <Dropdown @valueChanged="x => selectionChanged('class', x)" :value="$route.query.class" :options="[ {value: '', label: 'Any Class'}, {value: 'First', label: 'First'}, {value: 'Special', label: 'Special'}, {value: 'Welcome', label: 'Welcome'}, {value: 'Double', label: 'Double'}, {value: 'Zero', label: 'Zero'} ]"/>
-            <Dropdown @valueChanged="x => selectionChanged('type', x)" :value="$route.query.type" :options="[ {value: '', label: 'Any Type'}, {value: 'A', label: 'Physical'}, {value: 'Z', label: 'Digital'} ]"/>
+            <slot name="filters">
+                <Dropdown @valueChanged="x => selectionChanged('artist', x)" :value="$route.query.artist" :options="[ ...artists ]"/>
+                <Dropdown @valueChanged="x => selectionChanged('season', x)" :value="$route.query.season" :options="[ {value: '', label: 'Any Season'}, {value: 'Atom01', label: 'Atom01'}, {value: 'Binary01', label: 'Binary01'}, {value: 'Cream01', label: 'Cream01'} ]"/>
+                <Dropdown @valueChanged="x => selectionChanged('class', x)" :value="$route.query.class" :options="[ {value: '', label: 'Any Class'}, {value: 'First', label: 'First'}, {value: 'Special', label: 'Special'}, {value: 'Welcome', label: 'Welcome'}, {value: 'Double', label: 'Double'}, {value: 'Zero', label: 'Zero'} ]"/>
+                <Dropdown @valueChanged="x => selectionChanged('type', x)" :value="$route.query.type" :options="[ {value: '', label: 'Any Type'}, {value: 'A', label: 'Physical'}, {value: 'Z', label: 'Digital'} ]"/>
+            </slot>
         </div>
         <slot name="options"></slot>
         <div class="grid">
@@ -26,6 +30,7 @@ import defaultIcon from '@/assets/images/cosmo.png'
                     <b>{{ objekt.number }}</b>
                     <p class="objektSerial" v-if="objekt.serial">#{{ String(objekt.serial).padStart(5, '0') }}</p>
                 </div>
+                <img v-if="bookmarks.find(i => i.id === objekt.id)" class="heart" src="@/assets/icons/heart.svg">
             </RouterLink>
             <span ref="previewSize" /> <span /> <span /> <span /> <span />
         </div>
@@ -44,7 +49,8 @@ export default {
                 label: 'Any Artist',
                 icon: defaultIcon
             }],
-            fontSize: 'inherit'
+            fontSize: 'inherit',
+            bookmarks: localStorage.bookmarks ? JSON.parse(localStorage.bookmarks) : []
         }
     },
     mounted() {
@@ -73,6 +79,11 @@ export default {
                 })))
             }
         })
+
+        window.addEventListener('storage', this.updateBookmarks)
+    },
+    unmounted() {
+        window.removeEventListener('storage', this.updateBookmarks)
     },
     methods: {
         handleIntersection(entries) {
@@ -90,6 +101,9 @@ export default {
                 delete query[parameter]
             await this.$router.push({ query: query })
             this.$emit('updated')
+        },
+        updateBookmarks() {
+            this.bookmarks = localStorage.bookmarks ? JSON.parse(localStorage.bookmarks) : []
         }
     },
     props: {
@@ -149,6 +163,15 @@ export default {
     font-family: 'Dot-Matrix';
     margin-top: 1%;
     margin-left: -1%;
+}
+
+.heart {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 40px;
+    height: 40px;
+    filter: drop-shadow(0 0 2.5px #000000);
 }
 
 .objekt {
