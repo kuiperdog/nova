@@ -17,7 +17,7 @@ import defaultIcon from '@/assets/images/cosmo.png'
         <div class="filters">
             <slot name="filters">
                 <Dropdown @valueChanged="x => selectionChanged('artist', x)" :value="$route.query.artist" :options="[ ...artists ]"/>
-                <Dropdown @valueChanged="x => selectionChanged('season', x)" :value="$route.query.season" :options="[ {value: '', label: 'Any Season'}, {value: 'Atom01', label: 'Atom01'}, {value: 'Binary01', label: 'Binary01'} ]"/>
+                <Dropdown @valueChanged="x => selectionChanged('season', x)" :value="$route.query.season" :options="[ {value: '', label: 'Any Season'}, {value: 'Atom01', label: 'Atom01'}, {value: 'Binary01', label: 'Binary01'}, {value: 'Cream01', label: 'Cream01'} ]"/>
                 <Dropdown @valueChanged="x => selectionChanged('class', x)" :value="$route.query.class" :options="[ {value: '', label: 'Any Class'}, {value: 'First', label: 'First'}, {value: 'Special', label: 'Special'}, {value: 'Welcome', label: 'Welcome'}, {value: 'Double', label: 'Double'}, {value: 'Zero', label: 'Zero'} ]"/>
                 <Dropdown @valueChanged="x => selectionChanged('type', x)" :value="$route.query.type" :options="[ {value: '', label: 'Any Type'}, {value: 'A', label: 'Physical'}, {value: 'Z', label: 'Digital'} ]"/>
             </slot>

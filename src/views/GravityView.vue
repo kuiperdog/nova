@@ -259,7 +259,7 @@ export default {
     font-family: 'Halvar Breit Bold';
     font-size: 36px;
     line-height: 1.6em;
-    white-space: pre;
+    white-space: pre-wrap;
     flex: 1;
 }
 
@@ -396,6 +396,7 @@ export default {
     }
     #title {
         font-size: 26px;
+        min-width: 100%;
     }
     .timer h2 {
         font-size: 32px;
