@@ -165,7 +165,7 @@ export default {
     grid-column: span 3;
     gap: 10px;
     font-family: 'Halvar Breit';
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(42, 51, 58, 0.25);
 }
 
 .title:first-child {
