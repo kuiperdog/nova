@@ -40,6 +40,7 @@ import getArtists from '../utils/artists'
             <RouterLink :to="`/@${user}/collection`">Collection</RouterLink>
             <RouterLink :to="`/@${user}/trades`">Trades</RouterLink>
             <RouterLink :to="`/@${user}/votes`">Votes</RouterLink>
+            <RouterLink :to="`/@${user}/schedule`">Schedule</RouterLink>
         </div>
         <RouterView v-if="profile" :address="profile.address"/>
     </div>
