@@ -4,7 +4,7 @@ import Dropdown from '../../components/Dropdown.vue'
 </script>
 
 <template>
-    <div class="scheduleView" v-if="artists">
+    <div class="comoView" v-if="artists">
         <div class="header">
             <h2>{{ new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' }).format(new Date()) }}</h2>
             <Dropdown :options="artists" @valueChanged="x => load(x)"/>
@@ -111,7 +111,7 @@ export default {
 </script>
 
 <style scoped>
-.scheduleView {
+.comoView {
     display: flex;
     flex-direction: column;
     align-items: center;
