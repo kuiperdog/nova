@@ -6,7 +6,7 @@ import getArtists from '../utils/artists'
 
 <template>
     <div class="userView">
-        <Spinner v-if="user && !profile" class="spinner"/>
+        <Spinner v-if="user && !profile && !error" class="spinner"/>
         <div v-if="profile" class="profile">
             <img class="profileImage" :src="profile.profileImageUrl">
             <div class="profileName">
@@ -37,11 +37,16 @@ import getArtists from '../utils/artists'
             </div>
         </div>
         <div class="routerLinks" v-if="profile">
-            <RouterLink :to="`/@${user}/collection`">Collection</RouterLink>
+            <RouterLink :to="`/@${user}/collection`">Objekts</RouterLink>
             <RouterLink :to="`/@${user}/trades`">Trades</RouterLink>
             <RouterLink :to="`/@${user}/votes`">Votes</RouterLink>
+            <RouterLink :to="`/@${user}/como`">COMO</RouterLink>
         </div>
         <RouterView v-if="profile" :address="profile.address"/>
+        <div v-if="error" class="error">
+            <img src="@/assets/icons/error.svg">
+            <h2>User not found.</h2>
+        </div>
     </div>
 </template>
 
@@ -51,7 +56,8 @@ export default {
         return {
             profile: null,
             artists: null,
-            como: null
+            como: null,
+            error: false
         }
     },
     mounted() {
@@ -62,6 +68,7 @@ export default {
         async getUser() {
             this.profile = null
             this.como = null
+            this.error = false
             
             if (!this.artists)
                 this.artists = await getArtists()
@@ -70,6 +77,11 @@ export default {
                 this.profile = await getUser(this.user)
             } else {
                 const res = await fetch(`${this.COSMO_API}/user/v1/by-nickname/${this.user}`)
+                if (res.status === 404) {
+                    this.error = true
+                    return
+                }
+
                 const data = await res.json()
                 this.profile = data.profile
                 
@@ -227,6 +239,23 @@ export default {
 
 a {
     color: inherit;
+}
+
+.error {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.error img {
+    height: 100px;
+}
+
+.error h2 {
+    font-weight: bold;
 }
 
 @media only screen and (max-width: 670px) {

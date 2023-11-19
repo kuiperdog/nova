@@ -149,7 +149,7 @@ export default {
 .trades > div:nth-child(10n + 3),
 .trades > div:nth-child(10n + 4),
 .trades > div:nth-child(10n + 5) {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(42, 51, 58, 0.25);
 }
 
 .userLink {

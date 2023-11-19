@@ -7,6 +7,7 @@ import InfoView from '../views/InfoView.vue'
 import CollectionView from '../views/profile/CollectionView.vue'
 import TradesView from '../views/profile/TradesView.vue'
 import VotesView from '../views/profile/VotesView.vue'
+import ComoView from '../views/profile/ComoView.vue'
 import ObjektModal from '../components/ObjektModal.vue'
 
 const router = createRouter({
@@ -68,6 +69,10 @@ const router = createRouter({
                 {
                     path: 'votes',
                     component: VotesView
+                },
+                {
+                    path: 'como',
+                    component: ComoView
                 }
             ]
         },
