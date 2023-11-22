@@ -24,10 +24,10 @@ import { ethers } from 'ethers'
                         <p v-else><i>Unrevealed</i></p>
                     </div>
                 </template>
-                <div v-if="!polls.length">
-                    <p>User has not voted in any Gravity.</p>
-                </div>
             </template>
+            <div v-if="!polls.length">
+                <p>User has not voted in any Gravity.</p>
+            </div>
         </div>
     </div>
 </template>
