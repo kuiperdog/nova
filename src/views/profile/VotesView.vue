@@ -20,7 +20,7 @@ import { ethers } from 'ethers'
                         <p>{{ Math.round(ethers.formatEther(vote.amount)).toLocaleString('en-us') }} COMO</p>
                     </div>
                     <div class="choice">
-                        <p v-if="vote.candidate !== undefined"><b>{{ getChoice(vote.candidate, poll.details) }}</b></p>
+                        <p v-if="vote.candidate !== null"><b>{{ getChoice(vote.candidate, poll.details) }}</b></p>
                         <p v-else><i>Unrevealed</i></p>
                     </div>
                 </template>
