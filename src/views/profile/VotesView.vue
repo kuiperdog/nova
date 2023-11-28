@@ -83,12 +83,14 @@ export default {
             } else {
                 const artist = this.artists.find(a => vote.contract === a.contracts.Governor.toLowerCase())
                 const gravity = gravities.find(g => g.artist === artist.name && this.getPoll(vote, g))
-                acc.push({
-                    gravity: gravity,
-                    id: vote.poll,
-                    poll: this.getPoll(vote, gravity),
-                    votes: [vote]
-                })
+                if (gravity) {
+                    acc.push({
+                        gravity: gravity,
+                        id: vote.poll,
+                        poll: this.getPoll(vote, gravity),
+                        votes: [vote]
+                    })
+                }
             }
             return acc
         }, [])
