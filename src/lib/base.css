@@ -1,0 +1,16 @@
+@import url('./fonts/fonts.css');
+
+body {
+    min-height: 100vh;
+    margin: 0;
+    background-color: #08090A;
+    color: #FFFFFF;
+    font-family: 'Pretendard', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+}
