@@ -1,10 +1,18 @@
 @import url('./fonts/fonts.css');
 
+:root {
+    --background-color: #08090A;
+    --background-semitransparent: #08090A80;
+    --text-color: #FFFFFF;
+    --blur-radius: 5px;
+    --nav-z-index: 5;
+}
+
 body {
     min-height: 100vh;
     margin: 0;
-    background-color: #08090A;
-    color: #FFFFFF;
+    background-color: var(--background-color);
+    color: var(--text-color);
     font-family: 'Pretendard', sans-serif;
 }
 
