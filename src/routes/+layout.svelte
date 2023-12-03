@@ -1,10 +1,10 @@
 <script lang="ts">
     import '$lib/base.css';
-    import { tabs } from '$lib/tabs';
+    import { tabs } from '$lib/data/tabs';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import logo from '$lib/images/logo.svg';
-    import nav_expand_icon from '$lib/icons/nav_expand.svg';
+    import logo from '$lib/assets/images/logo.svg';
+    import nav_expand_icon from '$lib/assets/icons/nav_expand.svg';
 
     let innerWidth: number;
     let navExpanded = false;
