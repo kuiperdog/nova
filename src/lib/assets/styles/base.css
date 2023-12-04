@@ -4,12 +4,14 @@
     --background-color: #08090A;
     --background-semitransparent: #08090A80;
     --text-color: #FFFFFF;
+    --placeholder-color: #171C20;
+    --placeholder-transparent: #171C2000;
     --blur-radius: 5px;
     --nav-z-index: 5;
 }
 
 body {
-    min-height: 100vh;
+    height: 100vh;
     margin: 0;
     background-color: var(--background-color);
     color: var(--text-color);

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import '$lib/base.css';
+    import '$lib/assets/styles/base.css';
     import { tabs } from '$lib/data/tabs';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
@@ -68,6 +68,10 @@
 
     main {
         padding-top: 50px;
+        max-width: 1120px;
+        width: 100%;
+        margin: 0 auto;
+        height: 100%;
     }
 
     a {

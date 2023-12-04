@@ -1,0 +1,1 @@
+export const subsquid = 'https://squid.subsquid.io/cosmo/graphql'
