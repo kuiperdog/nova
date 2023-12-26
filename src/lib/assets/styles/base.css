@@ -8,6 +8,7 @@
     --placeholder-transparent: #171C2000;
     --blur-radius: 5px;
     --nav-z-index: 5;
+    --dropdown-z-index: 1;
 }
 
 body {

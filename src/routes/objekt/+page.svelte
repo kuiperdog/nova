@@ -3,8 +3,7 @@
     import { page } from '$app/stores';
     import ObjektGrid from '$lib/components/common/ObjektGrid.svelte';
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
-    import { subsquid } from '$lib/data/apis';
-    import { Collection } from '$lib/data/types';
+    import { Subsquid, Cosmo } from '$lib/data/apis';
 
     let total: number | null = null;
     let params = $page.url.searchParams;
@@ -12,17 +11,24 @@
     async function load(offset: number, length: number) {
         let filters: string[] = [];
         let sort = 'timestamp_DESC';
+        const artists = await Cosmo.artists();
 
         params.forEach((value, key) => {
             switch (key) {
                 case 'artist':
-                    filters.push(`artists_containsAll: "${value}"`);
+                    if (artists.find(a => a.name === value))
+                        filters.push(`artists_containsAll: "${value}"`);
+                    else if (artists.find(a => a.members.find(m => m.name === value)))
+                        filters.push(`member_eq: "${value}"`);
+                    else if (Cosmo.unit(value))
+                        filters.push(`AND: {member_eq: "${Cosmo.unit(value)![0]}"` + Cosmo.unit(value)?.slice(1).reduce(
+                            (acc, m, i) => acc.slice(0, acc.length - i) + `, OR: {member_eq: "${m}"` + '}'.repeat(i + 1), '') + '}')
+                    break;
+                case 'season':
+                    filters.push(`season_eq: "${value}"`);
                     break;
                 case 'class':
                     filters.push(`class_eq: "${value}"`);
-                    break;
-                case 'member':
-                    filters.push(`member_eq: "${value}"`);
                     break;
                 case 'number':
                     filters.push(`number_startsWith: "${value}"`);
@@ -48,7 +54,7 @@
             }
         })
 
-        const res = await fetch(subsquid, {
+        const res = await fetch(Subsquid.URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -60,7 +66,7 @@
                             ` : `` }
                             edges {
                                 node {
-                                    ${Object.keys(Collection).join('\n')}
+                                    ${Object.keys(Subsquid.Collection).join('\n')}
                                 }
                             }
                         }
@@ -75,7 +81,7 @@
         if (total === null)
             total = data.data.collectionsConnection.totalCount;
 
-        return data.data.collectionsConnection.edges.map((e: { node: Collection }): ComponentProps<ObjektPreview> => {
+        return data.data.collectionsConnection.edges.map((e: { node: Subsquid.Collection }): ComponentProps<ObjektPreview> => {
             return {
                 collectionId: e.node.id,
                 collectionNo: e.node.number,
@@ -86,13 +92,12 @@
         })
     }
 
-    const unsubscribe = page.subscribe(() => {
+    onDestroy(page.subscribe(() => {
         if (params !== $page.url.searchParams) {
-            params = $page.url.searchParams
+            params = $page.url.searchParams;
             total = null;
         }
-    });
-    onDestroy(unsubscribe);
+    }));
 </script>
 
 <svelte:head>

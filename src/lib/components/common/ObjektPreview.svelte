@@ -7,11 +7,12 @@
 
 	let width: number;
 	let loaded = false;
+	let img: HTMLImageElement;
 </script>
 
 <div class="preview" bind:clientWidth={width} style="height: {width * 487/314}px;">
-	<div class="thumbnail" style="opacity: {loaded ? '1' : '0'};">
-		<img src={thumbnail} on:load={() => loaded = true} alt={collectionId}>
+	<div class="thumbnail" style="opacity: {loaded || img && img.complete ? '1' : '0'};">
+		<img src={thumbnail} bind:this={img} on:load={() => loaded = true} alt={collectionId}>
 		<div class="sideBar" style="font-size: {width * 0.05}px; color: {textColor};">
 			<p>{collectionNo}</p>
 			{#if serial}
