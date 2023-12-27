@@ -5,6 +5,7 @@
     import { goto } from '$app/navigation';
     import logo from '$lib/assets/images/logo.svg';
     import nav_expand_icon from '$lib/assets/icons/nav_expand.svg';
+	import ObjektModal from '$lib/components/common/ObjektModal.svelte';
 
     let innerWidth: number;
     let navExpanded = false;
@@ -38,6 +39,10 @@
 </nav>
 
 <main>
+    {#if $page.state.collection}
+        <ObjektModal collection={$page.state.collection} objekt={$page.state.objekt}/>
+    {/if}
+    
     <slot/>
 </main>
 

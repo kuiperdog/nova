@@ -16,6 +16,28 @@ export namespace Subsquid {
         timestamp: 0
     };
     export type Collection = typeof Collection;
+
+    export const Objekt = {
+        id: '',
+        minted: 0,
+        owner: '',
+        received: 0,
+        serial: 0,
+        transferrable: false
+    };
+    export type Objekt = typeof Objekt;
+
+    export const Transfer = {
+        id: '',
+        from: '',
+        to: '',
+        timestamp: 0
+    };
+    export type Transfer = typeof Transfer;
+
+    export function formatObjekt(collection: Collection, objekt: Objekt | null = null): string {
+        return collection.member + ' ' + collection.season.charAt(0) + collection.number.substring(0, 3) + (objekt ? ` #${objekt.serial}` : '');
+    }
 }
 
 export namespace Cosmo {

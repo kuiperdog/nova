@@ -1,33 +1,39 @@
 <script lang="ts">
-	export let collectionId: string;
-	export let collectionNo: string;
-	export let thumbnail: string;
-	export let textColor: string;
-	export let serial: number | null;
+	import { pushState } from '$app/navigation';
+	import { page } from '$app/stores';
+	import type { Subsquid } from '$lib/data/apis';
+
+	export let collection: Subsquid.Collection;
+	export let objekt: Subsquid.Objekt | null = null;
 
 	let width: number;
 	let loaded = false;
 	let img: HTMLImageElement;
 </script>
 
-<div class="preview" bind:clientWidth={width} style="height: {width * 487/314}px;">
+<button class="preview" bind:clientWidth={width} style="height: {width * 487/314}px;" on:click={
+	() => pushState(`/objekt/${collection.id}` + (objekt ? `/${objekt.serial}` : ''), { collection: collection, objekt: objekt, previous: $page.url.href })
+}>
 	<div class="thumbnail" style="opacity: {loaded || img && img.complete ? '1' : '0'};">
-		<img src={thumbnail} bind:this={img} on:load={() => loaded = true} alt={collectionId}>
-		<div class="sideBar" style="font-size: {width * 0.05}px; color: {textColor};">
-			<p>{collectionNo}</p>
-			{#if serial}
-				<p class="serial">{serial}</p>
+		<img src={collection.thumbnail} bind:this={img} on:load={() => loaded = true} alt={collection.id}>
+		<div class="sideBar" style="font-size: {width * 0.05}px; color: {collection.textColor};">
+			<p>{collection.number}</p>
+			{#if objekt}
+				<p class="serial">{objekt.serial}</p>
 			{/if}
 		</div>
 	</div>
-</div>
+</button>
 
 <style>
 	.preview {
 		transition: transform 0.25s ease-in-out;
 		background-color: var(--placeholder-color);
         border-radius: 5% / calc(5% * 314/487);
-		box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.25);
+		box-shadow: var(--box-shadow);
+		border: none;
+		padding: 0;
+		cursor: pointer;
 	}
 
 	.preview:hover {

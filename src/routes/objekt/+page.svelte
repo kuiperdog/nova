@@ -81,15 +81,8 @@
         if (total === null)
             total = data.data.collectionsConnection.totalCount;
 
-        return data.data.collectionsConnection.edges.map((e: { node: Subsquid.Collection }): ComponentProps<ObjektPreview> => {
-            return {
-                collectionId: e.node.id,
-                collectionNo: e.node.number,
-                thumbnail: e.node.thumbnail,
-                textColor: e.node.textColor,
-                serial: null
-            };
-        })
+        return data.data.collectionsConnection.edges.map(
+            (e: { node: Subsquid.Collection }): ComponentProps<ObjektPreview> => { return { collection: e.node } });
     }
 
     onDestroy(page.subscribe(() => {
