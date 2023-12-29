@@ -59,6 +59,16 @@
     let openFilter: HTMLDivElement;
     $: columns = Math.floor(gridWidth / objektWidth);
 
+    const sorts = [
+        { name: 'Newest', value: '' }, 
+        { name: 'Oldest', value: 'oldest' }, 
+        { name: 'Number', value: 'number' },
+        ...(profile ? [
+            { name: 'Minted', value: 'minted' },
+            { name: 'Serial', value: 'serial' }
+        ] : [])
+    ];
+
     let visible: {[key: string]: boolean} = {};
     const toggle = (key: string) => visible[key] = !visible[key];
     function setFilter(key: string, value: string, hideFilter: boolean = true) {
@@ -114,14 +124,17 @@
             <h2 class="total">{total.toLocaleString('en-US')} items</h2>
         {/if}
         <div class="sortButton">
-            <button on:click={() => toggle('sortFilter')} id="sortFilterBtn">
-                Sort
+            <button on:click={() => toggle('sortFilter')} id="sortFilterBtn" class:active={visible['sortFilter'] || $page.url.searchParams.has('sort')}>
+                {#if $page.url.searchParams.has('sort')}
+                    <u>{ sorts.find(s => s.value === $page.url.searchParams.get('sort'))?.name }</u>
+                {:else}
+                    Sort
+                {/if}
                 <img src={sort_icon} alt="Sort">
             </button>
             {#if visible['sortFilter']}
                 <div class="filterContent sortFilter" bind:this={openFilter} id="sortFilter">
-                    {#each [{ name: 'Newest', value: '' }, { name: 'Oldest', value: 'oldest' }, { name: 'Number', value: 'number' },
-                        ...(profile ? [{ name: 'Minted', value: 'minted' }, { name: 'Serial', value: 'serial' }] : [])] as sort, index}
+                    {#each sorts as sort, index}
                         {#if ($page.url.searchParams.get('sort') || '') !== sort.value}
                             <button on:click={() => setFilter('sort', sort.value)}>{ sort.name }</button>
                             {#if index < (profile ? 4 : 2)}
@@ -405,6 +418,8 @@
         display: flex;
         align-items: center;
         gap: 5px;
+        padding: 5px;
+        border-radius: 5px;
     }
 
     .header button img {
@@ -421,6 +436,15 @@
 
     .sortButton {
         position: relative;
+    }
+
+    .sortButton button.active {
+        background-color: var(--accent-color);
+        color: #fff;
+    }
+
+    .sortButton button.active img {
+        filter: brightness(500%);
     }
 
     .sortFilter {
