@@ -145,7 +145,7 @@
                 </div>
             {/if}
         </div>
-        <button class="filterButton" on:click={() => visible['filtersPopup'] = true}>
+        <button class="filterButton" on:click={() => visible['filtersPopup'] = true} class:active={[...$page.url.searchParams.keys()].filter(k => k !== 'sort').length}>
             Filter
             <img src={filter_icon} alt="Filter">
         </button>
@@ -438,13 +438,19 @@
         position: relative;
     }
 
-    .sortButton button.active {
+    .sortButton button.active,
+    .filterButton.active {
         background-color: var(--accent-color);
         color: #fff;
     }
 
-    .sortButton button.active img {
+    .sortButton button.active img,
+    .filterButton.active img {
         filter: brightness(500%);
+    }
+
+    .filterButton.active {
+        text-decoration: underline;
     }
 
     .sortFilter {
