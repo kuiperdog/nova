@@ -13,6 +13,12 @@
 
 <svelte:window bind:innerWidth/>
 
+<svelte:head>
+    {#key $page.route}
+        <title>Nova | {(tabs.find(tab => RegExp(tab.matches).test($page.url.pathname)) || tabs[0]).title}</title>
+    {/key}
+</svelte:head>
+
 <nav class:expanded={navExpanded}>
     <img src={logo} class="logo" alt="Nova logo">
     {#if innerWidth > 650}

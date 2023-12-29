@@ -93,8 +93,4 @@
     }));
 </script>
 
-<svelte:head>
-    <title>Nova | Objekts</title>
-</svelte:head>
-
 <ObjektGrid {load} {total}/>
