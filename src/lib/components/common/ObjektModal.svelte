@@ -327,6 +327,7 @@
         height: calc(100% - 50px);
         z-index: var(--nav-z-index);
         backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -347,7 +348,7 @@
         width: 860px;
         height: 680px;
         border-radius: 25px;
-        background-color: var(--modal-color);
+        background-color: var(--item-color);
         box-shadow: var(--box-shadow);
         display: flex;
         overflow: hidden;
@@ -383,7 +384,7 @@
         height: 35px;
         padding: 0 15px;
         border-radius: 20px;
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
         box-shadow: var(--box-shadow);
     }
 
@@ -414,7 +415,7 @@
         top: 0;
         left: 50%;
         transform: translateX(-50%);
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
         border-radius: 5% / calc(5% * 330.15/510);
     }
 
@@ -464,7 +465,7 @@
         height: 50px;
         width: 50px;
         border-radius: 25px;
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
         box-shadow: var(--box-shadow);
         border: none;
         padding: 0;
@@ -472,7 +473,7 @@
     }
 
     .closeButton {
-        background-color: var(--button-semitransparent);
+        background-color: var(--item-secondary-semitransparent);
         position: absolute;
         top: 12.5px;
         right: 12.5px;
@@ -498,7 +499,7 @@
     }
 
     .detailView > div {
-        background-color: var(--modal-color);
+        background-color: var(--item-color);
         border-radius: 25px;
     }
 
@@ -526,13 +527,13 @@
         height: 25px;
         width: 100px;
         border-radius: 12.5px;
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
     }
 
     .profileImage, .profileImageSkeleton {
         height: 25px;
         border-radius: 12.5px;
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
     }
 
     .profileImageSkeleton {
@@ -577,7 +578,7 @@
         height: 20px;
         width: 75px;
         border-radius: 10px;
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
     }
 
     .findButton {
@@ -604,7 +605,7 @@
     }
 
     .unmintedSkeleton div {
-        background-color: var(--button-color);
+        background-color: var(--item-secondary);
         width: 20px;
         height: 20px;
         border-radius: 10px;

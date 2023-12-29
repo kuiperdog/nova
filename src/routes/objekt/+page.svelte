@@ -39,8 +39,8 @@
                 case 'maxNumber':
                     filters.push(`number_lte: "${value}"`);
                         break;
-                case 'physical':
-                    filters.push(`number_endsWidth: "${value ? 'A' : 'Z'}"`)
+                case 'type':
+                    filters.push(`number_endsWith: "${value}"`)
                 case 'sort':
                     switch (value) {
                         case 'number':
