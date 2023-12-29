@@ -39,6 +39,12 @@ button {
     cursor: pointer;
 }
 
+hr {
+    border: 1px solid var(--button-border);
+    border-bottom: none;
+    border-right: none;
+}
+
 *,
 *::before,
 *::after {

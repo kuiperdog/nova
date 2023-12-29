@@ -612,10 +612,6 @@
         bottom: 100%;
     }
 
-    hr {
-        color: var(--button-border);
-    }
-
     .filterContent button {
         background: none;
         color: inherit;

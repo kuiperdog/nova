@@ -494,10 +494,6 @@
         gap: 12.5px;
     }
 
-    .detailView hr {
-        color: #232A30;
-    }
-
     .detailView > div {
         background-color: var(--item-color);
         border-radius: 25px;
