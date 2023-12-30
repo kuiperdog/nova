@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { Cosmo, Subsquid, Polygon } from "$lib/data/apis";
+    import { Cosmo, Polygon } from "$lib/data/apis";
     import status_ok_icon from "$lib/assets/icons/status_ok.svg";
     import status_warning_icon from "$lib/assets/icons/status_warning.svg";
     import status_errror_icon from "$lib/assets/icons/status_error.svg";
     import { formatUnits } from "ethers";
 
+    export let data: any;
     let cosmo: string;
     let polygon: string;
     let nova: string;
@@ -23,40 +24,6 @@
         }
     }
 
-    async function checkNova() {
-        try {
-            const res = await fetch(Subsquid.URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    query: `
-                        query {
-                            squidStatus {
-                                height
-                            }
-                        }
-                    `
-                })
-            });
-
-            const data = await res.json();
-            if (!data || !data.data)
-                throw new Error();
-
-            if (data.data.squidStatus.height < (await Polygon.RPC.getBlockNumber() - 3800)) {
-                nova = status_warning_icon;
-                message = 'Database Unsynced';
-                console.log(data.data.squidStatus.height);
-                console.log(await Polygon.RPC.getBlockNumber());
-            } else {
-                nova = status_ok_icon;
-            }
-        } catch {
-            nova = status_errror_icon;
-            message = 'Database Unreachable';
-        }
-    }
-
     async function checkPolygon() {
         try {
             const fees = await Polygon.RPC.getFeeData();
@@ -72,8 +39,23 @@
         }
     }
 
+    $: if (data) {
+        if (!data.data) {
+            nova = status_errror_icon;
+            message = 'Database Unreachable';
+        } else {
+            Polygon.RPC.getBlockNumber().then(height => {
+                if (data.data.squidStatus.height < height - 3800) {
+                    nova = status_warning_icon;
+                    message = 'Database Unsynced';
+                } else {
+                    nova = status_ok_icon;
+                }
+            });
+        }
+    }
+
     checkCosmo();
-    checkNova();
     checkPolygon();
 </script>
 
@@ -116,10 +98,9 @@
 <style>
     .widget {
         flex: 1;
-        min-width: 350px;
+        min-width: 345px;
         border-radius: 25px;
         background-color: var(--item-color);
-        font-size: 16px;
     }
 
     .header {
