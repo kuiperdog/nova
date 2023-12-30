@@ -65,7 +65,7 @@
         {#if cosmo && polygon && nova}
             <p>{ message }</p>
         {:else}
-            <div class="messagePlaceholder"></div>
+            <div class="textPlaceholder" style:width="110px"></div>
         {/if}
     </div>
     <hr>
@@ -97,24 +97,14 @@
 
 <style>
     .widget {
-        flex: 1;
         min-width: 345px;
-        border-radius: 25px;
-        background-color: var(--item-color);
     }
 
-    .header {
-        width: 100%;
-        display: flex;
-        align-items: center;
-    }
-
-    .header b,
     .item p {
         flex: 1;
     }
 
-    .header, .item {
+    .item {
         padding: 20px 15px;
     }
 
@@ -134,12 +124,5 @@
         width: 24px;
         height: 24px;
         border-radius: 12px;
-    }
-
-    .messagePlaceholder {
-        background-color: var(--item-secondary);
-        width: 110px;
-        height: 20px;
-        border-radius: 5px;
     }
 </style>

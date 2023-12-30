@@ -36,10 +36,7 @@
                             ${Object.keys(Subsquid.Collection).join('\n')}
                         }
                     `}
-                    ${(!objekt || objekt.id) ? '' : `
-                        objekts(where: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}) {
-                            ${Object.keys(Subsquid.Objekt).join('\n')}
-                        }
+                    ${objekt ? `
                         transfersConnection(orderBy: timestamp_ASC, where: {objekt: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}}) {
                             edges {
                                 node {
@@ -47,7 +44,12 @@
                                 }
                             }
                         }
-                    `}
+                        ${!objekt.id ? `
+                            objekts(where: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}) {
+                                ${Object.keys(Subsquid.Objekt).join('\n')}
+                            }
+                        ` : ''}
+                    ` : ''}
                 }
             `
         })
@@ -59,12 +61,14 @@
         if (!collection.timestamp)
             collection = data.data.collectionById;
 
-        if (objekt && !objekt.id) {
-            if (data.data.objekts.length) {
-                objekt = data.data.objekts[0];
-                transfers = data.data.transfersConnection.edges.map((e: { node: Subsquid.Transfer }) => e.node);
-            } else {
-                objekt.minted = -1;
+        if (objekt) {
+            transfers = data.data.transfersConnection.edges.map((e: { node: Subsquid.Transfer }) => e.node);
+
+            if (!objekt.id) {
+                if (data.data.objekts.length)
+                    objekt = data.data.objekts[0];
+                else
+                    objekt.minted = -1;
             }
         }
     });
@@ -243,7 +247,7 @@
                 </button>
             </div>
             {#if objekt}
-                {#if objekt.id}
+                {#if objekt.id && transfers}
                     {@const objektAge = (Date.now() - objekt.minted) / 1000}
                     <div class="objektDetails">
                         <div class="objektOwner">

@@ -1,6 +1,8 @@
 <script lang="ts">
-    import StatusWidget from "$lib/components/widgets/StatusWidget.svelte";
+    import "$lib/assets/styles/widget.css";
+    import SystemStatus from "$lib/components/widgets/SystemStatus.svelte";
     import ObjektSupply from "$lib/components/widgets/ObjektSupply.svelte";
+    import Mints from "$lib/components/widgets/Mints.svelte";
     import { Subsquid } from "$lib/data/apis";
 
     let data: any;
@@ -33,6 +35,16 @@
                     objektsConnection(orderBy: id_ASC) {
                         totalCount
                     }
+                    mints: objektsConnection(orderBy: minted_DESC, where: {collection_isNull: false}, first: 10) {
+                        edges {
+                            node {
+                                ${Object.keys(Subsquid.Objekt).join('\n')}
+                                collection {
+                                    ${Object.keys(Subsquid.Collection).join('\n')}
+                                }
+                            }
+                        }
+                    }
                     ${dateQueries}
                 }
             `
@@ -41,20 +53,39 @@
         data = await res.json();
     });
 
+    let windowWidth: number;
 </script>
 
+<svelte:window bind:innerWidth={windowWidth}/>
+
 <div class="layout">
-    <StatusWidget {data}/>
-    <ObjektSupply {data}/>
+    <SystemStatus {data}/>
+    {#if windowWidth > 750}
+        <Mints {data}/>
+        <ObjektSupply {data}/>
+    {:else}
+        <ObjektSupply {data}/>
+        <Mints {data}/>
+    {/if}
 </div>
 
 <style>
     .layout {
-        display: flex;
         margin: 40px 20px;
-        gap: 20px;
-        flex-wrap: wrap;
-        align-items: flex-start;
+        column-count: 3;
+        column-gap: 20px;
+    }
+
+    @media only screen and (max-width: 1110px) {
+        .layout {
+            column-count: 2;
+        }
+    }
+
+    @media only screen and (max-width: 750px) {
+        .layout {
+            column-count: 1;
+        }
     }
 
     @media only screen and (max-width: 390px) {

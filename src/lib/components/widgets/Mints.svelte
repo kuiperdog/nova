@@ -1,0 +1,72 @@
+<script lang="ts">
+    import { Subsquid } from '$lib/data/apis';
+    import { page } from '$app/stores';
+    import { pushState } from '$app/navigation';
+
+    export let data: any;
+</script>
+
+<div class="widget">
+    <div class="header">
+        <b>Mints</b>
+        <p>Showing 10 latest</p>
+    </div>
+    <hr>
+    {#if data && data.data}
+        {#each data.data.mints.edges as edge, i}
+        {@const objektAge = (Date.now() - edge.node.minted) / 1000}
+            <div class="objekt">
+                <button on:click={() => pushState(`/objekt/${edge.node.collection.id}/${edge.node.serial}`, 
+                    { collection: edge.node.collection, objekt: edge.node, previous: $page.url.href })}>
+                    { Subsquid.formatObjekt(edge.node.collection, edge.node) }
+                </button>
+                {#if objektAge < 60}
+                    <p>{Math.floor(objektAge)} seconds ago</p>
+                {:else if objektAge < 3600}
+                    <p>{Math.floor(objektAge / 60)} minutes ago</p>
+                {:else}
+                    <p>{Math.floor(objektAge / 3600)} hours ago</p>
+                {/if}
+            </div>
+            {#if i < 9}
+                <hr>
+            {/if}
+        {/each}
+    {:else}
+        {#each { length: 10 } as _, i}
+            <div class="objekt">
+                <div class="textPlaceholder objektPlaceholder" style:width="140px"></div>
+                <div class="textPlaceholder" style:width="100px"></div>
+            </div>
+            {#if i < 9}
+                <hr>
+            {/if}
+        {/each}
+    {/if}
+</div>
+
+<style>
+    .widget {
+        min-width: 310px;
+    }
+    
+    .objekt {
+        padding: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+    .objekt button {
+        text-decoration: underline;
+        background: none;
+        padding: 0;
+        border: none;
+        color: inherit;
+        font-size: inherit;
+    }
+
+    .objekt button,
+    .objektPlaceholder {
+        margin-right: auto;
+    }
+</style>

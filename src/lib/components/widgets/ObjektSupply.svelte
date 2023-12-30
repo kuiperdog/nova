@@ -56,21 +56,7 @@
 
 <style>
     .widget {
-        flex: 1;
         min-width: 310px;
-        border-radius: 25px;
-        background-color: var(--item-color);
-    }
-
-    .header {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        padding: 20px 15px;
-    }
-
-    .header b {
-        flex: 1;
     }
 
     .graph {
@@ -117,12 +103,6 @@
 
     .details hr {
         margin: 0 -10px;
-    }
-
-    .textPlaceholder {
-        background-color: var(--item-secondary);
-        border-radius: 5px;
-        height: 20px;
     }
 
     .barPlaceholder {
