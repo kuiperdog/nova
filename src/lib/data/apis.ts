@@ -1,3 +1,5 @@
+import { JsonRpcProvider } from "ethers";
+
 export namespace Subsquid {
     export const URL = 'https://squid.subsquid.io/cosmo/graphql';
 
@@ -91,4 +93,8 @@ export namespace Cosmo {
         }
         return undefined;
     }
+}
+
+export namespace Polygon {
+    export const RPC = new JsonRpcProvider('https://polygon-rpc.com');
 }
