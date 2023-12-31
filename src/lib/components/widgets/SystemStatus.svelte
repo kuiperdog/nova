@@ -10,6 +10,7 @@
     let polygon: string;
     let nova: string;
     let message: string = 'All Systems Go';
+    let gas: number;
 
     async function checkCosmo() {
         try {
@@ -27,7 +28,9 @@
     async function checkPolygon() {
         try {
             const fees = await Polygon.RPC.getFeeData();
-            if (Number(formatUnits(fees.gasPrice!, 'gwei')) > 400) {
+            gas = Number(formatUnits(fees.gasPrice!, 'gwei'));
+
+            if (gas > 400) {
                 polygon = status_warning_icon;
                 message = 'Blockchain Congested';
             } else {
@@ -81,7 +84,7 @@
         <hr>
         <div class="item">
             <p>Polygon:</p>
-            <img src={status_ok_icon} alt="Status">
+            <img src={polygon} alt="Status" title={gas ? `Gas: ${Math.round(gas).toLocaleString('en-US')} Gwei`: ''}>
         </div>
         <hr>
         <div class="item">
