@@ -3,7 +3,9 @@
     import SystemStatus from "$lib/components/widgets/SystemStatus.svelte";
     import ObjektSupply from "$lib/components/widgets/ObjektSupply.svelte";
     import Mints from "$lib/components/widgets/Mints.svelte";
+    import Transfers from "$lib/components/widgets/Transfers.svelte";
     import { Subsquid } from "$lib/data/apis";
+    import { ZeroAddress } from "ethers";
 
     let data: any;
 
@@ -34,6 +36,19 @@
                     }
                     objektsConnection(orderBy: id_ASC) {
                         totalCount
+                    }
+                    transfersConnection(orderBy: id_DESC, first: 5, where: {from_not_eq: "${ZeroAddress}", to_not_eq: "${ZeroAddress}"}) {
+                        edges {
+                            node {
+                                ${Object.keys(Subsquid.Transfer).join('\n')}
+                                objekt {
+                                    ${Object.keys(Subsquid.Objekt).join('\n')}
+                                    collection {
+                                        ${Object.keys(Subsquid.Collection).join('\n')}
+                                    }
+                                }
+                            }
+                        }
                     }
                     mints: objektsConnection(orderBy: minted_DESC, where: {collection_isNull: false}, first: 10) {
                         edges {
@@ -67,6 +82,7 @@
         <ObjektSupply {data}/>
         <Mints {data}/>
     {/if}
+    <Transfers {data}/>
 </div>
 
 <style>
