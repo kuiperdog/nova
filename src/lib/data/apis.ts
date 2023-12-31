@@ -43,7 +43,7 @@ export namespace Subsquid {
 }
 
 export namespace Cosmo {
-    export const URL = 'https://api.cosmo.fans';
+    export const URL = 'https://cache.nova.gd';
 
     export interface Artist {
         name: string;
@@ -73,14 +73,9 @@ export namespace Cosmo {
         if (_artists)
             return _artists;
 
-        const artistsRes = await fetch(`${URL}/artist/v1`);
-        const artistsList = await artistsRes.json();
-
-        _artists = await Promise.all(artistsList.artists.map(async (a: { name: string }) => {
-            const dataRes = await fetch(`${URL}/artist/v1/${a.name}`);
-            const data = await dataRes.json();
-            return data.artist;
-        }));
+        const res = await fetch(`${URL}/artist/v1/`);
+        const data = await res.json();
+        _artists = data.artists;
 
         return _artists;
     }
