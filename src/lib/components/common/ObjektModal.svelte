@@ -21,6 +21,7 @@
 
     let total: number;
     let transfers: Subsquid.Transfer[];
+    let users: Cosmo.User[];
 
     fetch(Subsquid.URL, {
         method: 'POST',
@@ -63,6 +64,9 @@
 
         if (objekt) {
             transfers = data.data.transfersConnection.edges.map((e: { node: Subsquid.Transfer }) => e.node);
+            
+            const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${transfers.map(t => t.to).join(',')}`);
+            users = await profiles.json();
 
             if (!objekt.id) {
                 if (data.data.objekts.length)
@@ -112,8 +116,10 @@
                 if (!data.data.objektsConnection.edges.length && objekt) {
                     objekt.minted = -1;
                 } else {
-                    objekt = data.data.objektsConnection.edges[0].node;
                     transfers = data.data.transfersConnection.edges.map((e: { node: Subsquid.Transfer }) => e.node);
+                    const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${transfers.map(t => t.to).join(',')}`);
+                    users = await profiles.json();
+                    objekt = data.data.objektsConnection.edges[0].node;
                 }
             })
         }
@@ -126,12 +132,15 @@
     let backLoaded = false;
     let backImg: HTMLImageElement;
     let cardFlipped = false;
+    let findBtn: HTMLButtonElement;
     if (objekt && objekt.serial)
         nextSerial = objekt.serial;
 </script>
 
 <svelte:head>
-    <title>Nova | {Subsquid.formatObjekt(collection)}</title>
+    {#key $page.route}
+        <title>Nova | {Subsquid.formatObjekt(collection)}</title>
+    {/key}
 </svelte:head>
 
 <div class="modalBackground">
@@ -233,28 +242,30 @@
             <div class="serialSelector">
                 <b>Serial:</b>
                 <p class="serial">#</p>
-                <input type="number" placeholder="00000" size="5" min="0" maxlength="5" inputmode="numeric" bind:value={nextSerial}>
+                <input type="number" placeholder="00000" size="5" min="0" maxlength="5" inputmode="numeric"
+                    bind:value={nextSerial} on:keydown={(e) => { if (e.key === 'Enter') findBtn.click() }}>
                 <p class="totalSlash">/</p>
                 {#if total}
                     <p>{total.toLocaleString('en-US')} copies</p>
                 {:else}
                     <div class="totalSkeleton"></div>
                 {/if}
-                <button class="findButton" on:click={() => { if (nextSerial) pushState(`/objekt/${collection.id}/${nextSerial}`,
+                <button class="findButton" bind:this={findBtn} on:click={() => { if (nextSerial) pushState(`/objekt/${collection.id}/${nextSerial}`,
                     {collection: collection, objekt: { ...Subsquid.Objekt, serial: nextSerial }, previous: $page.state.previous}) }}>
                     <img src={find_icon} alt="Find">
                     Find
                 </button>
             </div>
             {#if objekt}
-                {#if objekt.id && transfers}
+                {#if objekt.id && transfers && users}
+                {@const owner = users.find(u => u.address === objekt?.owner)}
                     {@const objektAge = (Date.now() - objekt.minted) / 1000}
                     <div class="objektDetails">
                         <div class="objektOwner">
                             <b>Owner:</b>
                             <div class="profile">
                                 <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt={objekt.owner}>
-                                {objekt.owner.slice(0, 6) + '...' + objekt.owner.slice(-4)}
+                                { owner ? owner.nickname : objekt.owner.slice(0, 6) + '...' + objekt.owner.slice(-4) }
                             </div>
                         </div>
                         <hr>
@@ -285,6 +296,7 @@
                         </div>
                         <hr>
                         {#each transfers as transfer, index}
+                        {@const user = users.find(u => u.address === transfer.to)}
                             <div class="trade">
                                 <div>
                                     <p>{ new Date(Number(transfer.timestamp)).toLocaleString('en-GB') }</p>
@@ -293,7 +305,7 @@
                                 <div>
                                     <div class="profile">
                                         <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt={transfer.to}>
-                                        <p>{transfer.to.slice(0, 6) + '...' + transfer.to.slice(-4)}</p>
+                                        <p>{ user ? user.nickname : transfer.to.slice(0, 6) + '...' + transfer.to.slice(-4) }</p>
                                     </div>
                                 </div>
                             </div>
@@ -496,11 +508,13 @@
         display: flex;
         flex-direction: column;
         gap: 12.5px;
+        overflow-y: scroll;
     }
 
     .detailView > div {
         background-color: var(--item-color);
         border-radius: 25px;
+        flex-shrink: 0;
     }
 
     .collectionDetails {

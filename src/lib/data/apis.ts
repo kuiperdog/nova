@@ -68,6 +68,12 @@ export namespace Cosmo {
         }[];
     };
 
+    export interface User {
+        nickname: string;
+        address: string;
+        profileImageUrl: string;
+    }
+
     let _artists: Artist[];
     export async function artists(): Promise<Artist[]> {
         if (_artists)
