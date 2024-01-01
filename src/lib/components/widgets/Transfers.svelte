@@ -26,6 +26,12 @@
         <p>Showing 5 latest</p>
     </div>
     <hr>
+    <div class="header labels">
+        <p>From</p>
+        <div class="spacer"></div>
+        <p>To</p>
+    </div>
+    <hr>
     {#if data && data.data && users}
         {#each data.data.transfersConnection.edges as edge, i}
         {@const objektAge = (Date.now() - edge.node.timestamp) / 1000}
@@ -33,11 +39,9 @@
         {@const to = users.find(u => u.address === edge.node.to)}
             <div class="transfer">
                 <div class="users">
-                    <p>From</p>
                     <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt="To">
                     <p>{ from ? from.nickname : edge.node.from.slice(0, 6) + '...' + edge.node.from.slice(-4) }</p>
                     <div class="spacer"></div>
-                    <p>To</p>
                     <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt="To">
                     <p>{ to ? to.nickname : edge.node.to.slice(0, 6) + '...' + edge.node.to.slice(-4) }</p>
                 </div>
@@ -93,7 +97,7 @@
         gap: 15px;
     }
 
-    .users, .objekt, .user {
+    .users, .objekt {
         display: flex;
         align-items: center;
         gap: 5px;
@@ -115,5 +119,13 @@
     .profileImage {
         height: 25px;
         border-radius: 12.5px;
+    }
+
+    .labels {
+        padding: 10px 15px;
+    }
+    
+    .labels p {
+        opacity: 0.5;
     }
 </style>
