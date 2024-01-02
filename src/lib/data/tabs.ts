@@ -8,5 +8,10 @@ export const tabs = [
         title: 'Objekts',
         path: '/objekt',
         matches: '^\/objekt'
+    },
+    {
+        title: 'Users',
+        path: '/users',
+        matches: '^(\/users|\/@.+)$'
     }
 ]

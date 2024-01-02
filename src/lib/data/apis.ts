@@ -37,6 +37,14 @@ export namespace Subsquid {
     };
     export type Transfer = typeof Transfer;
 
+    export const Como = {
+        id: '',
+        balance: 0,
+        owner: '',
+        contract: ''
+    };
+    export type Como = typeof Como;
+
     export function formatObjekt(collection: Collection, objekt: Objekt | null = null): string {
         return collection.member + ' ' + collection.season.charAt(0) + collection.number.substring(0, 3) + (objekt ? ` #${objekt.serial}` : '');
     }
@@ -75,15 +83,21 @@ export namespace Cosmo {
     }
 
     let _artists: Artist[];
+    let artistsPromise: Promise<Artist[]>;
     export async function artists(): Promise<Artist[]> {
         if (_artists)
             return _artists;
 
-        const res = await fetch(`${URL}/artist/v1/`);
-        const data = await res.json();
-        _artists = data.artists;
+        if (!artistsPromise) {
+            artistsPromise = (async () => {
+                const res = await fetch(`${URL}/artist/v1/`);
+                const data = await res.json();
+                _artists = data.artists;
+                return _artists;
+            })();
+        }
 
-        return _artists;
+        return artistsPromise;
     }
 
     export function unit(name: string): string[] | undefined {
