@@ -6,12 +6,15 @@
     import logo from '$lib/assets/images/logo.svg';
     import nav_expand_icon from '$lib/assets/icons/nav_expand.svg';
     import find_icon from '$lib/assets/icons/find.svg';
+    import settings_icon from '$lib/assets/icons/settings.svg';
     import SearchBar from '$lib/components/common/SearchBar.svelte';
 	import ObjektModal from '$lib/components/common/ObjektModal.svelte';
+    import Settings from '$lib/components/common/Settings.svelte';
 
     let innerWidth: number;
     let navExpanded = false;
     let searchExpanded = false;
+    let settingsOpen = false;
 </script>
 
 <svelte:window bind:innerWidth/>
@@ -31,7 +34,7 @@
         {/each}
     {:else}
         {@const currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname))}
-        <button class="link current" on:click={() => { navExpanded = !navExpanded; searchExpanded = false; }}>
+        <button class="link current" on:click={() => { navExpanded = !navExpanded; searchExpanded = settingsOpen = false; }}>
             { currentTab?.title || 'Tabs' }
             <img src={nav_expand_icon} class="expandIcon" alt="Expand">
         </button>
@@ -40,10 +43,13 @@
     {#if innerWidth >= 900}
         <SearchBar/>
     {:else}
-        <button class="iconBtn search" class:active={searchExpanded} on:click={() => { searchExpanded = !searchExpanded; navExpanded = false; }}>
+        <button class="iconBtn search" class:active={searchExpanded} on:click={() => { searchExpanded = !searchExpanded; navExpanded = settingsOpen = false; }}>
             <img src={find_icon} alt="Search">
         </button>
     {/if}
+    <button class="iconBtn" class:active={settingsOpen} on:click={() => { settingsOpen = !settingsOpen; navExpanded = searchExpanded = false; }}>
+        <img src={settings_icon} alt="Settings">
+    </button>
 </nav>
 
 <main>
@@ -54,10 +60,17 @@
     <slot/>
 </main>
 
+{#if settingsOpen}
+    <div class="blur">
+        <button class="close" on:click={() => settingsOpen = false}/>
+        <Settings/>
+    </div>
+{/if}
+
 {#if innerWidth < 650 && navExpanded}
 {@const currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname))}
     <div class="blur">
-        <button class="close" on:keyup={(e) => { if (e.key === "Escape") navExpanded = false }} on:click={() => navExpanded = false}/>
+        <button class="close" on:click={() => navExpanded = false}/>
         <div class="dropdown">
             {#each tabs.filter(tab => tab !== currentTab) as tab}
                 <button class="link" on:click={() => { goto(tab.path); navExpanded = false; }}>
@@ -71,7 +84,7 @@
 
 {#if innerWidth < 900 && searchExpanded}
     <div class="blur searchDropdown">
-        <button class="close" on:keyup={(e) => { if (e.key === "Escape") searchExpanded = false }} on:click={() => searchExpanded = false}/>
+        <button class="close" on:click={() => searchExpanded = false}/>
         <div class="dropdown" style:padding="20px">
             <SearchBar/>
         </div>
@@ -184,6 +197,13 @@
         background: none;
         border: 0;
         padding: 0;
+        border-bottom: 2px solid #00000000;
+        margin-bottom: -2px;
+        transition: border-color .2s;
+    }
+
+    .iconBtn.active {
+        border-bottom-color: #FFFFFF;
     }
 
     .iconBtn img {
@@ -197,10 +217,5 @@
 
     :has(.current) .iconBtn.search {
         margin-left: 0;
-    }
-
-    .iconBtn.search.active {
-        border-bottom: 2px solid #FFFFFF;
-        margin-bottom: -2px;
     }
 </style>
