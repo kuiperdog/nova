@@ -212,8 +212,10 @@
                         <b>Member:</b>
                         <div class="profile">
                             {#if artists}
-                                <img class="profileImage" alt={collection.member}
-                                    src={artists.find(a => a.name === collection.artists[0])?.members.find(m => m.name === collection.member)?.profileImageUrl}>
+                            {@const member = artists.find(a => a.name === collection.artists[0])?.members.find(m => m.name === collection.member)}
+                                {#if member}
+                                    <img class="profileImage" alt={member.name} src={member.profileImageUrl}>
+                                {/if}
                             {:else}
                                 <div class="profileImageSkeleton"></div>
                             {/if}
