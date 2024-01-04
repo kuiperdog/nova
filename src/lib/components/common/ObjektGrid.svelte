@@ -750,16 +750,6 @@
         animation: fade-in 0.5s;
     }
 
-    @keyframes fade-in {
-        0% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
-
     @media only screen and (max-width: 900px) {
         .grid {
             grid-template-columns: repeat(4, 1fr);

@@ -11,6 +11,7 @@
     --item-secondary-semitransparent: #232A3080;
     --button-border: #2a333a;
     --accent-color: #9756FF;
+    --search-bar-color: #ffffff80;
     --box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25);
     --blur-radius: 5px;
     --nav-z-index: 5;
@@ -43,6 +44,16 @@ hr {
     border: 1px solid var(--button-border);
     border-bottom: none;
     border-right: none;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 *,

@@ -94,14 +94,4 @@
     .popup button {
         margin: 0 auto;
     }
-
-    @keyframes fade-in {
-        0% {
-            opacity: 0;
-        }
-
-        100% {
-            opacity: 1;
-        }
-    }
 </style>

@@ -5,10 +5,13 @@
     import { goto } from '$app/navigation';
     import logo from '$lib/assets/images/logo.svg';
     import nav_expand_icon from '$lib/assets/icons/nav_expand.svg';
+    import find_icon from '$lib/assets/icons/find.svg';
+    import SearchBar from '$lib/components/common/SearchBar.svelte';
 	import ObjektModal from '$lib/components/common/ObjektModal.svelte';
 
     let innerWidth: number;
     let navExpanded = false;
+    let searchExpanded = false;
 </script>
 
 <svelte:window bind:innerWidth/>
@@ -21,26 +24,25 @@
 
 <nav class:expanded={navExpanded}>
     <img src={logo} class="logo" alt="Nova logo">
-    {#if innerWidth > 650}
+
+    {#if innerWidth >= 650}
         {#each tabs as tab}
-            <a href={tab.path} class:active={RegExp(tab.matches).test($page.url.pathname)}>{ tab.title }</a>
+            <a class="link" href={tab.path} class:active={RegExp(tab.matches).test($page.url.pathname)}>{ tab.title }</a>
         {/each}
     {:else}
         {@const currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname))}
-        <button on:click={() => navExpanded = !navExpanded}>
+        <button class="link current" on:click={() => { navExpanded = !navExpanded; searchExpanded = false; }}>
             { currentTab?.title || 'Tabs' }
             <img src={nav_expand_icon} class="expandIcon" alt="Expand">
         </button>
-        <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-        <div class="tabDropdown" on:click={() => navExpanded = false} on:keyup={(e) => { if (e.key === "Escape") navExpanded = false }} role="navigation">
-            <div class="tabDropdownLayout">
-                {#each tabs.filter(tab => tab !== currentTab) as tab}
-                    <button on:click={() => { goto(tab.path); navExpanded = false; }}>
-                        { tab.title }
-                    </button>
-                {/each}
-            </div>
-        </div>
+    {/if}
+
+    {#if innerWidth >= 900}
+        <SearchBar/>
+    {:else}
+        <button class="iconBtn search" class:active={searchExpanded} on:click={() => { searchExpanded = !searchExpanded; navExpanded = false; }}>
+            <img src={find_icon} alt="Search">
+        </button>
     {/if}
 </nav>
 
@@ -52,29 +54,44 @@
     <slot/>
 </main>
 
-<style>
-    nav, .tabDropdown {
-        position: fixed;
-        z-index: var(--nav-z-index);
-        width: 100%;
-    }
+{#if innerWidth < 650 && navExpanded}
+{@const currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname))}
+    <div class="blur">
+        <button class="close" on:keyup={(e) => { if (e.key === "Escape") navExpanded = false }} on:click={() => navExpanded = false}/>
+        <div class="dropdown">
+            {#each tabs.filter(tab => tab !== currentTab) as tab}
+                <button class="link" on:click={() => { goto(tab.path); navExpanded = false; }}>
+                    { tab.title }
+                </button>
+            {/each}
+        </div>
+    </div>
+{/if}
 
-    nav, .tabDropdownLayout {
-        font-family: 'Halvar Breitschrift';
-        font-weight: bold;
-        font-size: 24px;
+
+{#if innerWidth < 900 && searchExpanded}
+    <div class="blur searchDropdown">
+        <button class="close" on:keyup={(e) => { if (e.key === "Escape") searchExpanded = false }} on:click={() => searchExpanded = false}/>
+        <div class="dropdown" style:padding="20px">
+            <SearchBar/>
+        </div>
+    </div>
+{/if}
+
+<style>
+    nav {
+        position: fixed;
+        top: 0;
+        height: 50px;
+        width: 100%;
+        padding: 0 20px;
+        z-index: var(--nav-z-index);
         background-color: var(--background-semitransparent);
         backdrop-filter: blur(var(--blur-radius));
         -webkit-backdrop-filter: blur(var(--blur-radius));
-    }
-
-    nav {
-        top: 0;
-        height: 50px;
-        padding: 0 20px;
         display: flex;
         align-items: center;
-        gap: 24px;
+        gap: 25px;
     }
 
     main {
@@ -85,7 +102,37 @@
         height: 100%;
     }
 
-    a {
+    .blur {
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 50px);
+        z-index: var(--nav-z-index);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        display: flex;
+        justify-content: center;
+        animation: 0.25s fade-in;
+    }
+
+    .close {
+        width: 100%;
+        height: 100%;
+        background: none;
+        border: none;
+        padding: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .link {
+        font-family: 'Halvar Breitschrift';
+        font-weight: bold;
+        font-size: 24px;
+    }
+
+    a.link {
         text-decoration: none;
         transition: color .2s, border-color .2s;
         border-bottom: 2px solid #00000000;
@@ -94,7 +141,7 @@
         color: #49565E;
     }
 
-    a.active {
+    a.link.active {
         color: #FFFFFF;
         border-bottom-color: #FFFFFF;
     }
@@ -103,20 +150,18 @@
         width: 60px
     }
 
-    button {
+    button.link {
         background: none;
         border: none;
         padding: 0;
         margin: 0 auto;
         cursor: pointer;
-        font-family: inherit;
-        font-size: inherit;
-        font-weight: inherit;
         color: #FFFFFF;
         display: flex;
     }
 
     .expandIcon {
+        margin-right: -5px;
         transition: transform 0.25s ease-in-out;
     }
 
@@ -124,24 +169,38 @@
         transform: rotate(180deg);
     }
 
-    .tabDropdown {
-        top: 50px;
-        left: 0;
-        height: 0;
-        overflow-y: hidden;
-        transition: height 0.25s ease-in-out;
-    }
-
-    .expanded .tabDropdown {
-        height: calc(100vh - 50px);
-    }
-
-    .tabDropdownLayout {
+    .dropdown {
         width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px;
-        padding-top: 0;
+        height: max-content;
+        background-color: var(--background-semitransparent);
+    }
+
+    .dropdown .link {
+        height: 50px;
+        line-height: 50px;
+    }
+
+    .iconBtn {
+        background: none;
+        border: 0;
+        padding: 0;
+    }
+
+    .iconBtn img {
+        width: 25px;
+    }
+
+    .iconBtn.search {
+        margin-left: auto;
+        margin-right: -15px;
+    }
+
+    :has(.current) .iconBtn.search {
+        margin-left: 0;
+    }
+
+    .iconBtn.search.active {
+        border-bottom: 2px solid #FFFFFF;
+        margin-bottom: -2px;
     }
 </style>
