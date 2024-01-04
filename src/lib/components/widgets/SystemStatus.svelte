@@ -84,7 +84,11 @@
         <hr>
         <div class="item">
             <p>Polygon:</p>
-            <img src={polygon} alt="Status" title={gas ? `Gas: ${Math.round(gas).toLocaleString('en-US')} Gwei`: ''}>
+            {#if polygon}
+                <img src={polygon} alt="Status" title={gas ? `Gas: ${Math.round(gas).toLocaleString('en-US')} Gwei`: ''}>
+            {:else}
+                <div class="statusPlaceholder"></div>
+            {/if}
         </div>
         <hr>
         <div class="item">
