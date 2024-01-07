@@ -3,6 +3,8 @@
     import { isAddress } from 'ethers';
 	import { goto } from '$app/navigation';
     import search_icon from '$lib/assets/icons/search.svg';
+	import { page } from '$app/stores';
+	import Page from '../../../routes/+page.svelte';
 
     let query: string;
     let timeout: number;
@@ -37,8 +39,11 @@
     }
 
     function keypress(event: KeyboardEvent) {
-        if (event.key === 'Enter' && value)
+        if (event.key === 'Enter' && value) {
             goto(`/@${value}`);
+            results = undefined;
+            value = '';
+        }
     }
 
     function mouseup(e: MouseEvent) {
@@ -46,6 +51,13 @@
             results = undefined;
             value = '';
         }
+    }
+
+    let _page: typeof $page;
+    $: if (_page !== $page) {
+        results = undefined;
+        value = '';
+        _page = $page;
     }
 </script>
 
