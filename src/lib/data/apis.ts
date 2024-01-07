@@ -1,4 +1,5 @@
 import { JsonRpcProvider } from "ethers";
+import governorAbi from './abi/Governor.json';
 
 export namespace Subsquid {
     export const URL = 'https://squid.subsquid.io/cosmo/graphql';
@@ -45,6 +46,18 @@ export namespace Subsquid {
     };
     export type Como = typeof Como;
 
+    export const Vote = {
+        id: '',
+        contract: '',
+        poll: 0,
+        from: '',
+        amount: 0,
+        index: 0,
+        candidate: 0 as Number | null,
+        timestamp: 0
+    };
+    export type Vote = typeof Vote;
+
     export function formatObjekt(collection: Collection, objekt: Objekt | null = null): string {
         return collection.member + ' ' + collection.season.charAt(0) + collection.number.substring(0, 3) + (objekt ? ` #${objekt.serial}` : '');
     }
@@ -82,6 +95,73 @@ export namespace Cosmo {
         profileImageUrl: string;
     }
 
+    export interface Gravity {
+        id: number;
+        artist: string;
+        title: string;
+        description: string;
+        type: string;
+        pollType: string;
+        bannerImageUrl: string;
+        entireStartDate: string;
+        entireEndDate: string;
+        body: any[];
+        polls: Poll[];
+        contractOutlink: string;
+    }
+
+    export interface Poll {
+        id: number;
+        artist: string;
+        pollIdOnChain: number;
+        gravityId: number;
+        type: string;
+        indexInGravity: number;
+        title: string;
+        imageUrl: string;
+        startDate: string;
+        endDate: string;
+        revealDate: string;
+        finalized: boolean;
+    };
+
+    export interface PollDetail extends Poll {
+        pollViewMetadata: {
+            title: string;
+            background: string | null;
+            defaultContent?: any;
+            selectedContent?: {
+                choiceId: string;
+                content: any;
+            }[];
+            slots?: {
+                id: string;
+                name: string;
+                title: string;
+                description: string;
+                backgroundImageUrl: string;
+            }[];
+            slotChoices?: {
+                id: string;
+                name: string;
+                alias: string | undefined;
+                roundImageUrl: string | null;
+                slotCardImageUrl: string | null;
+            }[];
+            choiceIdToSlotChoicesMapTable?: {
+                choiceId: string;
+                slotIds: string[];
+                slotChoiceIds: string;
+            }[];
+        };
+        choices: {
+            id: string;
+            title: string;
+            description: string;
+            txImageUrl: string;
+        }[];
+    };
+
     let _artists: Artist[];
     let artistsPromise: Promise<Artist[]>;
     export async function artists(): Promise<Artist[]> {
@@ -111,5 +191,8 @@ export namespace Cosmo {
 }
 
 export namespace Polygon {
-    export const RPC = new JsonRpcProvider('https://polygon-rpc.com');
+    export const RPC = new JsonRpcProvider('https://rpc.ankr.com/polygon');
+    export const ABI = {
+        Governor: governorAbi
+    };
 }

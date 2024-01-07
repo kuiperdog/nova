@@ -10,6 +10,11 @@ export const tabs = [
         matches: '^\/objekt'
     },
     {
+        title: 'Gravity',
+        path: '/gravity',
+        matches: '^\/gravity'
+    },
+    {
         title: 'Users',
         path: '/users',
         matches: '^(\/users|\/@.+)$'
