@@ -19,7 +19,7 @@
 		<div class="sideBar" style="font-size: {width * 0.05}px; color: {collection.textColor};">
 			<p>{collection.number}</p>
 			{#if objekt}
-				<p class="serial">{objekt.serial}</p>
+				<p class="serial">#{objekt.serial.toString().padStart(5, '0')}</p>
 			{/if}
 		</div>
 	</div>
