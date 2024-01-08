@@ -40,10 +40,14 @@
             <div class="transfer">
                 <div class="users">
                     <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt="To">
-                    <p>{ from ? from.nickname : edge.node.from.slice(0, 6) + '...' + edge.node.from.slice(-4) }</p>
+                    <a href="/@{from ? from.nickname : edge.node.from}">
+                        { from ? from.nickname : edge.node.from.slice(0, 6) + '...' + edge.node.from.slice(-4) }
+                    </a>
                     <div class="spacer"></div>
                     <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt="To">
-                    <p>{ to ? to.nickname : edge.node.to.slice(0, 6) + '...' + edge.node.to.slice(-4) }</p>
+                    <a href="/@{to ? to.nickname : edge.node.to}">
+                        { to ? to.nickname : edge.node.to.slice(0, 6) + '...' + edge.node.to.slice(-4) }
+                    </a>
                 </div>
                 <div class="objekt">
                     <button on:click={() => pushState(`/objekt/${edge.node.objekt.collection.id}/${edge.node.objekt.serial}`, 
@@ -127,5 +131,9 @@
     
     .labels p {
         opacity: 0.5;
+    }
+
+    .users a {
+        color: inherit;
     }
 </style>

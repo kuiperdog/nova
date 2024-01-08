@@ -265,10 +265,10 @@
                     <div class="objektDetails">
                         <div class="objektOwner">
                             <b>Owner:</b>
-                            <div class="profile">
+                            <a class="profile" href="/@{owner ? owner.nickname : objekt.owner}">
                                 <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt={objekt.owner}>
                                 { owner ? owner.nickname : objekt.owner.slice(0, 6) + '...' + objekt.owner.slice(-4) }
-                            </div>
+                            </a>
                         </div>
                         <hr>
                         <div class="objektInfo">
@@ -305,10 +305,10 @@
                                 </div>
                                 <hr>
                                 <div>
-                                    <div class="profile">
+                                    <a class="profile" href="/@{user ? user.nickname : transfer.to}">
                                         <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt={transfer.to}>
-                                        <p>{ user ? user.nickname : transfer.to.slice(0, 6) + '...' + transfer.to.slice(-4) }</p>
-                                    </div>
+                                        { user ? user.nickname : transfer.to.slice(0, 6) + '...' + transfer.to.slice(-4) }
+                                    </a>
                                 </div>
                             </div>
                             {#if index < transfers.length - 1}
@@ -537,6 +537,7 @@
         display: flex;
         gap: 5px;
         align-items: center;
+        color: inherit;
     }
 
     .profileSkeleton {

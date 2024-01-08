@@ -63,7 +63,7 @@
                 <p class="listNumber"><b>#{i + 1}</b></p>
                 <hr>
                 <img class="profileImg" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt="User">
-                <p>{user ? user.nickname : account.owner}</p>
+                <a href="/@{user ? user.nickname : account.owner}">{user ? user.nickname : account.owner}</a>
                 <hr>
                 <p>{Math.round(Number(formatEther(account.balance))).toLocaleString('en-US')}</p>
                 {#if i < holders.length - 1}
@@ -130,6 +130,11 @@
 
     .content > p {
         padding: 10px;
+    }
+
+    .content a {
+        padding: 10px;
+        color: inherit;
     }
 
     .content > .placeholder {
