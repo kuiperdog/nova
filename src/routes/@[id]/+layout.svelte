@@ -22,7 +22,6 @@
     Cosmo.artists().then(a => artists = a);
 
 	const address = writable<string>();
-	$: if (profile) address.set(profile.address);
     setContext("address", address);
 
     async function getProfile() {
@@ -32,6 +31,7 @@
         balances = undefined;
 
         if (isAddress(data.id)) {
+            address.set(data.id);
             const res = await fetch(`${Cosmo.URL}/user/v1/by-address/${data.id}`);
             const users = await res.json();
             if (users[0]) {
@@ -48,6 +48,7 @@
             const res = await fetch(`${Cosmo.URL}/user/v1/by-nickname/${data.id}`);
             const user = await res.json();
             if (user.profile) {
+                address.set(user.profile.address)
                 profile = user.profile;
             } else {
                 nonexistent = true;
@@ -75,6 +76,10 @@
 
         balances = query.data.comos;
         joinDate = new Date(Number(query.data.objekts[0].received));
+    }
+
+    $: if (profile && profile.nickname !== $page.params.id && profile.address !== $page.params.id) {
+        getProfile();
     }
 
     getProfile();
