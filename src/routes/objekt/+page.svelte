@@ -38,9 +38,10 @@
                     break;
                 case 'maxNumber':
                     filters.push(`number_lte: "${value}"`);
-                        break;
+                    break;
                 case 'type':
-                    filters.push(`number_endsWith: "${value}"`)
+                    filters.push(`number_endsWith: "${value}"`);
+                    break;
                 case 'sort':
                     switch (value) {
                         case 'number':
