@@ -85,13 +85,24 @@
     getProfile();
 </script>
 
+<svelte:head>
+    {#if profile}
+        {#key $page.route}
+            <title>Nova | {profile.nickname || profile.address.slice(0, 6) + '...' + profile.address.slice(-4)}</title>
+        {/key}
+    {/if}
+</svelte:head>
 
 <div class="layout">
     <div class="header">
         {#if profile}
             <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt=''>
             <div class="name">
-                <h1>{ profile.nickname }</h1>
+                {#if profile.nickname}
+                    <h1>{ profile.nickname }</h1>
+                {:else}
+                    <h1><i>ID Unknown</i></h1>
+                {/if}
                 <div class="address">
                     <p>{ profile.address.slice(0, 6) }...{ profile.address.slice(-4) }</p>
                     <button class="copy" on:click={() => navigator.clipboard.writeText(profile?.address || '')}>
