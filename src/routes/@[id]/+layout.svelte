@@ -24,6 +24,9 @@
 	const address = writable<string>();
     setContext("address", address);
 
+	const como = writable<Subsquid.Como[]>();
+    setContext("como", como);
+
     async function getProfile() {
         nonexistent = false;
         profile = undefined;
@@ -75,6 +78,7 @@
         const query = await res.json();
 
         balances = query.data.comos;
+        como.set(balances!);
         joinDate = new Date(Number(query.data.objekts[0].received));
     }
 
