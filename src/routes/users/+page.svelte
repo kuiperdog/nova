@@ -5,8 +5,6 @@
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import find_icon from "$lib/assets/icons/find.svg";
 
-    const CREATOR = '0xD5fc87DD8494d6B657bF0DE20111235d983CEC84';
-
     let users: Cosmo.User[] | undefined;
     let holders: Subsquid.Como[] | undefined;
     let artist: Cosmo.Artist;
@@ -22,7 +20,7 @@
                 body: JSON.stringify({
                     query: `
                         query {
-                            comosConnection(orderBy: balance_DESC, first: 100, where: {contract_eq: "${artist.contracts.Como.toLowerCase()}", owner_not_eq: "${artist.contracts.CommunityPool}", AND: {owner_not_eq: "${CREATOR}"}}) {
+                            comosConnection(orderBy: balance_DESC, first: 100, where: {contract_eq: "${artist.contracts.Como.toLowerCase()}"}) {
                                 edges {
                                     node {
                                         ${Object.keys(Subsquid.Como).join('\n')}
