@@ -119,13 +119,13 @@
                     </button>
                     <div class="details">
                         <p class="type">
-                            <span class="chip" class:from={item.to === $address}>
-                                {#if item.to === $address}
-                                    FROM
-                                {:else}
-                                    TO
-                                {/if}
-                            </span>
+                            {#if item.from === ZeroAddress}
+                                <span class="chip mint">MINT</span>
+                            {:else if item.to === $address}
+                                <span class="chip from">FROM</span>
+                            {:else}
+                                <span class="chip to">TO</span>
+                            {/if}
                         </p>
                         {#if user}
                             <a class="user" href="/@{user?.nickname}">
@@ -223,6 +223,9 @@
         background-color: var(--accent-color);
         font-size: 14px;
         font-weight: bold;
+    }
+
+    .chip.to {
         background-color: #94E5FE;
         color: #0A6673;
     }
@@ -230,6 +233,11 @@
     .chip.from {
         background-color: #c3fe94;
         color: #1d510b;
+    }
+
+    .chip.mint {
+        background-color: #fe94c6;
+        color: #730a37;
     }
 
     .user {
