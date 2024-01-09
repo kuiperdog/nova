@@ -51,8 +51,10 @@
             const res = await fetch(`${Cosmo.URL}/user/v1/by-nickname/${data.id}`);
             const user = await res.json();
             if (user.profile) {
-                address.set(user.profile.address)
+                address.set(user.profile.address);
                 profile = user.profile;
+                if (user.profile.nickname !== data.id)
+                    replaceState(`/@${user.profile.nickname}`, $page.state);
             } else {
                 nonexistent = true;
                 return;
@@ -82,7 +84,7 @@
         joinDate = new Date(Number(query.data.objekts[0].received));
     }
 
-    $: if (profile && profile.nickname !== $page.params.id && profile.address !== $page.params.id) {
+    $: if (profile && profile.nickname.toLowerCase() !== $page.params.id.toLowerCase() && profile.address !== $page.params.id) {
         getProfile();
     }
 
