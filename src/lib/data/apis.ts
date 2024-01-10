@@ -53,7 +53,7 @@ export namespace Subsquid {
         from: '',
         amount: 0,
         index: 0,
-        candidate: 0 as Number | null,
+        candidate: 0 as number | null,
         timestamp: 0
     };
     export type Vote = typeof Vote;
@@ -151,7 +151,7 @@ export namespace Cosmo {
             choiceIdToSlotChoicesMapTable?: {
                 choiceId: string;
                 slotIds: string[];
-                slotChoiceIds: string;
+                slotChoiceIds: string[];
             }[];
         };
         choices: {
