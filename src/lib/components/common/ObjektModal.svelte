@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { pushState } from "$app/navigation";
+	import { goto, pushState } from "$app/navigation";
     import { page } from "$app/stores";
     import { Subsquid, Cosmo } from "$lib/data/apis";
     import tap_icon from "$lib/assets/icons/tap.svg";
@@ -81,7 +81,7 @@
         if ($page.state.previous)
             pushState($page.state.previous, { collection: null, objekt: null, previous: null });
         else
-            history.go(-1);
+            goto('/objekt');
     }
 
     $: {
@@ -139,7 +139,7 @@
 
 <svelte:head>
     {#key $page.route}
-        <title>Nova | {Subsquid.formatObjekt(collection)}</title>
+        <title>Nova{collection ? '| ' + Subsquid.formatObjekt(collection) : ''}</title>
     {/key}
 </svelte:head>
 
@@ -198,7 +198,7 @@
                 <div class="collectionDetails">
                     <div>
                         <b>Artist:</b>
-                        {#if artists}
+                        {#if artists && collection.artists[0]}
                             <div class="profile">
                                 <img class="profileImage" src={artists.find(a => a.name === collection.artists[0])?.logoImageUrl} alt={collection.artists[0]}>
                                 <p>{artists.find(a => a.name === collection.artists[0])?.title}</p>
@@ -211,15 +211,15 @@
                     <div>
                         <b>Member:</b>
                         <div class="profile">
-                            {#if artists}
+                            {#if artists && collection.member}
                             {@const member = artists.find(a => a.name === collection.artists[0])?.members.find(m => m.name === collection.member)}
                                 {#if member}
                                     <img class="profileImage" alt={member.name} src={member.profileImageUrl}>
                                 {/if}
+                                <p>{collection.member}</p>
                             {:else}
-                                <div class="profileImageSkeleton"></div>
+                                <div class="profile profileSkeleton"></div>
                             {/if}
-                            <p>{collection.member}</p>
                         </div>
                     </div>
                 </div>
