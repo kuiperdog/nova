@@ -193,7 +193,7 @@
                 </button>
             </div>
         </div>
-        <div class="detailView" style:background-color={collection.backgroundColor}>
+        <div class="detailView" class:specialObjekt={collection.class === 'Special'} style:background-color={collection.class !== 'Special' ? collection.backgroundColor : ''}>
             <div>
                 <div class="collectionDetails">
                     <div>
@@ -512,6 +512,10 @@
         gap: 12.5px;
         overflow-y: scroll;
         transition: background-color .1s;
+    }
+
+    .detailView.specialObjekt {
+        background: linear-gradient(135deg, #f9e6e0 0%, #d1d8e8 25%, #f2e2cb 50%, #fcc4db 75%, #b1a7f0 100%);
     }
 
     .detailView > div {
