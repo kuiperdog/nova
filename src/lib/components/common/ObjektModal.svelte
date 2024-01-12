@@ -4,6 +4,7 @@
     import { Subsquid, Cosmo } from "$lib/data/apis";
     import tap_icon from "$lib/assets/icons/tap.svg";
     import view_3d_icon from "$lib/assets/icons/3d.svg";
+    import heart_icon from "$lib/assets/icons/heart.svg";
     import filled_heart_icon from "$lib/assets/icons/filled_heart.svg";
     import download_icon from "$lib/assets/icons/download.svg";
     import close_icon from "$lib/assets/icons/close.svg";
@@ -125,6 +126,13 @@
         }
     }
 
+    let liked = JSON.parse(window.localStorage.getItem('bookmarks') || '[]').find((c: Subsquid.Collection) => c.id === collection.id);
+    function toggleLiked() {
+        const likes: Subsquid.Collection[] = JSON.parse(window.localStorage.getItem('bookmarks') || '[]');
+        window.localStorage.setItem('bookmarks', JSON.stringify(liked ? likes.filter(c => c.id !== collection.id) : [ collection, ...likes ]));
+        liked = !liked;
+    }
+
     let viewHeight: number;
     let nextSerial: number;
     let frontLoaded = false;
@@ -185,8 +193,8 @@
                 <button>
                     <img src={view_3d_icon} alt="3D View">
                 </button>
-                <button>
-                    <img src={filled_heart_icon} alt="Favorite">
+                <button on:click={() => toggleLiked()}>
+                    <img src={liked ? filled_heart_icon : heart_icon} alt="Like">
                 </button>
                 <button  on:click={() => window.open(cardFlipped ? collection.back : collection.front, '_blank')}>
                     <img src={download_icon} alt="Download">
@@ -488,6 +496,11 @@
         border: none;
         padding: 0;
         cursor: pointer;
+        transition: transform .1s;
+    }
+
+    .objektButtons button:active {
+        transform: scale(.95);
     }
 
     .closeButton {
@@ -552,14 +565,10 @@
         background-color: var(--item-secondary);
     }
 
-    .profileImage, .profileImageSkeleton {
+    .profileImage {
         height: 25px;
         border-radius: 12.5px;
         background-color: var(--item-secondary);
-    }
-
-    .profileImageSkeleton {
-        width: 25px;
     }
 
     .serialSelector {
