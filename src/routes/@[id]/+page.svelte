@@ -18,38 +18,14 @@
 
         params.forEach((value, key) => {
             switch (key) {
-                case 'artist':
-                    if (artists.find(a => a.name === value))
-                        collectionFilters.push(`artists_containsAll: "${value}"`);
-                    else if (artists.find(a => a.members.find(m => m.name === value)))
-                        collectionFilters.push(`member_eq: "${value}"`);
-                    else if (Cosmo.unit(value))
-                        collectionFilters.push(`AND: {member_eq: "${Cosmo.unit(value)![0]}"` + Cosmo.unit(value)?.slice(1).reduce(
-                            (acc, m, i) => acc.slice(0, acc.length - i) + `, OR: {member_eq: "${m}"` + '}'.repeat(i + 1), '') + '}')
-                    break;
-                case 'season':
-                    collectionFilters.push(`season_eq: "${value}"`);
-                    break;
-                case 'class':
-                    collectionFilters.push(`class_eq: "${value}"`);
-                    break;
-                case 'number':
-                    collectionFilters.push(`number_startsWith: "${value}"`);
-                    break;
-                case 'minNumber':
-                    collectionFilters.push(`number_gte: "${value}"`);
-                    break;
-                case 'maxNumber':
-                    collectionFilters.push(`number_lte: "${value}"`);
-                    break;
                 case 'minSerial':
                     objektFilters.push(`serial_gte: ${value}`);
                     break;
                 case 'maxSerial':
                     objektFilters.push(`serial_lte: ${value}`);
                     break;
-                case 'type':
-                    collectionFilters.push(`number_endsWith: "${value}"`)
+                case 'sendable':
+                    objektFilters.push('transferrable_eq: true');
                     break;
                 case 'sort':
                     switch (value) {
@@ -68,7 +44,50 @@
                     }
                     break;
             }
-        })
+        });
+
+        if (params.has('liked')) {
+            if (!window.localStorage.getItem('bookmarks')) {
+                total = 0;
+                return [];
+            }
+
+            const likes = Subsquid.filterCollections(JSON.parse(window.localStorage.getItem('bookmarks') || '[]'), params);
+            collectionFilters.push(`id_eq: "${likes[0].id}"` + likes.slice(1).reduce((acc, item, i) =>
+                acc.slice(0, acc.length - i) + `, OR: {id_eq: "${item.id}"` + '}'.repeat(i + 1), ''));
+        } else {
+            params.forEach((value, key) => {
+                switch (key) {
+                    case 'artist':
+                        if (artists.find(a => a.name === value))
+                            collectionFilters.push(`artists_containsAll: "${value}"`);
+                        else if (artists.find(a => a.members.find(m => m.name === value)))
+                            collectionFilters.push(`member_eq: "${value}"`);
+                        else if (Cosmo.unit(value))
+                            collectionFilters.push(`AND: {member_eq: "${Cosmo.unit(value)![0]}"` + Cosmo.unit(value)?.slice(1).reduce(
+                                (acc, m, i) => acc.slice(0, acc.length - i) + `, OR: {member_eq: "${m}"` + '}'.repeat(i + 1), '') + '}');
+                        break;
+                    case 'season':
+                        collectionFilters.push(`season_eq: "${value}"`);
+                        break;
+                    case 'class':
+                        collectionFilters.push(`class_eq: "${value}"`);
+                        break;
+                    case 'number':
+                        collectionFilters.push(`number_startsWith: "${value}"`);
+                        break;
+                    case 'minNumber':
+                        collectionFilters.push(`number_gte: "${value}"`);
+                        break;
+                    case 'maxNumber':
+                        collectionFilters.push(`number_lte: "${value}"`);
+                        break;
+                    case 'type':
+                        collectionFilters.push(`number_endsWith: "${value}"`);
+                        break;
+                }
+            });
+        }
 
         const res = await fetch(Subsquid.URL, {
             method: 'POST',

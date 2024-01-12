@@ -8,7 +8,47 @@
     let total: number | null = null;
     let params = $page.url.searchParams;
 
-    async function load(offset: number, length: number) {
+    async function load(offset: number, length: number): Promise<ComponentProps<ObjektPreview>[]> {
+        if (params.has('liked')) {
+            let liked: Subsquid.Collection[] = JSON.parse(window.localStorage.getItem('bookmarks') || '[]');
+            if (!liked.length)
+                return [];
+            
+            if (!liked[0].backgroundColor) {
+                const res = await fetch(Subsquid.URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: `
+                            query {
+                                ${liked.map((collection, index) => `
+                                    bookmarks${index}: collectionsConnection(orderBy: id_ASC, where: {id_eq: "${collection.id}"}) {
+                                        edges {
+                                            node {
+                                                backgroundColor
+                                            }
+                                        }
+                                    }
+                                `).join('\n')}
+                            }
+                        `
+                    })
+                });
+                const data = await res.json();
+
+                for (let i = 0; i < Object.keys(data.data).length; i++) {
+                    liked[i].backgroundColor = data.data[Object.keys(data.data)[i]].edges[0].node.backgroundColor;
+                }
+
+                window.localStorage.setItem('bookmarks', JSON.stringify(liked));
+            }
+
+            liked = Subsquid.filterCollections(liked, params);
+            total = liked.length;
+
+            return liked.map(c => { return { collection: c } });
+        }
+
         let filters: string[] = [];
         let sort = 'timestamp_DESC';
         const artists = await Cosmo.artists();
@@ -53,7 +93,7 @@
                     }
                     break;
             }
-        })
+        });
 
         const res = await fetch(Subsquid.URL, {
             method: 'POST',
@@ -82,14 +122,13 @@
         if (total === null)
             total = data.data.collectionsConnection.totalCount;
 
-        return data.data.collectionsConnection.edges.map(
-            (e: { node: Subsquid.Collection }): ComponentProps<ObjektPreview> => { return { collection: e.node } });
+        return data.data.collectionsConnection.edges.map((e: { node: Subsquid.Collection }): ComponentProps<ObjektPreview> => { return { collection: e.node } });
     }
 
     onDestroy(page.subscribe(() => {
         if (params !== $page.url.searchParams) {
-            params = $page.url.searchParams;
             total = null;
+            params = $page.url.searchParams;
         }
     }));
 </script>

@@ -1,5 +1,6 @@
 <script lang="ts">
     import ObjektPreview from './ObjektPreview.svelte';
+    import Checkbox from './Checkbox.svelte';
     import { onDestroy, type ComponentProps } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
@@ -69,6 +70,25 @@
         ] : [])
     ];
 
+    let sendable: boolean = $page.url.searchParams.has('sendable');
+    let _sendable: boolean;
+    $: if (_sendable !== sendable) {
+        _sendable = sendable;
+        setFilter('sendable', sendable ? 'true' : '', false);
+    } else if (sendable !== $page.url.searchParams.has('sendable')) {
+        _sendable = sendable = $page.url.searchParams.has('sendable');
+    }
+
+
+    let liked: boolean = $page.url.searchParams.has('liked');
+    let _liked: boolean;
+    $: if (_liked !== liked) {
+        _liked = liked;
+        setFilter('liked', liked ? 'true' : '', false);
+    } else if (liked !== $page.url.searchParams.has('liked')) {
+        _liked = liked = $page.url.searchParams.has('liked');
+    }
+
     let visible: {[key: string]: boolean} = {};
     const toggle = (key: string) => visible[key] = !visible[key];
     function setFilter(key: string, value: string, hideFilter: boolean = true) {
@@ -123,6 +143,12 @@
         {:else}
             <h2 class="total">{total.toLocaleString('en-US')} items</h2>
         {/if}
+        {#if gridWidth > (profile ? 1040 : 830)}
+            {#if profile}
+                <Checkbox bind:checked={sendable}>Sendable Objekts only</Checkbox>
+            {/if}
+            <Checkbox bind:checked={liked}>Liked Objekts only</Checkbox>
+        {/if}
         <div class="sortButton">
             <button on:click={() => toggle('sortFilter')} id="sortFilterBtn" class:active={visible['sortFilter'] || $page.url.searchParams.has('sort')}>
                 {#if $page.url.searchParams.has('sort')}
@@ -152,6 +178,14 @@
     </div>
     <div class={gridWidth > (profile ? 1040 : 830) ? 'filtersContainer' : 'filtersPopup'} class:showPopup={visible['filtersPopup']} id="filtersContainer">
         <div class="filters">
+            {#if gridWidth < (profile ? 1040 : 830)}
+                <div class="checkboxes">
+                    {#if profile}
+                        <Checkbox bind:checked={sendable}>Sendable Objekts only</Checkbox>
+                    {/if}
+                    <Checkbox bind:checked={liked}>Liked Objekts only</Checkbox>
+                </div>
+            {/if}
             {#if !artists}
                 {#each { length: profile ? 6 : 5 } as _}
                     <div class="skeleton filterSkeleton"></div>
@@ -517,7 +551,7 @@
         gap: 40px 20px;
     }
 
-    .filtersPopup .filters > * {
+    .filtersPopup .filters > *:not(.checkboxes) {
         flex: 1;
         min-width: max(calc((100% - 40px) / 5), 150px);
         max-width: calc((100% - 40px) / 3);
@@ -542,6 +576,14 @@
     .doneBtn button:hover,
     .doneBtn button:active {
         filter: brightness(110%);
+    }
+
+    .filtersPopup .checkboxes {
+        flex-basis: 100%;
+        display: flex;
+        gap: 20px;
+        margin: -10px 0;
+        justify-content: center;
     }
 
     .filters button {
@@ -763,7 +805,7 @@
     }
 
     @media only screen and (max-width: 530px) {
-        .filtersPopup .filters > * {
+        .filtersPopup .filters > *:not(.checkboxes) {
             max-width: calc((100% - 40px) / 2);
         }
     }

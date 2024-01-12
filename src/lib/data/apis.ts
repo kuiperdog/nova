@@ -1,6 +1,8 @@
 import { JsonRpcProvider } from "ethers";
 import governorAbi from './abi/Governor.json';
 
+let _artists: Cosmo.Artist[];
+
 export namespace Subsquid {
     export const URL = 'https://squid.subsquid.io/cosmo/graphql';
 
@@ -60,6 +62,48 @@ export namespace Subsquid {
 
     export function formatObjekt(collection: Collection, objekt: Objekt | null = null): string {
         return collection.member + ' ' + collection.season.charAt(0) + collection.number.substring(0, 3) + (objekt ? ` #${objekt.serial}` : '');
+    }
+
+    export function filterCollections(collections: Collection[], params: URLSearchParams): Collection[] {
+        if (params.has('sort')) {
+            if (params.get('sort') === 'number')
+                collections = collections.sort((a, b) => a.number.localeCompare(b.number));
+            else if (params.get('sort') === 'oldest')
+                collections = collections.reverse();
+        }
+
+        params.forEach((value, key) => {
+            switch (key) {
+                case 'artist':
+                    if (_artists.find(a => a.name === value))
+                        collections = collections.filter(c => c.artists.includes(value));
+                    else if (_artists.find(a => a.members.find(m => m.name === value)))
+                        collections = collections.filter(c => c.member === value);
+                    else if (Cosmo.unit(value))
+                        collections = collections.filter(c => Cosmo.unit(value)?.includes(c.member));
+                    break;
+                case 'season':
+                    collections = collections.filter(c => c.season === value);
+                    break;
+                case 'class':
+                    collections = collections.filter(c => c.class === value);
+                    break;
+                case 'number':
+                    collections = collections.filter(c => c.number.startsWith(value));
+                    break;
+                case 'minNumber':
+                    collections = collections.filter(c => c.number >= value);
+                    break;
+                case 'maxNumber':
+                    collections = collections.filter(c => c.member <= value);
+                    break;
+                case 'type':
+                    collections = collections.filter(c => c.number.endsWith(value));
+                    break;
+            }
+        });
+
+        return collections;
     }
 }
 
@@ -162,7 +206,6 @@ export namespace Cosmo {
         }[];
     };
 
-    let _artists: Artist[];
     let artistsPromise: Promise<Artist[]>;
     export async function artists(): Promise<Artist[]> {
         if (_artists)
