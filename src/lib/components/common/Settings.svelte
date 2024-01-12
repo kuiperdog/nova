@@ -1,4 +1,22 @@
+<script lang="ts">
+    import nova_logo from '$lib/assets/images/logo.svg';
+    import ArtistSelector from './ArtistSelector.svelte';
+
+    const version = __VERSION__;
+</script>
+
 <div class="settings">
+    <img class="logo" src={nova_logo} alt="Nova">
+    <p>
+        Nova v{version} by <a href="https://twitter.com/kuiperdog">Kuiper</a>
+    </p>
+    <p>
+        <a href="https://github.com/kuiperdog/nova">Source Code</a>
+        |
+        <a href="https://patreon.com/kuiperdog">Donate</a>
+        |
+        <a href="https://github.com/kuiperdog/nova/issues">Bug Tracker</a>
+    </p>
     <p class="disclaimer">Nova is not created by, endorsed by, or affiliated with Modhaus Inc.</p>
 </div>
 
@@ -13,14 +31,29 @@
         -webkit-backdrop-filter: blur(calc(var(--blur-radius) * 2));
         padding: 20px;
         display: flex;
-        gap: 10px;
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        align-items: center;
         animation: slide 0.5s;
     }
 
-    .disclaimer {
-        text-align: center;
-        align-self: flex-end;;
+    .logo {
+        margin-top: auto;
+        width: 100px;
     }
+
+    a {
+        color: inherit;
+    }
+
+    .setting {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     @keyframes slide {
         0% {
             transform: translateX(100%);

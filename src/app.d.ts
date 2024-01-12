@@ -8,4 +8,6 @@ declare global {
             previous: string | null
         }
     }
+    
+    declare const __VERSION__: string;
 }
