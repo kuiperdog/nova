@@ -7,7 +7,7 @@ export namespace Subsquid {
     export const Collection = {
         artists: [] as string[],
         back: '',
-//        backgroundColor: '',
+        backgroundColor: '',
         class: '',
         front: '',
         id: '',

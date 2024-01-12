@@ -193,7 +193,7 @@
                 </button>
             </div>
         </div>
-        <div class="detailView">
+        <div class="detailView" style:background-color={collection.backgroundColor}>
             <div>
                 <div class="collectionDetails">
                     <div>
@@ -504,13 +504,14 @@
     }
 
     .detailView {
-        background-color: #c8141d;
+        background-color: var(--item-secondary);
         padding: 12.5px;
         padding-top: 75px;
         display: flex;
         flex-direction: column;
         gap: 12.5px;
         overflow-y: scroll;
+        transition: background-color .1s;
     }
 
     .detailView > div {
