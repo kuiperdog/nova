@@ -5,6 +5,7 @@
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
     import { Subsquid, Cosmo } from '$lib/data/apis';
     import { type Writable } from 'svelte/store';
+    import { likes } from '$lib/data/likes';
 
     let total: number | null = null;
     let params = $page.url.searchParams;
@@ -47,13 +48,13 @@
         });
 
         if (params.has('liked')) {
-            if (!window.localStorage.getItem('bookmarks')) {
+            if (!$likes.length) {
                 total = 0;
                 return [];
             }
 
-            const likes = Subsquid.filterCollections(JSON.parse(window.localStorage.getItem('bookmarks') || '[]'), params);
-            collectionFilters.push(`id_eq: "${likes[0].id}"` + likes.slice(1).reduce((acc, item, i) =>
+            const items = Subsquid.filterCollections($likes, params);
+            collectionFilters.push(`id_eq: "${items[0].id}"` + items.slice(1).reduce((acc, item, i) =>
                 acc.slice(0, acc.length - i) + `, OR: {id_eq: "${item.id}"` + '}'.repeat(i + 1), ''));
         } else {
             params.forEach((value, key) => {
@@ -133,6 +134,13 @@
             total = null;
         }
     }));
+
+    let _likes = $likes;
+    $: if (_likes !== $likes) {
+        _likes = $likes;
+        if (params.has('liked'))
+            total = null;
+    }
 </script>
 
 <ObjektGrid {load} {total} profile/>

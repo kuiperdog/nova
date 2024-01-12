@@ -13,6 +13,7 @@
     import status_warning_icon from "$lib/assets/icons/status_warning.svg";
     import status_error_icon from "$lib/assets/icons/status_error.svg";
     import qr_image from "$lib/assets/images/qr.png";
+	import { likes } from "$lib/data/likes";
 
     export let collection: Subsquid.Collection;
     export let objekt: Subsquid.Objekt | null = null;
@@ -126,13 +127,6 @@
         }
     }
 
-    let liked = JSON.parse(window.localStorage.getItem('bookmarks') || '[]').find((c: Subsquid.Collection) => c.id === collection.id);
-    function toggleLiked() {
-        const likes: Subsquid.Collection[] = JSON.parse(window.localStorage.getItem('bookmarks') || '[]');
-        window.localStorage.setItem('bookmarks', JSON.stringify(liked ? likes.filter(c => c.id !== collection.id) : [ collection, ...likes ]));
-        liked = !liked;
-    }
-
     let viewHeight: number;
     let nextSerial: number;
     let frontLoaded = false;
@@ -193,8 +187,8 @@
                 <button>
                     <img src={view_3d_icon} alt="3D View">
                 </button>
-                <button on:click={() => toggleLiked()}>
-                    <img src={liked ? filled_heart_icon : heart_icon} alt="Like">
+                <button on:click={() => $likes = $likes.find(c => c.id === collection.id) ? $likes.filter(c => c.id !== collection.id) : [ collection, ...$likes ]}>
+                    <img src={$likes.find(c => c.id === collection.id) ? filled_heart_icon : heart_icon} alt="Like">
                 </button>
                 <button  on:click={() => window.open(cardFlipped ? collection.back : collection.front, '_blank')}>
                     <img src={download_icon} alt="Download">

@@ -4,26 +4,26 @@
     import ObjektGrid from '$lib/components/common/ObjektGrid.svelte';
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
     import { Subsquid, Cosmo } from '$lib/data/apis';
+    import { likes } from '$lib/data/likes';
 
     let total: number | null = null;
     let params = $page.url.searchParams;
 
     async function load(offset: number, length: number): Promise<ComponentProps<ObjektPreview>[]> {
         if (params.has('liked')) {
-            let liked: Subsquid.Collection[] = JSON.parse(window.localStorage.getItem('bookmarks') || '[]');
-            if (!liked.length) {
+            if (!$likes.length) {
                 total = 0;
                 return [];
             }
             
-            if (!liked[0].backgroundColor) {
+            if (!$likes[0].backgroundColor) {
                 const res = await fetch(Subsquid.URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         query: `
                             query {
-                                ${liked.map((collection, index) => `
+                                ${$likes.map((collection, index) => `
                                     bookmarks${index}: collectionsConnection(orderBy: id_ASC, where: {id_eq: "${collection.id}"}) {
                                         edges {
                                             node {
@@ -38,17 +38,14 @@
                 });
                 const data = await res.json();
 
-                for (let i = 0; i < Object.keys(data.data).length; i++) {
-                    liked[i].backgroundColor = data.data[Object.keys(data.data)[i]].edges[0].node.backgroundColor;
-                }
-
-                window.localStorage.setItem('bookmarks', JSON.stringify(liked));
+                $likes = $likes.map((c, i) => {
+                    return { ...c, backgroundColor: data.data[Object.keys(data.data)[i]].edges[0].node.backgroundColor }
+                });
             }
 
-            liked = Subsquid.filterCollections(liked, params);
-            total = liked.length;
-
-            return liked.map(c => { return { collection: c } });
+            const items = Subsquid.filterCollections($likes, params);
+            total = items.length;
+            return items.map(c => { return { collection: c } });
         }
 
         let filters: string[] = [];
@@ -133,6 +130,13 @@
             params = $page.url.searchParams;
         }
     }));
+
+    let _likes = $likes;
+    $: if (_likes !== $likes) {
+        if (params.has('liked') && _likes[0] && _likes[0].backgroundColor)
+            total = null;
+        _likes = $likes;
+    }
 </script>
 
 <slot/>

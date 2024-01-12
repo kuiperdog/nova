@@ -2,6 +2,8 @@
 	import { pushState } from '$app/navigation';
 	import { page } from '$app/stores';
 	import type { Subsquid } from '$lib/data/apis';
+	import { likes } from '$lib/data/likes';
+	import filled_heart_icon from '$lib/assets/icons/filled_heart.svg';
 
 	export let collection: Subsquid.Collection;
 	export let objekt: Subsquid.Objekt | null = null;
@@ -22,6 +24,9 @@
 				<p class="serial">#{objekt.serial.toString().padStart(5, '0')}</p>
 			{/if}
 		</div>
+		{#if $likes.find(c => c.id === collection.id)}
+			<img src={filled_heart_icon} alt="Liked" class="liked">
+		{/if}
 	</div>
 </button>
 
@@ -66,5 +71,13 @@
 
 	.serial {
 		font-family: 'Dot-Matrix';
+	}
+
+	.liked {
+		position: absolute;
+		top: 2.5%;
+		left: 2.5%;
+		width: 20%;
+		animation: fade-in .1s;
 	}
 </style>
