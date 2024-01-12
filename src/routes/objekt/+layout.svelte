@@ -11,8 +11,10 @@
     async function load(offset: number, length: number): Promise<ComponentProps<ObjektPreview>[]> {
         if (params.has('liked')) {
             let liked: Subsquid.Collection[] = JSON.parse(window.localStorage.getItem('bookmarks') || '[]');
-            if (!liked.length)
+            if (!liked.length) {
+                total = 0;
                 return [];
+            }
             
             if (!liked[0].backgroundColor) {
                 const res = await fetch(Subsquid.URL, {
