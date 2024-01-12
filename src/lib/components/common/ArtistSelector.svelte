@@ -8,8 +8,10 @@
     Cosmo.artists().then(a => {
         artists = a;
 
-        if (!selected)
-            selected = a[0];
+        if (!selected) {
+            const defaultArtist = window.localStorage.getItem('defaultArtist');
+            selected = defaultArtist ? a.find(artist => artist.name === defaultArtist) : a[0];
+        }
     });
 
     function mouseup(e: MouseEvent) {

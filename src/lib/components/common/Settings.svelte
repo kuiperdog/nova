@@ -1,11 +1,24 @@
 <script lang="ts">
     import nova_logo from '$lib/assets/images/logo.svg';
     import ArtistSelector from './ArtistSelector.svelte';
+    import { Cosmo } from '$lib/data/apis';
 
     const version = __VERSION__;
+
+    let selected: Cosmo.Artist | undefined;
+    let _selected: Cosmo.Artist | undefined;
+
+    $: if (selected && _selected !== selected) {
+        _selected = selected;
+        window.localStorage.setItem('defaultArtist', selected.name);
+    }
 </script>
 
 <div class="settings">
+    <div class="setting">
+        <b>Default Artist:</b>
+        <ArtistSelector bind:selected/>
+    </div>
     <img class="logo" src={nova_logo} alt="Nova">
     <p>
         Nova v{version} by <a href="https://twitter.com/kuiperdog">Kuiper</a>
