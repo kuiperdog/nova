@@ -5,6 +5,7 @@
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
     import { Subsquid, Cosmo } from '$lib/data/apis';
     import { likes } from '$lib/data/likes';
+    import copy_icon from '$lib/assets/icons/copy.svg';
 
     let total: number | null = null;
     let params = $page.url.searchParams;
@@ -137,8 +138,54 @@
             total = null;
         _likes = $likes;
     }
+
+    function copyLikes() {
+        navigator.clipboard.writeText(Object.values($likes.reduce((acc, c) => {
+            acc[c.member] = [ c, ...(acc[c.member] || []) ];
+            return acc;
+        }, {} as {[member: string]: Subsquid.Collection[]})).map(m => {
+            return `${m[0].member}: ` + m.map(c => `${c.season.slice(0, 1)}${c.number.slice(0, 3)}`).join(', ');
+        }).join('\n'));
+    }
 </script>
+
+<ObjektGrid {load} {total}/>
+
+{#if params.has('liked') && total}
+    <button class="copy" on:click={() => copyLikes()}>
+        <img src={copy_icon} alt="Copy">
+    </button>
+{/if}
 
 <slot/>
 
-<ObjektGrid {load} {total}/>
+
+<style>
+    .copy {
+        width: 60px;
+        height: 60px;
+        position: sticky;
+        bottom: 25px;
+        left: calc(100% - 85px);
+        border-radius: 30px;
+        background-color: var(--accent-color);
+        box-shadow: var(--box-shadow);
+        border: none;
+        padding: 12.5px;
+        transition: transform .1s, filter .1s;
+        animation: fade-in .1s;
+    }
+
+    .copy img {
+        height: 100%;
+        filter: brightness(500%);
+    }
+
+    .copy:hover {
+        filter: brightness(110%);
+    }
+
+    .copy:active {
+        transform: scale(0.95);
+    }
+</style>
