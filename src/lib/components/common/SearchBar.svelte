@@ -106,6 +106,11 @@
         font-size: 16px;
     }
 
+    ::placeholder {
+        color: #000000;
+        opacity: .75;
+    }
+
     .results {
         position: absolute;
         top: calc(100% + 5px);
