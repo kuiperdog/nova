@@ -14,6 +14,7 @@
     import status_error_icon from "$lib/assets/icons/status_error.svg";
     import qr_image from "$lib/assets/images/qr.png";
 	import { likes } from "$lib/data/likes";
+    import Objekt3DView from "./Objekt3DView.svelte";
 
     export let collection: Subsquid.Collection;
     export let objekt: Subsquid.Objekt | null = null;
@@ -135,6 +136,7 @@
     let backImg: HTMLImageElement;
     let cardFlipped = false;
     let findBtn: HTMLButtonElement;
+    let view3d = false;
     if (objekt && objekt.serial)
         nextSerial = objekt.serial;
 </script>
@@ -147,50 +149,56 @@
 
 <div class="modalBackground">
     <div class="modal">
-        <div class="objektView">
+        <div class="objektView" class:view3dActive={view3d}>
             <div class="objektHeader">
                 <div class="objektTooltip">
                     <img src={tap_icon} alt="Click Objekt to flip">
                     <p>Click Objekt to flip</p>
                 </div>
             </div>
-            <button class="objektPreview" bind:clientHeight={viewHeight} on:click={() => cardFlipped = !cardFlipped} class:objektFlipped={cardFlipped}>
-                <div class="objektFront" style="width: {viewHeight * 330.15/510}px;">
-                    <div class="objektSide" style="opacity: {frontLoaded || frontImg && frontImg.complete ? '1' : '0'};">
-                        <img class="objektImage" bind:this={frontImg} on:load={() => frontLoaded = true} src={collection.front} alt={Subsquid.formatObjekt(collection)}>
-                        <div class="sideBar" style="font-size: {viewHeight * 330.15/510 * 0.05}px; color: {collection.textColor};">
-                            <p>
-                                { collection.number }
-                                {#if objekt}
-                                    <span class="previewSerial"> #{objekt.serial.toString().padStart(5, '0')}</span>
-                                {/if}
-                            </p>
+            {#if view3d}
+                <div class="view3d">
+                    <Objekt3DView front={collection.front} back={collection.back}/>
+                </div>
+            {:else}
+                <button class="objektPreview" bind:clientHeight={viewHeight} on:click={() => cardFlipped = !cardFlipped} class:objektFlipped={cardFlipped}>
+                    <div class="objektFront" style="width: {viewHeight * 330.15/510}px;">
+                        <div class="objektSide" style="opacity: {frontLoaded || frontImg && frontImg.complete ? '1' : '0'};">
+                            <img class="objektImage" bind:this={frontImg} on:load={() => frontLoaded = true} src={collection.front} alt={Subsquid.formatObjekt(collection)}>
+                            <div class="sideBar" style="font-size: {viewHeight * 330.15/510 * 0.05}px; color: {collection.textColor};">
+                                <p>
+                                    { collection.number }
+                                    {#if objekt}
+                                        <span class="previewSerial"> #{objekt.serial.toString().padStart(5, '0')}</span>
+                                    {/if}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="objektBack" style="width: {viewHeight * 330.15/510}px;">
-                    <div class="objektSide" style="opacity: {backLoaded || backImg && backImg.complete ? '1' : '0'};">
-                        <img class="objektImage" bind:this={backImg} on:load={() => backLoaded = true} src={collection.back} alt={Subsquid.formatObjekt(collection)}>
-                        <div class="sideBar" style="font-size: {viewHeight * 330.15/510 * 0.05}px; color: {collection.textColor};">
-                            <p>
-                                { collection.number }
-                                {#if objekt}
-                                    <span class="previewSerial"> #{objekt.serial.toString().padStart(5, '0')}</span>
-                                {/if}
-                            </p>
+                    <div class="objektBack" style="width: {viewHeight * 330.15/510}px;">
+                        <div class="objektSide" style="opacity: {backLoaded || backImg && backImg.complete ? '1' : '0'};">
+                            <img class="objektImage" bind:this={backImg} on:load={() => backLoaded = true} src={collection.back} alt={Subsquid.formatObjekt(collection)}>
+                            <div class="sideBar" style="font-size: {viewHeight * 330.15/510 * 0.05}px; color: {collection.textColor};">
+                                <p>
+                                    { collection.number }
+                                    {#if objekt}
+                                        <span class="previewSerial"> #{objekt.serial.toString().padStart(5, '0')}</span>
+                                    {/if}
+                                </p>
+                            </div>
+                            <img class="qr" src={qr_image} alt="QR" style="height: {viewHeight * 330.15/510 * 0.25}px;">
                         </div>
-                        <img class="qr" src={qr_image} alt="QR" style="height: {viewHeight * 330.15/510 * 0.25}px;">
                     </div>
-                </div>
-            </button>
+                </button>
+            {/if}
             <div class="objektButtons">
-                <button>
+                <button on:click={() => view3d = !view3d} class="view3dButton">
                     <img src={view_3d_icon} alt="3D View">
                 </button>
                 <button on:click={() => $likes = $likes.find(c => c.id === collection.id) ? $likes.filter(c => c.id !== collection.id) : [ collection, ...$likes ]}>
                     <img src={$likes.find(c => c.id === collection.id) ? filled_heart_icon : heart_icon} alt="Like">
                 </button>
-                <button  on:click={() => window.open(cardFlipped ? collection.back : collection.front, '_blank')}>
+                <button on:click={() => window.open(cardFlipped ? collection.back : collection.front, '_blank')}>
                     <img src={download_icon} alt="Download">
                 </button>
             </div>
@@ -384,6 +392,12 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        position: relative;
+        transition: background-color .1s;
+    }
+
+    .objektView.view3dActive {
+        background-color: #000000;
     }
 
     .objektHeader, .objektButtons {
@@ -410,6 +424,29 @@
 
     .objektTooltip img {
         height: 20px;
+    }
+
+    .view3dActive .objektHeader {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .view3dActive .objektButtons {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+    }
+
+    .view3d {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        animation: fade-in .1s;
     }
 
     .objektPreview {
@@ -490,11 +527,15 @@
         border: none;
         padding: 0;
         cursor: pointer;
-        transition: transform .1s;
+        transition: transform .1s, background-color .1s;
     }
 
     .objektButtons button:active {
         transform: scale(.95);
+    }
+
+    .view3dActive .view3dButton {
+        background-color: var(--accent-color);
     }
 
     .closeButton {
