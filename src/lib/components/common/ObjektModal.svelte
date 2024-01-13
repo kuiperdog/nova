@@ -757,6 +757,7 @@
 
         .objektView {
             height: calc(100vh - 87.5px);
+            max-height: calc((100vw - 60px) * 2230/1083);
         }
 
         .detailView {
