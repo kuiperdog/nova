@@ -2,13 +2,14 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
     import { Cosmo, Polygon } from '$lib/data/apis';
-    import { Contract, formatEther, hexlify } from 'ethers';
+    import { Contract, formatEther } from 'ethers';
     import { MulticallProvider } from '@ethers-ext/provider-multicall';
     import { flip } from 'svelte/animate';
     import ArtistSelector from '$lib/components/common/ArtistSelector.svelte';
     import Votes from './Votes.svelte';
     import Graph from './Graph.svelte';
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
+    import { getAssets } from '$lib/data/assets';
 
     let gravity: Cosmo.Gravity | undefined;
     let poll: Cosmo.PollDetail | undefined;
@@ -19,6 +20,7 @@
     let countdown = -1;
     let revealedVotes: number;
     let totalVotes: number;
+    let totalComo: number;
     let votesPerCandidates: number[];
 
     let _params: any;
@@ -75,12 +77,9 @@
         const res = await fetch(`${Cosmo.URL}/gravity/v3/${gravity?.artist}/gravity/${gravity?.id}/polls/${id}`);
         const pollDetail: Cosmo.PollDetail = (await res.json()).pollDetail;
 
-        if (contract)
-            contract.removeAllListeners();
-
         contract = new Contract(artist!.contracts.Governor, Polygon.ABI.Governor, Polygon.RPC);
 
-        pollId = pollDetail.pollIdOnChain || pollDetail.id
+        pollId = pollDetail.pollIdOnChain || pollDetail.id;
         const candidates = await contract.candidates(pollId);
         if (candidates.toString() !== pollDetail.choices.map(c => c.id).toString())
             pollId -= 1;
@@ -93,36 +92,34 @@
         ]);
         revealedVotes = Number(pollData.revealedVotes);
         totalVotes = Number(total);
+        totalComo = Number(formatEther(pollData.totalVotedCOMO));
         votesPerCandidates = votes;
         
-        if (Date.parse(pollDetail.endDate) > Date.now()) {
-            interval = window.setInterval(() => {
-                if (Date.parse(pollDetail.endDate) > Date.now())
+        if (Date.parse(pollDetail.endDate) > Date.now() || revealedVotes < totalVotes) {
+            interval = window.setInterval(async () => {
+                if (Date.parse(pollDetail.endDate) > Date.now()) {
                     countdown = Date.parse(pollDetail.endDate) - Date.now();
-                else
-                    startCount();
+                    const [ pollData, total ] = await Promise.all([
+                        multicall.polls(pollId),
+                        multicall.totalVotes(pollId)
+                    ]);
+                    totalComo = Number(formatEther(pollData.totalVotedCOMO));
+                    totalVotes = Number(total);
+                } else if (totalVotes === revealedVotes) {
+                    window.clearInterval(interval);
+                } else {
+                    countdown = -1;
+                    const [ pollData, votes ] = await Promise.all([
+                        multicall.polls(pollId),
+                        multicall.votesPerCandidates(pollId)
+                    ]);
+                    revealedVotes = Number(pollData.revealedVotes);
+                    votesPerCandidates = votes;
+                }
             }, 1000);
-            countdown = Date.parse(pollDetail.endDate) - Date.now();
-        } else if (revealedVotes < totalVotes) {
-            startCount();
         }
 
         poll = pollDetail;
-    }
-
-    function startCount() {
-        countdown = -1;
-        window.clearInterval(interval);
-
-        contract.on(contract.filters.Revealed(pollId), async (data) => {
-            revealedVotes = Number(data.args.revealed);
-            votesPerCandidates = await contract.votesPerCandidates(pollId);
-
-            if (revealedVotes === totalVotes)
-                contract.off(contract.filters.Revealed);
-        }).catch((err) => {
-            console.warn(`Error polling Revealed event: ${err}`);
-        });
     }
 
     function slotChoiceComo(slotIndex: number, choiceId: string): number {
@@ -258,9 +255,17 @@
         {/if}
     </div>
     <div class="sidebar">
-        {#if poll}
+        {#if poll && artist}
+            <div class="item total">
+                <b>Total COMO:</b>
+                {#if totalComo !== undefined}
+                    <p>{totalComo.toLocaleString('en-US')}</p>
+                    <img src={getAssets(artist).como} alt="COMO">
+                {/if}
+            </div>
             <Votes voteStart={Date.parse(poll.startDate)} voteEnd={Date.parse(poll.endDate)} {pollId}/>
         {:else}
+            <div class="itemPlaceholder"></div>
             <div class="itemPlaceholder" style:flex="1"></div>
         {/if}
     </div>
@@ -487,6 +492,23 @@
         height: 100%;
         background-color: var(--accent-color);
         transition: width 0.1s;
+    }
+
+    .item.total {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        height: 40px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .item.total b {
+        flex: 1;
+    }
+
+    .item.total img {
+        height: 20px;
     }
 
     .item,
