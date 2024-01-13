@@ -114,8 +114,8 @@
 
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div bind:this={view}
-    on:mousedown={(e) => dragStart(e)} on:touchstart={(e) => dragStart(e.touches[0])}
-    on:mousemove={(e) => drag(e)} on:touchmove={(e) => drag(e.touches[0])}>
+    on:mousedown={(e) => dragStart(e)} on:touchstart={(e) => { dragStart(e.touches[0]); e.preventDefault(); }}
+    on:mousemove={(e) => drag(e)} on:touchmove={(e) => { drag(e.touches[0]); e.preventDefault(); }}>
 </div>
 
 <style>
