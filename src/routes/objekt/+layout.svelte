@@ -165,7 +165,7 @@
         width: 60px;
         height: 60px;
         position: sticky;
-        bottom: 25px;
+        top: calc(100% - 85px);
         left: calc(100% - 85px);
         border-radius: 30px;
         background-color: var(--accent-color);
