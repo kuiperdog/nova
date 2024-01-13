@@ -1,0 +1,16 @@
+{
+    "short_name": "Nova",
+    "name": "Nova",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#08090A",
+    "theme_color": "#08090A",
+    "description": "Explore the cosmos",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}
