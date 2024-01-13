@@ -422,6 +422,7 @@
         padding: 20px;
         padding-top: 40px;
         width: 100%;
+        min-height: 100%;
     }
 
     .header {

@@ -3,9 +3,11 @@
     import { page } from '$app/stores';
     import ObjektGrid from '$lib/components/common/ObjektGrid.svelte';
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
+    import ObjektScanner from '$lib/components/common/ObjektScanner.svelte';
     import { Subsquid, Cosmo } from '$lib/data/apis';
     import { likes } from '$lib/data/likes';
     import copy_icon from '$lib/assets/icons/copy.svg';
+    import camera_icon from '$lib/assets/icons/camera.svg';
 
     let total: number | null = null;
     let params = $page.url.searchParams;
@@ -147,25 +149,37 @@
             return `${m[0].member}: ` + m.map(c => `${c.season.slice(0, 1)}${c.number.slice(0, 3)}`).join(', ');
         }).join('\n'));
     }
+
+    let scanning = false;
 </script>
 
 <ObjektGrid {load} {total}/>
 
-{#if params.has('liked') && total}
-    <button class="copy" on:click={() => copyLikes()}>
-        <img src={copy_icon} alt="Copy">
+{#if params.has('liked')}
+    {#if total}
+    <button on:click={() => copyLikes()}>
+        <img src={copy_icon} alt="Copy" class="copy">
+    </button>
+    {/if}
+{:else if /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)}
+    <button on:click={() => scanning = true}>
+        <img src={camera_icon} alt="Scan">
     </button>
 {/if}
 
 <slot/>
 
+{#if scanning}
+    <ObjektScanner bind:scanning/>
+{/if}
+
 
 <style>
-    .copy {
+    button {
         width: 60px;
         height: 60px;
         position: sticky;
-        top: calc(100% - 85px);
+        bottom: 25px;
         left: calc(100% - 85px);
         border-radius: 30px;
         background-color: var(--accent-color);
@@ -176,16 +190,19 @@
         animation: fade-in .1s;
     }
 
-    .copy img {
+    button img {
         height: 100%;
-        filter: brightness(500%);
     }
 
-    .copy:hover {
+    button:hover {
         filter: brightness(110%);
     }
 
-    .copy:active {
+    button:active {
         transform: scale(0.95);
+    }
+
+    .copy {
+        filter: brightness(500%);
     }
 </style>
