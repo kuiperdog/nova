@@ -99,9 +99,10 @@
     nav {
         position: fixed;
         top: 0;
-        height: 50px;
+        height: calc(50px + env(safe-area-inset-top));
         width: 100%;
         padding: 0 20px;
+        padding-top: env(safe-area-inset-top);
         z-index: var(--nav-z-index);
         background-color: var(--background-semitransparent);
         backdrop-filter: blur(var(--blur-radius));
@@ -112,7 +113,7 @@
     }
 
     main {
-        padding-top: 50px;
+        padding-top: calc(50px + env(safe-area-inset-top));
         max-width: 1120px;
         width: 100%;
         margin: 0 auto;
@@ -121,10 +122,10 @@
 
     .blur {
         position: fixed;
-        top: 50px;
+        top: calc(50px + env(safe-area-inset-top));
         left: 0;
         width: 100%;
-        height: calc(100% - 50px);
+        height: calc(100% - 50px - env(safe-area-inset-top));
         z-index: var(--nav-z-index);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);

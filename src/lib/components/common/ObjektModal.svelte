@@ -365,7 +365,7 @@
         top: 50px;
         left: 0;
         width: 100%;
-        height: calc(100% - 50px);
+        height: calc(100% - 50px - env(safe-area-inset-top));
         z-index: var(--nav-z-index);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
