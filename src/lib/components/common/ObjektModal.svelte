@@ -362,7 +362,7 @@
 <style>
     .modalBackground {
         position: fixed;
-        top: 50px;
+        top: calc(50px + env(safe-area-inset-top));
         left: 0;
         width: 100%;
         height: calc(100% - 50px - env(safe-area-inset-top));
