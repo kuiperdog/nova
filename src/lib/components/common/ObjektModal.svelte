@@ -87,6 +87,20 @@
             goto('/objekt');
     }
 
+    function find() {
+        if (!nextSerial)
+            return;
+
+        pushState(`/objekt/${collection.id}/${nextSerial}`, {
+            collection: collection,
+            objekt: { ...Subsquid.Objekt, serial: nextSerial },
+            previous: $page.state.previous
+        });
+
+        if (!$page.state.previous)
+            objekt = { ...Subsquid.Objekt, serial: nextSerial };
+    }
+
     $: {
         if ($page.state.objekt && objekt && objekt.minted === 0) {
             objekt = { ...Subsquid.Objekt, serial: $page.state.objekt.serial, minted: 1 };
@@ -262,8 +276,7 @@
                 {:else}
                     <div class="totalSkeleton"></div>
                 {/if}
-                <button class="findButton" bind:this={findBtn} on:click={() => { if (nextSerial) pushState(`/objekt/${collection.id}/${nextSerial}`,
-                    {collection: collection, objekt: { ...Subsquid.Objekt, serial: nextSerial }, previous: $page.state.previous}) }}>
+                <button class="findButton" bind:this={findBtn} on:click={() => find()}>
                     <img src={find_icon} alt="Find">
                     Find
                 </button>
