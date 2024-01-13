@@ -2,7 +2,7 @@
     import '$lib/assets/styles/base.css';
     import { tabs } from '$lib/data/tabs';
     import { page } from '$app/stores';
-    import { goto } from '$app/navigation';
+    import { goto, onNavigate } from '$app/navigation';
     import logo from '$lib/assets/images/logo.svg';
     import nav_expand_icon from '$lib/assets/icons/nav_expand.svg';
     import find_icon from '$lib/assets/icons/find.svg';
@@ -15,6 +15,10 @@
     let navExpanded = false;
     let searchExpanded = false;
     let settingsOpen = false;
+    
+    onNavigate(() => {
+        searchExpanded = settingsOpen = false;
+    });
 </script>
 
 <svelte:window bind:innerWidth/>
