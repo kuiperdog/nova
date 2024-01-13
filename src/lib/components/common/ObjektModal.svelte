@@ -157,7 +157,7 @@
 
 <svelte:head>
     {#key $page.route}
-        <title>Nova{collection ? '| ' + Subsquid.formatObjekt(collection) : ''}</title>
+        <title>Nova{collection ? ' | ' + Subsquid.formatObjekt(collection) : ''}</title>
     {/key}
 </svelte:head>
 
