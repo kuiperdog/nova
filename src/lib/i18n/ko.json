@@ -82,7 +82,7 @@
             "class": "클래스:",
             "collection": "컬렉션:",
             "serial": "일련번호:",
-            "copies": "{count} 복사",
+            "copies": "{count} 발행됨",
             "find": "찾기",
             "owner": "소유자:",
             "minted": "제작일:",
