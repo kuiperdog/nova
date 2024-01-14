@@ -85,7 +85,7 @@
             "copies": "{count} 복사",
             "find": "찾기",
             "owner": "소유자:",
-            "age": "나이:",
+            "minted": "제작일:",
             "sendable": "전송 가능:",
             "history": "이력",
             "transfers": "{count} 회 전송",

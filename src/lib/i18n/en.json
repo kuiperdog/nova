@@ -85,7 +85,7 @@
             "copies": "{count} copies",
             "find": "Find",
             "owner": "Owner:",
-            "age": "Age:",
+            "minted": "Minted:",
             "sendable": "Sendable:",
             "history": "History",
             "transfers": "{count} transfers",

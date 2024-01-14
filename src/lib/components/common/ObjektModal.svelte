@@ -234,7 +234,7 @@
                     </div>
                     <hr>
                     <div>
-                        <b>{$t('objekt.details.member')}:</b>
+                        <b>{$t('objekt.details.member')}</b>
                         <div class="profile">
                             {#if artists && collection.member}
                             {@const member = artists.find(a => a.name === collection.artists[0])?.members.find(m => m.name === collection.member)}
@@ -273,7 +273,7 @@
                     bind:value={nextSerial} on:keydown={(e) => { if (e.key === 'Enter') findBtn.click() }}>
                 <p class="totalSlash">/</p>
                 {#if total}
-                    <p>{$t('objekt.details.copies'), { values: { count: $number(total) } }}</p>
+                    <p>{$t('objekt.details.copies', { values: { count: $number(total) }})}</p>
                 {:else}
                     <div class="totalSkeleton"></div>
                 {/if}
@@ -297,7 +297,7 @@
                         <hr>
                         <div class="objektInfo">
                             <div>
-                                <b>{$t('objekt.details.age')}</b>
+                                <b>{$t('objekt.details.minted')}</b>
                                 {#if objektAge < 60}
                                     <p>{$t('general.seconds_past', { values: { seconds: Math.floor(objektAge) } })}</p>
                                 {:else if objektAge < 3600}
