@@ -145,7 +145,7 @@
     .votes, .countdown {
         background-color: var(--item-color);
         border-radius: 20px;
-        flex: 1;
+        flex: 2;
         overflow: scroll;
         max-height: 90vh;
     }

@@ -8,12 +8,14 @@
     import ArtistSelector from '$lib/components/common/ArtistSelector.svelte';
     import Votes from './Votes.svelte';
     import Graph from './Graph.svelte';
+    import History from './History.svelte';
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
     import { getAssets } from '$lib/data/assets';
 
     let gravity: Cosmo.Gravity | undefined;
     let poll: Cosmo.PollDetail | undefined;
     let artist: Cosmo.Artist | undefined = undefined;
+    let gravityList: Cosmo.Gravity[] | undefined = undefined;
     let contract: Contract;
     let pollId: number;
     let interval: number;
@@ -28,7 +30,7 @@
         if ($page.params !== _params) {
             if (!_params || $page.params.id !== _params.id || $page.params.artist !== _params.artist) {
                 if (artist && artist.name !== $page.params.artist)
-                    artist = undefined;
+                    artist = gravityList = undefined;
                 gravity = undefined;
                 poll = undefined;
                 getGravity();
@@ -47,8 +49,12 @@
 
     async function getGravity() {
         if ($page.params.id) {
-            const res = await fetch(`${Cosmo.URL}/gravity/v3/${$page.params.artist}/gravity/${$page.params.id}`);
-            gravity = (await res.json()).gravity;
+            if (gravityList && gravityList.find(g => g.id === Number($page.params.id))) {
+                gravity = gravityList.find(g => g.id === Number($page.params.id));
+            } else {
+                const res = await fetch(`${Cosmo.URL}/gravity/v3/${$page.params.artist}/gravity/${$page.params.id}`);
+                gravity = (await res.json()).gravity;
+            }
         } else {
             const res = await fetch(`${Cosmo.URL}/gravity/v3/${$page.params.artist || ''}`);
             const gravities = await res.json() as { 
@@ -63,6 +69,12 @@
                 gravity = gravities.upcoming.at(-1);
             else
                 gravity = gravities.past[0];
+
+            gravityList = [
+                ...gravities.upcoming,
+                ...gravities.ongoing,
+                ...gravities.past
+            ].filter(g => g.artist === gravity?.artist);
         }
 
         artist = (await Cosmo.artists()).find(a => a.name === gravity?.artist);
@@ -81,7 +93,7 @@
 
         pollId = pollDetail.pollIdOnChain || pollDetail.id;
         const candidates = await contract.candidates(pollId);
-        if (candidates.toString() !== pollDetail.choices.map(c => c.id).toString())
+        if (candidates.toString().replaceAll('\b', '') !== pollDetail.choices.map(c => c.id).toString())
             pollId -= 1;
 
         const multicall = new Contract(artist!.contracts.Governor, Polygon.ABI.Governor, new MulticallProvider(Polygon.RPC));
@@ -264,6 +276,7 @@
                 {/if}
             </div>
             <Votes voteStart={Date.parse(poll.startDate)} contract={contract.target.toString()} {poll} {pollId} {artist}/>
+            <History bind:gravities={gravityList} {artist}/>
         {:else}
             <div class="itemPlaceholder"></div>
             <div class="itemPlaceholder" style:flex="1"></div>
@@ -279,7 +292,8 @@
 
     .main, .sidebar {
         display: flex;
-        padding: 40px 20px;
+        padding: 20px;
+        padding-top: 40px;
         gap: 20px;
         flex-direction: column;
         height: 100%;
@@ -389,10 +403,6 @@
     .gravityType.solo-gravity {
         background-color: #c3fe94;
         color: #1d510b;
-    }
-
-    .history {
-        margin-left: auto;
     }
 
     .item, .itemPlaceholder {
