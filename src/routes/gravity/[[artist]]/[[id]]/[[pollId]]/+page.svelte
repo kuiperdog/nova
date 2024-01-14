@@ -85,7 +85,9 @@
         countdown = -1;
         window.clearInterval(interval);
 
-        const id = $page.params.pollId || (gravity?.polls.find(p => !p.finalized) || gravity?.polls.at(-1))?.id;
+        const sortedPolls = gravity?.polls.sort((a, b) => Date.parse(a.startDate) - Date.parse(b.startDate));
+        console.log(sortedPolls);
+        const id = $page.params.pollId || (gravity?.polls.find(p => !p.finalized) || sortedPolls?.at(-1))?.id;
         const res = await fetch(`${Cosmo.URL}/gravity/v3/${gravity?.artist}/gravity/${gravity?.id}/polls/${id}`);
         const pollDetail: Cosmo.PollDetail = (await res.json()).pollDetail;
 
@@ -281,6 +283,7 @@
             <History bind:gravities={gravityList} {artist}/>
         {:else}
             <div class="itemPlaceholder"></div>
+            <div class="itemPlaceholder" style:flex="2"></div>
             <div class="itemPlaceholder" style:flex="1"></div>
         {/if}
     </div>
