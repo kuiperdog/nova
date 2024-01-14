@@ -189,6 +189,8 @@
         margin-top: 5px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        gap: 20px;
     }
 
     .vote a {
