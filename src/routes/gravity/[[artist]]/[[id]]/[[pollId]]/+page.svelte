@@ -263,7 +263,7 @@
                     <img src={getAssets(artist).como} alt="COMO">
                 {/if}
             </div>
-            <Votes voteStart={Date.parse(poll.startDate)} voteEnd={Date.parse(poll.endDate)} {pollId}/>
+            <Votes voteStart={Date.parse(poll.startDate)} contract={contract.target.toString()} {poll} {pollId} {artist}/>
         {:else}
             <div class="itemPlaceholder"></div>
             <div class="itemPlaceholder" style:flex="1"></div>
