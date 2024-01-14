@@ -11,6 +11,7 @@
     import History from './History.svelte';
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
     import { getAssets } from '$lib/data/assets';
+    import { t } from 'svelte-i18n';
 
     let gravity: Cosmo.Gravity | undefined;
     let poll: Cosmo.PollDetail | undefined;
@@ -209,7 +210,7 @@
                     {#if gravity && gravity.bannerImageUrl}
                         <img src={gravity.bannerImageUrl} alt={gravity.title}>
                     {/if}
-                    <p>Counting will start in</p>
+                    <p>{$t('gravity.counting_countdown')}</p>
                     <h3>{String(Math.floor((countdown % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))).padStart(2, '0') 
                         + ':' + String(Math.floor((countdown % (60 * 60 * 1000)) / (60 * 1000))).padStart(2, '0')
                         + ':' + String(Math.floor((countdown % (60 * 1000)) / 1000)).padStart(2, '0')}</h3>
@@ -273,7 +274,7 @@
     <div class="sidebar">
         {#if poll && artist}
             <div class="item total">
-                <b>Total COMO:</b>
+                <b>{$t('gravity.totalcomo')}</b>
                 {#if totalComo !== undefined}
                     <p>{totalComo.toLocaleString('en-US')}</p>
                     <img src={getAssets(artist).como} alt="COMO">

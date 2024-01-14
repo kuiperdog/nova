@@ -1,12 +1,14 @@
 <script lang="ts">
+    import { t, number } from 'svelte-i18n';
+
     export let data: any;
 </script>
 
 <div class="widget">
     <div class="header">
-        <b>Objekt Supply</b>
+        <b>{$t('widget.objektsupply.title')}</b>
         {#if data && data.data}
-            <p>{ data.data.objektsConnection.totalCount.toLocaleString('en-US') } total</p>
+            <p>{$t('widget.objektsupply.total', { values: { number: $number(data.data.objektsConnection.totalCount) } })}</p>
         {:else}
             <div class="textPlaceholder" style:width="100px"></div>
         {/if}
@@ -31,22 +33,18 @@
     <hr>
     <div class="details">
         <div>
-            <b>This Week:</b>
+            <b>{$t('widget.objektsupply.weekly_supply')}</b>
             {#if data && data.data}
-                <p>
-                    { Object.keys(data.data).filter(k => k.startsWith('day')).reduce((acc, d) => acc + data.data[d].totalCount, 0).toLocaleString('en-US') }
-                </p>
+                <p>{$number(Object.keys(data.data).filter(k => k.startsWith('day')).reduce((acc, d) => acc + data.data[d].totalCount, 0))}</p>
             {:else}
                 <div class="textPlaceholder" style:width="50px"></div>
             {/if}
         </div>
         <hr>
         <div>
-            <b>Today:</b>
+            <b>{$t('widget.objektsupply.daily_supply')}</b>
             {#if data && data.data}
-                <p>
-                    { data.data.day7.totalCount.toLocaleString('en-US') }
-                </p>
+                <p>{$number(data.data.day7.totalCount)}</p>
             {:else}
                 <div class="textPlaceholder" style:width="40px"></div>
             {/if}

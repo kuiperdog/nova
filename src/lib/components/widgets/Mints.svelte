@@ -2,14 +2,15 @@
     import { Subsquid } from '$lib/data/apis';
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
+    import { t } from 'svelte-i18n';
 
     export let data: any;
 </script>
 
 <div class="widget">
     <div class="header">
-        <b>Mints</b>
-        <p>Showing 10 latest</p>
+        <b>{$t('widget.mints.title')}</b>
+        <p>{$t('widget.mints.subtitle')}</p>
     </div>
     <hr>
     {#if data && data.data}
@@ -21,11 +22,11 @@
                     { Subsquid.formatObjekt(edge.node.collection, edge.node) }
                 </button>
                 {#if objektAge < 60}
-                    <p>{Math.floor(objektAge)} seconds ago</p>
+                    <p>{$t('general.seconds_past', { values: { seconds: Math.floor(objektAge) } })}</p>
                 {:else if objektAge < 3600}
-                    <p>{Math.floor(objektAge / 60)} minutes ago</p>
+                    <p>{$t('general.minutes_past', { values: { minutes: Math.floor(objektAge / 60) } })}</p>
                 {:else}
-                    <p>{Math.floor(objektAge / 3600)} hours ago</p>
+                    <p>{$t('general.hours_past', { values: { hours: Math.floor(objektAge / 3600) } })}</p>
                 {/if}
             </div>
             {#if i < 9}

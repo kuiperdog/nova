@@ -2,6 +2,7 @@
     import { Subsquid, Cosmo } from '$lib/data/apis';
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
+    import { t } from 'svelte-i18n';
 
     export let data: any;
     let users: Cosmo.User[];
@@ -22,14 +23,14 @@
 
 <div class="widget">
     <div class="header">
-        <b>Transfers</b>
-        <p>Showing 5 latest</p>
+        <b>{$t('widget.transfers.title')}</b>
+        <p>{$t('widget.transfers.subtitle')}</p>
     </div>
     <hr>
     <div class="header labels">
-        <p>From</p>
+        <p>{$t('widget.transfers.sender')}</p>
         <div class="spacer"></div>
-        <p>To</p>
+        <p>{$t('widget.transfers.receiver')}</p>
     </div>
     <hr>
     {#if data && data.data && users}
@@ -56,11 +57,11 @@
                     </button>
                     <div class="spacer"></div>
                     {#if objektAge < 60}
-                        <p>{Math.floor(objektAge)} seconds ago</p>
+                        <p>{$t('general.seconds_past', { values: { seconds: Math.floor(objektAge) } })}</p>
                     {:else if objektAge < 3600}
-                        <p>{Math.floor(objektAge / 60)} minutes ago</p>
+                        <p>{$t('general.minutes_past', { values: { minutes: Math.floor(objektAge / 60) } })}</p>
                     {:else}
-                        <p>{Math.floor(objektAge / 3600)} hours ago</p>
+                        <p>{$t('general.hours_past', { values: { hours: Math.floor(objektAge / 3600) } })}</p>
                     {/if}
                 </div>
             </div>

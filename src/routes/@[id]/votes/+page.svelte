@@ -4,6 +4,7 @@
     import { Cosmo, Subsquid } from "$lib/data/apis";
     import { formatEther } from "ethers";
     import { getAssets } from "$lib/data/assets";
+    import { t } from 'svelte-i18n';
 
     const address: Writable<string> = getContext("address");
     let gravities: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Subsquid.Vote[] })[] })[];
@@ -139,7 +140,7 @@
                             <hr class="vertical">
                             <div class="choice">
                                 {#if vote.candidate === null}
-                                    <p><i>Unrevealed</i></p>
+                                    <p><i>{$t('profile.votes.unrevealed')}</i></p>
                                 {:else}
                                     <img src={poll.choices[vote.candidate].txImageUrl} alt={poll.choices[vote.candidate].title}>
                                     <p>{ poll.choices[vote.candidate].title || pollTitle(poll, vote.candidate) }</p>

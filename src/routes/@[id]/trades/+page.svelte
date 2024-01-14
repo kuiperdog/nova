@@ -7,6 +7,7 @@
     import { Cosmo, Subsquid } from '$lib/data/apis';
     import Checkbox from '$lib/components/common/Checkbox.svelte';
     import cosmo_logo from '$lib/assets/images/cosmo.png';
+    import { t, number } from 'svelte-i18n';
 
     const limit = 25;
     const address: Writable<string> = getContext("address");
@@ -97,12 +98,12 @@
 <div class="layout">
     <div class="header">
         {#if total !== undefined}
-            <h2 class="total">{total.toLocaleString('en-US')} results</h2>
+            <h2 class="total">{$t('profile.trades.total', { values: { total: $number(total) } })}</h2>
         {:else}
             <div class="totalPlaceholder"></div>
         {/if}
         <Checkbox bind:checked={mints}>
-            Include mints
+            {$t('profile.trades.showmints')}
         </Checkbox>
     </div>
     <div class="items">
@@ -122,11 +123,11 @@
                     <div class="details">
                         <p class="type">
                             {#if item.from === ZeroAddress}
-                                <span class="chip mint">MINT</span>
+                                <span class="chip mint">{$t('profile.trades.chip.mint')}</span>
                             {:else if item.to === $address}
-                                <span class="chip from">FROM</span>
+                                <span class="chip from">{$t('profile.trades.chip.from')}</span>
                             {:else}
-                                <span class="chip to">TO</span>
+                                <span class="chip to">{$t('profile.trades.chip.to')}</span>
                             {/if}
                         </p>
                         {#if user}
@@ -266,7 +267,9 @@
     }
 
     .tradePlaceholder {
-        width: 510px;
+        width: 100%;
+        max-width: 530px;
+        margin: 0 auto;
         height: 60px;
         border-radius: 10px;
     }

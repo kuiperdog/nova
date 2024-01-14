@@ -1,5 +1,6 @@
 <script lang="ts">
     import { Cosmo } from '$lib/data/apis';
+    import { t } from 'svelte-i18n';
 
     export let artist: Cosmo.Artist;
     export let gravities: Cosmo.Gravity[] | undefined = undefined;
@@ -19,9 +20,9 @@
 
 <div class="history">
     <div class="header">
-        <b>History</b>
+        <b>{$t('gravity.history.title')}</b>
         {#if gravities}
-            <p>{ gravities.length } gravities</p>
+            <p>{$t('gravity.history.subtitle', { values: { count: gravities.length } })}</p>
         {:else}
             <div class="placeholder" style:Width="80px"></div>
         {/if}

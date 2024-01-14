@@ -4,12 +4,13 @@
     import status_warning_icon from "$lib/assets/icons/status_warning.svg";
     import status_errror_icon from "$lib/assets/icons/status_error.svg";
     import { formatUnits } from "ethers";
+    import { t } from 'svelte-i18n';
 
     export let data: any;
     let cosmo: string;
     let polygon: string;
     let nova: string;
-    let message: string = 'All Systems Go';
+    let message: string = $t('widget.status.no_errors');
     let gas: number;
 
     async function checkCosmo() {
@@ -21,7 +22,7 @@
             cosmo = status_ok_icon;
         } catch {
             cosmo = status_errror_icon;
-            message = 'Cosmo Unreachable';
+            message = $t('widget.status.cosmo_unreachable');
         }
     }
 
@@ -32,25 +33,25 @@
 
             if (gas > 400) {
                 polygon = status_warning_icon;
-                message = 'Blockchain Congested';
+                message = $t('widget.status.blockchain_congested');
             } else {
                 polygon = status_ok_icon;
             }
         } catch {
             polygon = status_errror_icon;
-            message = 'Blockchain Unreachable';
+            message = $t('widget.status.blockchain_unreachable');
         }
     }
 
     $: if (data) {
         if (!data.data) {
             nova = status_errror_icon;
-            message = 'Database Unreachable';
+            message = $t('widget.status.db_unreachable');
         } else {
             Polygon.RPC.getBlockNumber().then(height => {
                 if (data.data.squidStatus.height < height - 3800) {
                     nova = status_warning_icon;
-                    message = 'Database Unsynced';
+                    message = $t('widget.status.db_unsynced');
                 } else {
                     nova = status_ok_icon;
                 }
@@ -64,7 +65,7 @@
 
 <div class="widget">
     <div class="header">
-        <b>System Status</b>
+        <b>{$t('widget.status.title')}</b>
         {#if cosmo && polygon && nova}
             <p>{ message }</p>
         {:else}

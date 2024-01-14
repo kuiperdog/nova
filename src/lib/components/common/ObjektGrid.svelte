@@ -8,6 +8,7 @@
     import clear_icon from '$lib/assets/icons/clear.svg';
     import sort_icon from '$lib/assets/icons/sort.svg';
     import filter_icon from '$lib/assets/icons/filter.svg';
+    import { t, number } from 'svelte-i18n';
 
     const batchSize = 30;
 
@@ -61,12 +62,12 @@
     $: columns = Math.floor(gridWidth / objektWidth);
 
     const sorts = [
-        { name: 'Newest', value: '' }, 
-        { name: 'Oldest', value: 'oldest' }, 
-        { name: 'Number', value: 'number' },
+        { name: $t('objekt.sort.newest'), value: '' }, 
+        { name: $t('objekt.sort.oldest'), value: 'oldest' }, 
+        { name: $t('objekt.sort.number'), value: 'number' },
         ...(profile ? [
-            { name: 'Minted', value: 'minted' },
-            { name: 'Serial', value: 'serial' }
+            { name: $t('objekt.sort.minted'), value: 'minted' },
+            { name: $t('objekt.sort.serial'), value: 'serial' }
         ] : [])
     ];
 
@@ -141,20 +142,20 @@
         {#if total === null}
             <div class="skeleton totalSkeleton"></div>
         {:else}
-            <h2 class="total">{total.toLocaleString('en-US')} items</h2>
+            <h2 class="total">{$t('objekt.itemcount', { values: { items: $number(total) } })}</h2>
         {/if}
         {#if gridWidth > (profile ? 1040 : 830)}
             {#if profile}
-                <Checkbox bind:checked={sendable}>Sendable Objekts only</Checkbox>
+                <Checkbox bind:checked={sendable}>{$t('objekt.filter.only_sendable')}</Checkbox>
             {/if}
-            <Checkbox bind:checked={liked}>Liked Objekts only</Checkbox>
+            <Checkbox bind:checked={liked}>{$t('objekt.filter.only_liked')}</Checkbox>
         {/if}
         <div class="sortButton">
             <button on:click={() => toggle('sortFilter')} id="sortFilterBtn" class:active={visible['sortFilter'] || $page.url.searchParams.has('sort')}>
                 {#if $page.url.searchParams.has('sort')}
                     <u>{ sorts.find(s => s.value === $page.url.searchParams.get('sort'))?.name }</u>
                 {:else}
-                    Sort
+                    {$t('objekt.sort.label')}
                 {/if}
                 <img src={sort_icon} alt="Sort">
             </button>
@@ -172,7 +173,7 @@
             {/if}
         </div>
         <button class="filterButton" on:click={() => visible['filtersPopup'] = true} class:active={[...$page.url.searchParams.keys()].filter(k => k !== 'sort').length}>
-            Filter
+            {$t('objekt.filter.label')}
             <img src={filter_icon} alt="Filter">
         </button>
     </div>
@@ -181,9 +182,9 @@
             {#if gridWidth < (profile ? 1040 : 830)}
                 <div class="checkboxes">
                     {#if profile}
-                        <Checkbox bind:checked={sendable}>Sendable Objekts only</Checkbox>
+                        <Checkbox bind:checked={sendable}>{$t('objekt.filter.only_sendable')}</Checkbox>
                     {/if}
-                    <Checkbox bind:checked={liked}>Liked Objekts only</Checkbox>
+                    <Checkbox bind:checked={liked}>{$t('objekt.filter.only_liked')}</Checkbox>
                 </div>
             {/if}
             {#if !artists}
@@ -193,15 +194,15 @@
             {:else}
                 <div class="filter">
                     {#if $page.url.searchParams.has('artist')}
-                        <p class="filterLabel">Artist</p>
+                        <p class="filterLabel">{$t('objekt.filter.artist')}</p>
                         <button class="clearFilter" on:click={() => setFilter('artist', '')}>
                             <img src={clear_icon} alt="Clear">
-                            Clear
+                            {$t('objekt.filter.clear')}
                         </button>
                     {/if}
                     <button on:click={() => toggle(`artistFilter`)} id="artistFilterBtn">
                         {#if !$page.url.searchParams.has('artist')}
-                            Artist
+                            {$t('objekt.filter.artist')}
                         {:else if artists.find(a => a.name === $page.url.searchParams.get('artist'))}
                             {@const artist = artists.find(a => a.name === $page.url.searchParams.get('artist'))}
                             <img src={artist?.logoImageUrl} alt={artist?.title}>
@@ -223,9 +224,9 @@
                                 {@const units = artist ? new Set(artist.members.reduce((acc, m) =>[...acc, ...(m.units ?? [])
                                     .filter(u => $page.url.searchParams.get('artist') !== u)], new Array()).sort()) : new Set()}
                                 <div class="filterHeader">
-                                    <button class:active={!visible['artistUnits']} on:click={() => visible['artistUnits'] = false}>Members</button>
+                                    <button class:active={!visible['artistUnits']} on:click={() => visible['artistUnits'] = false}>{$t('objekt.filter.members')}</button>
                                     {#if units.size}
-                                        <button class:active={visible['artistUnits']} on:click={() => visible['artistUnits'] = true}>Units</button>
+                                        <button class:active={visible['artistUnits']} on:click={() => visible['artistUnits'] = true}>{$t('objekt.filter.units')}</button>
                                     {/if}
                                 </div>
                                 <hr>
@@ -263,16 +264,16 @@
                     {/if}
                 </div>
                 {#each [
-                    {name: 'season', title: 'Season', options: ['Atom01', 'Binary01', 'Cream01']},
-                    {name: 'class', title: 'Class', options: ['First', 'Special', 'Welcome', 'Double', 'Zero']},
-                    {name: 'type', title: 'Type', options: ['A', 'Z']}
+                    {name: 'season', title: $t('objekt.filter.season'), options: ['Atom01', 'Binary01', 'Cream01']},
+                    {name: 'class', title: $t('objekt.filter.class'), options: ['First', 'Special', 'Welcome', 'Double', 'Zero']},
+                    {name: 'type', title: $t('objekt.filter.type'), options: ['A', 'Z']}
                 ] as filter}
                     <div class="filter">
                         {#if $page.url.searchParams.has(filter.name)}
                             <p class="filterLabel">{ filter.title }</p>
                             <button class="clearFilter" on:click={() => setFilter(filter.name, '')}>
                                 <img src={clear_icon} alt="Clear">
-                                Clear
+                                {$t('objekt.filter.clear')}
                             </button>
                         {/if}
                         <button on:click={() => toggle(`${filter.name}Filter`)} id="{filter.name}FilterBtn">
@@ -296,10 +297,10 @@
                 {/each}
                 <div class="filter">
                     {#if $page.url.searchParams.has('number') || $page.url.searchParams.has('minNumber') || $page.url.searchParams.has('maxNumber')}
-                        <p class="filterLabel">Number</p>
+                        <p class="filterLabel">{$t('objekt.filter.number')}</p>
                         <button class="clearFilter" on:click={() => clearFilters('number', ['number', 'minNumber', 'maxNumber'])}>
                             <img src={clear_icon} alt="Clear">
-                            Clear
+                            {$t('objekt.filter.clear')}
                         </button>
                     {/if}
                     <button on:click={() => toggle('numberFilter')} id="numberFilterBtn">
@@ -308,21 +309,21 @@
                         {:else if $page.url.searchParams.has('minNumber') && $page.url.searchParams.has('maxNumber')}
                             { $page.url.searchParams.get('minNumber')} - {$page.url.searchParams.get('maxNumber') }
                         {:else if $page.url.searchParams.has('minNumber')}
-                            Above { $page.url.searchParams.get('minNumber') }
+                            { $t('objekt.filter.minimum_value', { values: { value: $page.url.searchParams.get('minNumber') } }) }
                         {:else if $page.url.searchParams.has('maxNumber')}
-                            Below { $page.url.searchParams.has('maxNumber') }
+                            { $t('objekt.filter.maximum_value', { values: { value: $page.url.searchParams.get('maxNumber') } }) }
                         {:else}
-                            Number
+                            { $t('objekt.filter.number') }
                         {/if}
                     </button>
                     {#if visible['numberFilter']}
                         <div class="filterContent" bind:this={openFilter} id="numberFilter">
                             <div class="filterHeader">
                                 <button class:active={!visible['exactNumber']} on:click={() => { visible['exactNumber'] = false; clearFilters('', ['number']) }}>
-                                    Range
+                                    {$t('objekt.filter.range')}
                                 </button>
                                 <button class:active={visible['exactNumber']} on:click={() => { visible['exactNumber'] = true; clearFilters('', ['minNumber', 'maxNumber']) }}>
-                                    Exact
+                                    {$t('objekt.filter.exact')}
                                 </button>
                             </div>
                             {#if visible['exactNumber']}
@@ -333,13 +334,13 @@
                             {:else}
                                 <div class="rangeFilter">
                                     <div>
-                                        <p>From</p>
+                                        <p>{$t('objekt.filter.range_from')}</p>
                                         <input type="number" placeholder="000" size="3" min="0" maxlength="3" inputmode="numeric"
                                             bind:value={minNumber} on:blur={() => setFilter('minNumber', minNumber ? minNumber.toString() : '', false)}>
                                     </div>
                                     <p>-</p>
                                     <div>
-                                        <p>To</p>
+                                        <p>{$t('objekt.filter.range_to')}</p>
                                         <input type="number" placeholder="999" size="3" min="0" maxlength="3" inputmode="numeric"
                                             bind:value={maxNumber} on:blur={() => setFilter('maxNumber', maxNumber ? maxNumber.toString() : '', false)}>
                                     </div>
@@ -351,29 +352,29 @@
                 {#if profile}
                     <div class="filter">
                         {#if $page.url.searchParams.has('minSerial') || $page.url.searchParams.has('maxSerial')}
-                            <p class="filterLabel">Serial</p>
+                            <p class="filterLabel">{$t('objekt.filter.serial')}</p>
                             <button class="clearFilter" on:click={() => clearFilters('serial', ['minSerial', 'maxSerial'])}>
                                 <img src={clear_icon} alt="Clear">
-                                Clear
+                                {$t('objekt.filter.clear')}
                             </button>
                         {/if}
                         <button on:click={() => toggle('serialFilter')} id="serialFilterBtn">
                             {#if $page.url.searchParams.has('minSerial')}
-                                Above { Number($page.url.searchParams.get('minSerial')).toLocaleString() }
+                                { $t('objekt.filter.minimum_value', { values: { value: $page.url.searchParams.get('minSerial') } }) }
                             {:else if $page.url.searchParams.has('maxSerial')}
-                                Below { Number($page.url.searchParams.get('maxSerial')).toLocaleString() }
+                                { $t('objekt.filter.maximum_value', { values: { value: $page.url.searchParams.get('maxSerial') } }) }
                             {:else}
-                                Serial
+                                { $t('objekt.filter.serial') }
                             {/if}
                         </button>
                         {#if visible['serialFilter']}
                             <div class="filterContent" bind:this={openFilter} id="serialFilter">
                                 <div class="filterHeader">
                                     <button class:active={visible['minSerial']} on:click={() => { visible['minSerial'] = true; clearFilters('', ['maxSerial']) }}>
-                                        Minimum
+                                        {$t('objekt.filter.minimum')}
                                     </button>
                                     <button class:active={!visible['minSerial']} on:click={() => { visible['minSerial'] = false; clearFilters('', ['minSerial']) }}>
-                                        Maximum
+                                        {$t('objekt.filter.maximum')}
                                     </button>
                                 </div>
                                 <div class="numberFilter">
@@ -391,7 +392,7 @@
                 {/if}
                 <div class="doneBtn">
                     <button on:click={() => visible['filtersPopup'] = false}>
-                        Done
+                        {$t('objekt.filter.done')}
                     </button>
                 </div>
             {/if}

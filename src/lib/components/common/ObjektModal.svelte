@@ -15,6 +15,7 @@
     import qr_image from "$lib/assets/images/qr.png";
 	import { likes } from "$lib/data/likes";
     import Objekt3DView from "./Objekt3DView.svelte";
+    import { t, number } from 'svelte-i18n';
 
     export let collection: Subsquid.Collection;
     export let objekt: Subsquid.Objekt | null = null;
@@ -166,8 +167,8 @@
         <div class="objektView" class:view3dActive={view3d}>
             <div class="objektHeader">
                 <div class="objektTooltip">
-                    <img src={tap_icon} alt="Click Objekt to flip">
-                    <p>Click Objekt to flip</p>
+                    <img src={tap_icon} alt="Click">
+                    <p>{$t('objekt.details.previewtooltip')}</p>
                 </div>
             </div>
             {#if view3d}
@@ -221,7 +222,7 @@
             <div>
                 <div class="collectionDetails">
                     <div>
-                        <b>Artist:</b>
+                        <b>{$t('objekt.details.artist')}</b>
                         {#if artists && collection.artists[0]}
                             <div class="profile">
                                 <img class="profileImage" src={artists.find(a => a.name === collection.artists[0])?.logoImageUrl} alt={collection.artists[0]}>
@@ -233,7 +234,7 @@
                     </div>
                     <hr>
                     <div>
-                        <b>Member:</b>
+                        <b>{$t('objekt.details.member')}:</b>
                         <div class="profile">
                             {#if artists && collection.member}
                             {@const member = artists.find(a => a.name === collection.artists[0])?.members.find(m => m.name === collection.member)}
@@ -250,35 +251,35 @@
                 <hr>
                 <div class="collectionDetails">
                     <div>
-                        <b>Season:</b>
+                        <b>{$t('objekt.details.season')}</b>
                         <p>{collection.season}</p>
                     </div>
                     <hr>
                     <div>
-                        <b>Class:</b>
+                        <b>{$t('objekt.details.class')}</b>
                         <p>{collection.class}</p>
                     </div>
                     <hr>
                     <div>
-                        <b>Collection:</b>
+                        <b>{$t('objekt.details.collection')}</b>
                         <p>{collection.number}</p>
                     </div>
                 </div>
             </div>
             <div class="serialSelector">
-                <b>Serial:</b>
+                <b>{$t('objekt.details.serial')}</b>
                 <p class="serial">#</p>
                 <input type="number" placeholder="00000" size="5" min="0" maxlength="5" inputmode="numeric"
                     bind:value={nextSerial} on:keydown={(e) => { if (e.key === 'Enter') findBtn.click() }}>
                 <p class="totalSlash">/</p>
                 {#if total}
-                    <p>{total.toLocaleString('en-US')} copies</p>
+                    <p>{$t('objekt.details.copies'), { values: { count: $number(total) } }}</p>
                 {:else}
                     <div class="totalSkeleton"></div>
                 {/if}
                 <button class="findButton" bind:this={findBtn} on:click={() => find()}>
                     <img src={find_icon} alt="Find">
-                    Find
+                    {$t('objekt.details.find')}
                 </button>
             </div>
             {#if objekt}
@@ -287,7 +288,7 @@
                     {@const objektAge = (Date.now() - objekt.minted) / 1000}
                     <div class="objektDetails">
                         <div class="objektOwner">
-                            <b>Owner:</b>
+                            <b>{$t('objekt.details.owner')}</b>
                             <a class="profile" href="/@{owner ? owner.nickname : objekt.owner}">
                                 <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt={objekt.owner}>
                                 { owner ? owner.nickname : objekt.owner.slice(0, 6) + '...' + objekt.owner.slice(-4) }
@@ -296,28 +297,28 @@
                         <hr>
                         <div class="objektInfo">
                             <div>
-                                <b>Age:</b>
+                                <b>{$t('objekt.details.age')}</b>
                                 {#if objektAge < 60}
-                                    <p>{Math.floor(objektAge)} seconds</p>
+                                    <p>{$t('general.seconds_past', { values: { seconds: Math.floor(objektAge) } })}</p>
                                 {:else if objektAge < 3600}
-                                    <p>{Math.floor(objektAge / 60)} minutes</p>
+                                    <p>{$t('general.minutes_past', { values: { minutes: Math.floor(objektAge / 60) } })}</p>
                                 {:else if objektAge < 86400}
-                                    <p>{Math.floor(objektAge / 3600)} hours</p>
+                                    <p>{$t('general.hours_past', { values: { hours: Math.floor(objektAge / 3600) } })}</p>
                                 {:else}
-                                    <p>{Math.floor(objektAge / 86400)} days</p>
+                                    <p>{$t('general.days_past', { values: { days: Math.floor(objektAge / 86400) } })}</p>
                                 {/if}
                             </div>
                             <hr>
                             <div>
-                                <b>Sendable:</b>
+                                <b>{$t('objekt.details.sendable')}</b>
                                 <img src={objekt.transferrable ? status_ok_icon : status_error_icon} alt={objekt.transferrable ? 'Yes' : 'No'}>
                             </div>
                         </div>
                     </div>
                     <div class="tradeDetails">
                         <div class="tradesHeader">
-                            <b>History</b>
-                            <p>{transfers.length} transfers</p>
+                            <b>{$t('objekt.details.history')}</b>
+                            <p>{$t('objekt.details.transfers', { values: { count: transfers.length } })}</p>
                         </div>
                         <hr>
                         {#each transfers as transfer, index}
@@ -342,7 +343,7 @@
                 {:else if objekt.minted < 0}
                     <div class="unmintedDetails">
                         <img src={status_warning_icon} alt="Unminted">
-                        <p>Objekt has not been minted yet.</p>
+                        <p>{$t('objekt.details.unminted')}</p>
                     </div>
                 {:else}
                     <div class="unmintedSkeleton">

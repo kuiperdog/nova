@@ -1,5 +1,6 @@
 <script lang="ts">
     import '$lib/assets/styles/base.css';
+    import '$lib/i18n';
     import { tabs } from '$lib/data/tabs';
     import { page } from '$app/stores';
     import { goto, onNavigate } from '$app/navigation';

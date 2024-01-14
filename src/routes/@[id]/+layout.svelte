@@ -11,6 +11,7 @@
 	import { page } from '$app/stores';
     import { writable } from 'svelte/store';
     import { setContext } from 'svelte';
+    import { t, number } from 'svelte-i18n';
 
     export let data: { id: string };
 
@@ -107,7 +108,7 @@
                 {#if profile.nickname}
                     <h1>{ profile.nickname }</h1>
                 {:else}
-                    <h1><i>ID Unknown</i></h1>
+                    <h1><i>{$t('profile.no_id')}</i></h1>
                 {/if}
                 <div class="address">
                     <p>{ profile.address.slice(0, 6) }...{ profile.address.slice(-4) }</p>
@@ -140,7 +141,7 @@
                     {#each balances as balance}
                         <div class="como">
                             <img src={getAssets(artists.find(a => a.contracts.Como.toLowerCase() === balance.contract) || artists[0]).como} alt="COMO">
-                            { Number(formatEther(balance.balance)).toLocaleString('en-US') }
+                            { $number(Number(formatEther(balance.balance))) }
                         </div>
                     {/each}
                 {:else}
@@ -151,7 +152,7 @@
             {#if joinDate}
                 <div class="joinDate">
                     <img src={date_icon} alt="Joined">
-                    <p>Joined {joinDate.toLocaleDateString()}</p>
+                    <p>{ $t('profile.joindate', { values: { date: joinDate.toLocaleDateString() } }) }</p>
                 </div>
             {:else}
                 <div class="placeholder joinDatePlaceholder"></div>
@@ -162,14 +163,14 @@
         <div class="errorContainer">
             <div class="error">
                 <img src={status_error_icon} alt="Error">
-                <p>User not found</p>
+                <p>{$t('profile.not_found')}</p>
             </div>
         </div>
     {:else if profile}
         <div class="tabs">
             <a href="/@{profile.nickname || profile.address}" class:active={$page.route.id === '/@[id]'}>Objekts</a>
-            <a href="/@{profile.nickname || profile.address}/trades" class:active={$page.route.id === '/@[id]/trades'}>Trades</a>
-            <a href="/@{profile.nickname || profile.address}/votes" class:active={$page.route.id === '/@[id]/votes'}>Votes</a>
+            <a href="/@{profile.nickname || profile.address}/trades" class:active={$page.route.id === '/@[id]/trades'}>{$t('profile.trades.title')}</a>
+            <a href="/@{profile.nickname || profile.address}/votes" class:active={$page.route.id === '/@[id]/votes'}>{$t('profile.votes.title')}</a>
             <a href="/@{profile.nickname || profile.address}/como" class:active={$page.route.id === '/@[id]/como'}>COMO</a>
         </div>
         <slot/>

@@ -4,6 +4,7 @@
     import { getAssets } from "$lib/data/assets";
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import find_icon from "$lib/assets/icons/find.svg";
+    import { t } from 'svelte-i18n';
 
     let users: Cosmo.User[] | undefined;
     let holders: Subsquid.Como[] | undefined;
@@ -43,7 +44,7 @@
 
 <div class="layout">
     <div class="title">
-        <p>Top 100 holders of</p>
+        <p>{$t('users.title')}</p>
         <ArtistSelector bind:selected/>
         <div class="como">
             {#if artist}
@@ -88,7 +89,8 @@
         <div></div>
     </div>
     <p class="hint">
-        Find users by address or ID with the <img src={find_icon} alt="Search"> <b>Search</b> bar.
+        <img src={find_icon} alt="Search">
+        {$t('users.hint')}
     </p>
 </div>
 
@@ -173,14 +175,6 @@
         align-items: center;
         flex-wrap: wrap;
         justify-content: center;
-    }
-
-    .hint img {
-        margin-left: 3px;
-    }
-
-    .hint b {
-        margin-right: 5px;
     }
 
     .placeholder {

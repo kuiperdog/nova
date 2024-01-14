@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { Subsquid } from "$lib/data/apis";
-    import { formatEther } from "ethers";
+    import { Subsquid } from '$lib/data/apis';
+    import { formatEther } from 'ethers';
+    import { t, number } from 'svelte-i18n';
 
     export let contract: string;
     export let poll: number;
@@ -55,7 +56,9 @@
         <div class="progress" style:width="{revealedVotes / totalVotes * 100}%"></div>
     </div>
     <div class="text">
-        <p>{revealedVotes.toLocaleString('en-US')}/{totalVotes.toLocaleString('en-US')} votes ({Math.round(revealedVotes / totalVotes * 100)}%)</p>
+        <p>
+            {$t('gravity.totalvotes', { values: { votes: `${$number(revealedVotes)}/${$number(totalVotes)}` } })} ({Math.round(revealedVotes / totalVotes * 100)}%)
+        </p>
     </div>
 </div>
 

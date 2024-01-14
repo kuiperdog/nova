@@ -5,6 +5,7 @@
     import { flip } from 'svelte/animate';
     import { Subsquid, Cosmo } from '$lib/data/apis';
     import { getAssets } from '$lib/data/assets';
+    import { t } from 'svelte-i18n';
 
     export let voteStart: number;
     export let contract: string;
@@ -100,7 +101,7 @@
 
 {#if countdown > -1}
     <div class="countdown">
-        <p>Voting will open in</p>
+        <p>{$t('gravity.votes.countdown')}</p>
         <h3>{String(Math.floor((countdown % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))).padStart(2, '0') 
             + ':' + String(Math.floor((countdown % (60 * 60 * 1000)) / (60 * 1000))).padStart(2, '0')
             + ':' + String(Math.floor((countdown % (60 * 1000)) / 1000)).padStart(2, '0')}</h3>
@@ -108,8 +109,8 @@
 {:else}
     <div class="votes">
         <div class="header">
-            <b>Votes</b>
-            <p>Showing top 50</p>
+            <b>{$t('gravity.votes.title')}</b>
+            <p>{$t('gravity.votes.subtitle')}</p>
         </div>
         {#if votes.length}
             {#each votes as vote, i (vote.id)}
@@ -131,7 +132,7 @@
                                 { poll.choices[vote.candidate].title || pollTitle(poll, vote.candidate) }
                             </p>
                         {:else}
-                            <i>Unrevealed</i>
+                            <i>{$t('gravity.votes.unrevealed')}</i>
                         {/if}
                     </div>
                 </div>

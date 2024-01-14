@@ -1,0 +1,139 @@
+{
+    "general": {
+        "seconds_past": "{seconds} seconds ago",
+        "minutes_past": "{minutes} minutes ago",
+        "hours_past": "{hours} hours ago",
+        "days_past": "{days} days ago"
+    },
+    "widget": {
+        "status": {
+            "title": "System Status",
+            "blockchain_congested": "Blockchain Congested",
+            "blockchain_unreachable": "Blockchain Unreachable",
+            "cosmo_unreachable": "Cosmo Unreachable",
+            "db_unsynced": "Database Unsynced",
+            "db_unreachable": "Database Unreachable",
+            "no_errors": "All Systems Go"
+        },
+        "mints": {
+            "title": "Mints",
+            "subtitle": "Showing 10 latest"
+        },
+        "objektsupply": {
+            "title": "Objekt Supply",
+            "total": "{number} total",
+            "weekly_supply": "This Week:",
+            "daily_supply": "Today:"
+        },
+        "transfers": {
+            "title": "Transfers",
+            "subtitle": "Showing 5 latest",
+            "sender": "From",
+            "receiver": "To"
+        }
+    },
+    "settings": {
+        "default_artist": "Default Artist:",
+        "language": "Language:",
+        "version": "Nova v{version} by {author}",
+        "source": "Source Code",
+        "donations": "Donate",
+        "bugs": "Bug Tracker",
+        "disclaimer": "Nova is not created by, endorsed by, or affiliated with Modhaus Inc."
+    },
+    "objekt": {
+        "itemcount": "{items} items",
+        "filter": {
+            "label": "Filter",
+            "only_liked": "Liked Objekts only",
+            "only_sendable": "Sendable Objekts only",
+            "artist": "Artist",
+            "members": "Members",
+            "units": "Units",
+            "season": "Season",
+            "class": "Class",
+            "type": "Type",
+            "number": "Number",
+            "serial": "Serial",
+            "range": "Range",
+            "exact": "Exact",
+            "range_from": "From",
+            "range_to": "To",
+            "minimum": "Minimum",
+            "maximum": "Maximum",
+            "maximum_value": "Below {value}",
+            "minimum_value": "Above {value}",
+            "clear": "Clear",
+            "done": "Done"
+        },
+        "sort": {
+            "label": "Sort",
+            "newest": "Newest",
+            "oldest": "Oldest",
+            "number": "Number",
+            "minted": "Minted",
+            "serial": "Serial"
+        },
+        "details": {
+            "previewtooltip": "Click Objekt to flip",
+            "artist": "Artist:",
+            "member": "Member:",
+            "season": "Season:",
+            "class": "Class:",
+            "collection": "Collection:",
+            "serial": "Serial:",
+            "copies": "{count} copies",
+            "find": "Find",
+            "owner": "Owner:",
+            "age": "Age:",
+            "sendable": "Sendable:",
+            "history": "History",
+            "transfers": "{count} transfers",
+            "unminted": "Objekt has not been minted yet."
+        }
+    },
+    "users": {
+        "title": "Top 100 holders of",
+        "hint": "Find users by address or ID with the search bar.",
+        "search": {
+            "placeholder": "Search users by ID or address"
+        }
+    },
+    "profile": {
+        "no_id": "ID Unknown",
+        "not_found": "User not found",
+        "joindate": "Joined {date}",
+        "trades": {
+            "title": "Trades",
+            "total": "{total} results",
+            "showmints": "Include mints",
+            "chip": {
+                "from": "FROM",
+                "to": "TO",
+                "mint": "MINT"
+            }
+        },
+        "votes": {
+            "title": "Votes",
+            "unrevealed": "Unrevealed"
+        },
+        "como": {
+            "rank": "Rank:"
+        }
+    },
+    "gravity": {
+        "totalcomo": "Total COMO:",
+        "totalvotes": "{votes} votes",
+        "counting_countdown": "Counting will begin in:",
+        "history": {
+            "title": "History",
+            "subtitle": "{count} Gravities"
+        },
+        "votes": {
+            "title": "Votes",
+            "subtitle": "Showing top 50",
+            "unrevealed": "Unrevealed",
+            "countdown": "Voting will begin in:"
+        }
+    }
+}

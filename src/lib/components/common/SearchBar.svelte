@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
     import search_icon from '$lib/assets/icons/search.svg';
 	import { page } from '$app/stores';
-	import Page from '../../../routes/+page.svelte';
+	import { t } from 'svelte-i18n';
 
     let query: string;
     let timeout: number;
@@ -65,7 +65,7 @@
 
 <div class="searchBar" bind:this={searchBar}>
     <img src={search_icon} alt="Search">
-    <input type="text" placeholder="Search users by ID or address" on:input={input} on:keypress={keypress} bind:value>
+    <input type="text" placeholder={$t('users.search.placeholder')} on:input={input} on:keypress={keypress} bind:value>
     {#if results && results.length}
         <div class="results">
             {#each results as result}

@@ -4,6 +4,7 @@
     import { getAssets } from "$lib/data/assets";
     import { type Writable } from "svelte/store";
     import { getContext } from "svelte";
+    import { t } from 'svelte-i18n';
 
     let artist: Cosmo.Artist;
     let selected: Cosmo.Artist | undefined;
@@ -57,7 +58,7 @@
         {/if}
         <p class="como">COMO</p>
         <div class="ranking">
-            <b>Rank:</b>
+            <b>{$t('profile.como.rank')}</b>
             {#if ranking}
                 <p>#{ranking.toLocaleString('en-US')}</p>
             {:else}
