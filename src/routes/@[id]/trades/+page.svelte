@@ -52,17 +52,19 @@
         const queryData = await query.json();
         if (total === undefined)
             total = queryData.data.transfersConnection.totalCount;
-        
-        const addresses = new Set(
-            queryData.data.transfersConnection.edges.reduce((acc: string[], e: { node: Subsquid.Transfer }) => {
-                return [...acc, e.node.to, e.node.from];
-            }, [])
-        );
 
-        const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${Array.from(addresses).join(',')}`);
-        const profilesData = await profiles.json();
-        
-        users = Array.from(new Set([...users, ...profilesData]));
+        if (queryData.data.transfersConnection.edges.length) {
+            const addresses = new Set(
+                queryData.data.transfersConnection.edges.reduce((acc: string[], e: { node: Subsquid.Transfer }) => {
+                    return [...acc, e.node.to, e.node.from];
+                }, [])
+            );
+
+            const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${Array.from(addresses).join(',')}`);
+            const profilesData = await profiles.json();
+            users = Array.from(new Set([...users, ...profilesData]));
+        }
+
         items = [...(items || []), ...queryData.data.transfersConnection.edges.map((e: { node: any }) => e.node)];
         loading = false;
     }
@@ -94,7 +96,7 @@
 
 <div class="layout">
     <div class="header">
-        {#if total}
+        {#if total !== undefined}
             <h2 class="total">{total.toLocaleString('en-US')} results</h2>
         {:else}
             <div class="totalPlaceholder"></div>
@@ -155,7 +157,7 @@
             {#each { length: Math.min(5, total - items.length) } as _, i}
                 <div class="tradePlaceholder" use:viewport={i} class:halfPlaceholder={Math.min(5, total - items.length) === i + 1}></div>
             {/each}
-        {:else}
+        {:else if total !== 0}
             {#each { length: limit } as _, i}
                 <div class="tradePlaceholder" class:halfPlaceholder={limit === i + 1}></div>
             {/each}
