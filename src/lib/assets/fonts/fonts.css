@@ -1,0 +1,48 @@
+@font-face {
+    font-family: 'Halvar Breitschrift';
+    font-weight: normal;
+    font-display: swap;
+    src: url('halvar_breitschrift.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Halvar Breitschrift';
+    font-weight: bold;
+    font-display: swap;
+    src: url('halvar_breitschrift_bold.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: normal;
+	font-display: swap;
+	src: url('pretendard.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: bold;
+	font-display: swap;
+	src: url('pretendard_bold.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 900;
+	font-display: swap;
+	src: url('pretendard_black.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Helvetica Neue';
+	font-weight: normal;
+	font-display: swap;
+	src: url('helvetica_neue.woff2') format('woff2');
+}
+
+@font-face {
+	font-family: 'Dot-Matrix';
+	font-weight: normal;
+	font-display: swap;
+	src: url('dot_matrix.woff2') format('woff2');
+}

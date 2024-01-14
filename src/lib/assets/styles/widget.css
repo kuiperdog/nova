@@ -1,0 +1,23 @@
+.widget {
+    break-inside: avoid;
+    border-radius: 25px;
+    background-color: var(--item-color);
+    margin-bottom: 20px;
+}
+
+.widget .header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 20px 15px;
+}
+
+.widget .header b {
+    flex: 1;
+}
+
+.widget .textPlaceholder {
+    background-color: var(--item-secondary);
+    border-radius: 5px;
+    height: 20px;
+}
