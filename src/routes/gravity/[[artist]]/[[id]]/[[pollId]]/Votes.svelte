@@ -81,6 +81,16 @@
 
         votes = newVotes;
     }
+
+    function pollTitle(poll: Cosmo.PollDetail, candidate: number) {
+        const data = poll.pollViewMetadata;
+        if (data.slots) {
+            const map = data.choiceIdToSlotChoicesMapTable![candidate];
+            return data.slots.map((slot, i) => `${slot.name}: ${data.slotChoices?.find(c => c.id === map.slotChoiceIds[i])?.alias}`).join(', ');
+        }
+        
+        return poll.choices[candidate].id;
+    }
     
     onDestroy(() => {
         client.dispose();
@@ -118,7 +128,7 @@
                         {#if vote.candidate !== null}
                             <p class="candidate">
                                 <img src={poll.choices[vote.candidate].txImageUrl} alt="Choice">
-                                { poll.choices[vote.candidate].title }
+                                { poll.choices[vote.candidate].title || pollTitle(poll, vote.candidate) }
                             </p>
                         {:else}
                             <i>Unrevealed</i>

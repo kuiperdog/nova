@@ -93,7 +93,7 @@
 
         pollId = pollDetail.pollIdOnChain || pollDetail.id;
         const candidates = await contract.candidates(pollId);
-        if (candidates.toString().replaceAll('\b', '') !== pollDetail.choices.map(c => c.id).toString())
+        if (candidates.toString().replaceAll('\b', '') !== pollDetail.choices.map(c => c.id).toString().replaceAll('\b', ''))
             pollId -= 1;
 
         const multicall = new Contract(artist!.contracts.Governor, Polygon.ABI.Governor, new MulticallProvider(Polygon.RPC));
@@ -215,7 +215,7 @@
             {:else}
                 <Graph contract={contract.target.toString().toLowerCase()} poll={pollId} {revealedVotes} {totalVotes}/>
                 <div class="item polls">
-                    {#if poll.pollViewMetadata.slots &&  poll.pollViewMetadata.slotChoices}
+                    {#if poll.pollViewMetadata.slots && poll.pollViewMetadata.slotChoices}
                         {#each poll.pollViewMetadata.slots as slot, slotIndex}
                             <div class="slot">
                                 <p class="slotTitle">
@@ -244,13 +244,15 @@
                         {/each}
                     {:else}
                         <div class="slot">
-                            {#each [...votesPerCandidates].sort((a, b) => Number(b) - Number(a)) as vote, i (poll.choices[i])}
-                            {@const percent = Math.round(Number(formatEther(vote)) / votesPerCandidates.reduce((a, b) => a + Number(formatEther(b)), 0) * 100)}
+                            {#each [...poll.choices].sort((a, b) => 
+                                Number(votesPerCandidates[poll?.choices.indexOf(b) || 0]) - Number(votesPerCandidates[poll?.choices.indexOf(a) || 0])
+                            ) as choice (choice)}
+                            {@const percent = Math.round(Number(formatEther(votesPerCandidates[poll.choices.indexOf(choice)])) / totalComo * 100)}
                                 <div class="choice" animate:flip>
                                     <div class="choiceTitle">
-                                        <img src={poll.choices[i].txImageUrl} alt={poll.choices[i].title}>
-                                        <p class="name">{poll.choices[i].title}</p>
-                                        <p>{Number(formatEther(vote)).toLocaleString('en-US')} COMO ({percent}%)</p>
+                                        <img src={choice.txImageUrl} alt={choice.title}>
+                                        <p class="name">{choice.title}</p>
+                                        <p>{Number(formatEther(votesPerCandidates[poll.choices.indexOf(choice)])).toLocaleString('en-US')} COMO ({percent}%)</p>
                                     </div>
                                     <div class="choiceBar">
                                         <div class="progress" style:width="{percent}%"/>
@@ -538,6 +540,14 @@
 
         .sidebar {
             padding-left: 10px;
+        }
+
+        .polls {
+            flex-direction: column;
+        }
+
+        .polls .slot {
+            flex: initial
         }
     }
 
