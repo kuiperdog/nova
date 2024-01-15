@@ -51,7 +51,7 @@
         } else {
             const res = await fetch(`${Cosmo.URL}/user/v1/by-nickname/${data.id}`);
             const user = await res.json();
-            if (user.profile) {
+            if (user && user.profile) {
                 address.set(user.profile.address);
                 profile = user.profile;
                 if (user.profile.nickname !== data.id)
@@ -85,11 +85,11 @@
         joinDate = new Date(Number(query.data.objekts[0].received));
     }
 
-    $: if (profile && profile.nickname.toLowerCase() !== $page.params.id.toLowerCase() && profile.address !== $page.params.id) {
+    let query: string;
+    $: if (query !== $page.params.id) {
         getProfile();
+        query = $page.params.id;
     }
-
-    getProfile();
 </script>
 
 <svelte:head>
