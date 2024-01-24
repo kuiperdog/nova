@@ -3,7 +3,7 @@ import{s as _e,b as he,e as ue,d as x,m as me,c as ee,n as K}from"../chunks/sche
                             comosConnection(orderBy: id_ASC, where: {contract_eq: "${w}", AND: {balance_gt: "${A?.balance}", OR: {balance_eq: "${A?.balance}", id_gt: "${A?.id}"}}}) {
                                 totalCount
                             }
-                            objekts(orderBy: id_ASC, where: {owner_eq: "${A?.owner}", collection_isNull: false, collection: {class_eq: "Special", artists_containsAll: "${o.name}"}}) {
+                            objekts(orderBy: id_ASC, limit: 9999, where: {owner_eq: "${A?.owner}", collection_isNull: false, collection: {class_eq: "Special", artists_containsAll: "${o.name}"}}) {
                                 minted
                             }
                         }
