@@ -50,7 +50,7 @@
                             }
                         }
                         ${!objekt.id ? `
-                            objekts(where: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}) {
+                            objekts(where: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}, limit: 1) {
                                 ${Object.keys(Subsquid.Objekt).join('\n')}
                             }
                         ` : ''}

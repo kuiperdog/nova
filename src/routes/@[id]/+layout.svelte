@@ -68,7 +68,7 @@
             body: JSON.stringify({
                 query: `
                     query {
-                        comos(orderBy: id_ASC, where: {owner_eq: "${profile?.address}"}) {
+                        comos(orderBy: id_ASC, limit: 5, where: {owner_eq: "${profile?.address}"}) {
                             ${Object.keys(Subsquid.Como).join('\n')}
                         }
                         objekts(limit: 1, orderBy: received_ASC, where: {owner_eq: "${profile?.address}"}) {

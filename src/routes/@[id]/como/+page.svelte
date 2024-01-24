@@ -30,7 +30,7 @@
                             comosConnection(orderBy: id_ASC, where: {contract_eq: "${contract}", AND: {balance_gt: "${balance?.balance}", OR: {balance_eq: "${balance?.balance}", id_gt: "${balance?.id}"}}}) {
                                 totalCount
                             }
-                            objekts(orderBy: id_ASC, where: {owner_eq: "${balance?.owner}", collection_isNull: false, collection: {class_eq: "Special", artists_containsAll: "${artist.name}"}}) {
+                            objekts(orderBy: id_ASC, limit: 9999, where: {owner_eq: "${balance?.owner}", collection_isNull: false, collection: {class_eq: "Special", artists_containsAll: "${artist.name}"}}) {
                                 minted
                             }
                         }

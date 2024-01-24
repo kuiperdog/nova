@@ -16,7 +16,7 @@
         body: JSON.stringify({
             query: `
                 query {
-                    votes(where: {contract_eq: "${contract}", poll_eq: "${poll}"}) {
+                    votes(limit: 99999, where: {contract_eq: "${contract}", poll_eq: "${poll}"}) {
                         amount
                     }
                 }
