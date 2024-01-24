@@ -34,9 +34,6 @@
                     squidStatus {
                         height
                     }
-                    objektsConnection(orderBy: id_ASC) {
-                        totalCount
-                    }
                     transfersConnection(orderBy: id_DESC, first: 5, where: {from_not_eq: "${ZeroAddress}", to_not_eq: "${ZeroAddress}"}) {
                         edges {
                             node {

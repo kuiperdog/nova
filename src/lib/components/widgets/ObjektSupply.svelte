@@ -7,11 +7,6 @@
 <div class="widget">
     <div class="header">
         <b>{$t('widget.objektsupply.title')}</b>
-        {#if data && data.data}
-            <p>{$t('widget.objektsupply.total', { values: { number: $number(data.data.objektsConnection.totalCount) } })}</p>
-        {:else}
-            <div class="textPlaceholder" style:width="100px"></div>
-        {/if}
     </div>
     <hr>
     <div class="graph">
