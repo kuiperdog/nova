@@ -102,7 +102,7 @@
 {#if countdown > -1}
     <div class="countdown">
         <p>{$t('gravity.votes.countdown')}</p>
-        <h3>{String(Math.floor((countdown % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))).padStart(2, '0') 
+        <h3>{String(Math.floor(countdown / (60 * 60 * 1000))).padStart(2, '0') 
             + ':' + String(Math.floor((countdown % (60 * 60 * 1000)) / (60 * 1000))).padStart(2, '0')
             + ':' + String(Math.floor((countdown % (60 * 1000)) / 1000)).padStart(2, '0')}</h3>
     </div>

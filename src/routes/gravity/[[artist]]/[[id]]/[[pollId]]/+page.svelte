@@ -12,6 +12,7 @@
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
     import { getAssets } from '$lib/data/assets';
     import { t } from 'svelte-i18n';
+    import { onDestroy } from 'svelte'; 
 
     let gravity: Cosmo.Gravity | undefined;
     let poll: Cosmo.PollDetail | undefined;
@@ -34,9 +35,11 @@
                     artist = gravityList = undefined;
                 gravity = undefined;
                 poll = undefined;
+                window.clearInterval(interval);
                 getGravity();
             } else if ($page.params.pollId !== _params.pollId) {
                 poll = undefined;
+                window.clearInterval(interval);
                 getPoll();
             }
         }
@@ -84,10 +87,8 @@
 
     async function getPoll() {
         countdown = -1;
-        window.clearInterval(interval);
 
         const sortedPolls = gravity?.polls.sort((a, b) => Date.parse(a.startDate) - Date.parse(b.startDate));
-        console.log(sortedPolls);
         const id = $page.params.pollId || (gravity?.polls.find(p => !p.finalized) || sortedPolls?.at(-1))?.id;
         const res = await fetch(`${Cosmo.URL}/gravity/v3/${gravity?.artist}/gravity/${gravity?.id}/polls/${id}`);
         const pollDetail: Cosmo.PollDetail = (await res.json()).pollDetail;
@@ -111,6 +112,8 @@
         votesPerCandidates = votes;
         
         if (Date.parse(pollDetail.endDate) > Date.now() || revealedVotes < totalVotes) {
+            window.clearInterval(interval);
+            countdown = Date.parse(pollDetail.endDate) - Date.now();
             interval = window.setInterval(async () => {
                 if (Date.parse(pollDetail.endDate) > Date.now()) {
                     countdown = Date.parse(pollDetail.endDate) - Date.now();
@@ -145,6 +148,8 @@
             return a + Number(formatEther(votesPerCandidates[candidate!]));
         }, 0)!;
     }
+
+    onDestroy(() => window.clearInterval(interval));
 </script>
 
 <div class="layout">
@@ -211,7 +216,7 @@
                         <img src={gravity.bannerImageUrl} alt={gravity.title}>
                     {/if}
                     <p>{$t('gravity.counting_countdown')}</p>
-                    <h3>{String(Math.floor((countdown % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000))).padStart(2, '0') 
+                    <h3>{String(Math.floor(countdown / (60 * 60 * 1000))).padStart(2, '0')
                         + ':' + String(Math.floor((countdown % (60 * 60 * 1000)) / (60 * 1000))).padStart(2, '0')
                         + ':' + String(Math.floor((countdown % (60 * 1000)) / 1000)).padStart(2, '0')}</h3>
                 </div>
