@@ -533,7 +533,7 @@
     }
 
     .item,
-    .headerSection > *:not(.placeholder),
+    .headerSection > *:not(.placeholder):not(.liveIndicator),
     h1 {
         animation: fade-in 0.25s;
     }
@@ -568,6 +568,10 @@
 
         .headerSection {
             gap: 10px;
+        }
+
+        .liveIndicator {
+            margin-right: 0;
         }
     }
 
