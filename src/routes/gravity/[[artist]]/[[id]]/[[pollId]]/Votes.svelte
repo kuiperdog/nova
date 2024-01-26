@@ -17,7 +17,7 @@
     let interval: number;
     const client = createClient({ url: Subsquid.WS_URL });
     const query = `
-        votes(orderBy: amount_DESC, limit: 50, where: {contract_eq: "${contract.toLowerCase()}", poll_eq: "${pollId}"})  {
+        votes(orderBy: amount_DESC, limit: 50, where: {contract_eq: "${contract.toLowerCase()}", poll_eq: "${pollId}"}) {
             ${Object.keys(Subsquid.Vote).join('\n')}
         }
     `;
@@ -50,7 +50,7 @@
         await processVotes(data.data.votes);
 
         if (!votes.length || votes.filter(v => v.candidate === null).length) {
-            client.subscribe({ query: `subscrioption {${query}}` }, {
+            client.subscribe({ query: `subscription {${query}}` }, {
                 next: async (data) => {
                     if (data.data) {
                         await processVotes(data.data.votes as Subsquid.Vote[]);
