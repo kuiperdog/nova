@@ -181,6 +181,7 @@
         justify-content: space-between;
         gap: 5px;
         border-bottom: 1px solid var(--button-border);
+        background-color: var(--item-color);
     }
 
     .header {
