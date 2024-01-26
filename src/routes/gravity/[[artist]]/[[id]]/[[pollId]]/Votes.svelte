@@ -132,7 +132,7 @@
                                 { poll.choices[vote.candidate].title || pollTitle(poll, vote.candidate) }
                             </p>
                         {:else}
-                            <i>{$t('gravity.votes.unrevealed')}</i>
+                            <i class="candidate">{$t('gravity.votes.unrevealed')}</i>
                         {/if}
                     </div>
                 </div>
