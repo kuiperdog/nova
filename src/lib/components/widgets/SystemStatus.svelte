@@ -67,7 +67,7 @@
     <div class="header">
         <b>{$t('widget.status.title')}</b>
         {#if cosmo && polygon && nova}
-            <p>{ message }</p>
+            <p class="message">{ message }</p>
         {:else}
             <div class="textPlaceholder" style:width="110px"></div>
         {/if}
@@ -132,5 +132,14 @@
         width: 24px;
         height: 24px;
         border-radius: 12px;
+    }
+
+    .item img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .item p, .item img, .message {
+        animation: fade-in .1s;
     }
 </style>

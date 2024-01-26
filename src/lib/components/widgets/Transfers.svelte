@@ -71,7 +71,7 @@
         {/each}
     {:else}
         {#each { length: 5 } as _, i}
-            <div class="transfer">
+            <div class="transfer transferPlaceholder">
                 <div class="users">
                     <div class="textPlaceholder" style:width="120px"></div>
                     <div class="spacer"></div>
@@ -136,5 +136,9 @@
 
     .users a {
         color: inherit;
+    }
+
+    .transfer:not(.transferPlaceholder) {
+        animation: fade-in .1s;
     }
 </style>

@@ -70,4 +70,8 @@
     .objektPlaceholder {
         margin-right: auto;
     }
+
+    .objekt button, .objekt p {
+        animation: fade-in .1s;
+    }
 </style>

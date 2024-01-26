@@ -2,6 +2,9 @@
     import { t, number } from 'svelte-i18n';
 
     export let data: any;
+
+    $: max = data && data.data ? Object.keys(data.data).filter(k => k.startsWith('day'))
+        .reduce((acc, d) => data.data[d].totalCount > acc ? data.data[d].totalCount : acc, 0) : 0;
 </script>
 
 <div class="widget">
@@ -12,16 +15,9 @@
     <div class="graph">
         {#each { length: 7 } as _, i}
             <div class="day">
-                {#if data && data.data}
-                {@const max = Object.keys(data.data).filter(k => k.startsWith('day'))
-                    .reduce((acc, d) => data.data[d].totalCount > acc ? data.data[d].totalCount : acc, 0)}
-                    <div class="bar" style:height="{data.data[`day${i + 1}`].totalCount / max * 100}px"
-                        title="{data.data[`day${i + 1}`].totalCount.toLocaleString('en-US')} Objekts"></div>
-                    <p>{ new Intl.DateTimeFormat(undefined, {weekday: 'short'}).format(new Date().setDate(new Date().getDate() + i + 1)) }</p>
-                {:else}
-                    <div class="barPlaceholder" style:height="{Math.random() * 90 + 10}px"></div>
-                    <div class="textPlaceholder" style:width="25px"></div>
-                {/if}
+                <div class="bar" class:loaded={data && data.data} title={data && data.data ? data.data[`day${i + 1}`].totalCount.toLocaleString('en-US') : ''}
+                    style:height="{data && data.data ? data.data[`day${i + 1}`].totalCount / max * 100 : 10}px"></div>
+                <p>{ new Intl.DateTimeFormat(undefined, {weekday: 'short'}).format(new Date().setDate(new Date().getDate() + i + 1)) }</p>
             </div>
         {/each}
     </div>
@@ -69,9 +65,14 @@
     }
 
     .bar {
-        background-color: var(--accent-color);
+        background-color: var(--item-secondary);
         width: 20px;
         border-radius: 5px;
+        transition: background-color .25s, height .25s;
+    }
+
+    .bar.loaded {
+        background-color: var(--accent-color);
     }
 
     .day p {
@@ -98,9 +99,7 @@
         margin: 0 -10px;
     }
 
-    .barPlaceholder {
-        background-color: var(--item-secondary);
-        border-radius: 5px;
-        width: 20px;
+    .details p {
+        animation: fade-in .1s;
     }
 </style>
