@@ -16,6 +16,7 @@
     let countdown = -1;
     let interval: number;
     const client = createClient({ url: Subsquid.WS_URL });
+    let unsubscribe: () => void = () => {};
     const query = `
         votes(orderBy: amount_DESC, limit: 50, where: {contract_eq: "${contract.toLowerCase()}", poll_eq: "${pollId}"}) {
             ${Object.keys(Subsquid.Vote).join('\n')}
@@ -50,12 +51,14 @@
         await processVotes(data.data.votes);
 
         if (!votes.length || votes.filter(v => v.candidate === null).length) {
-            client.subscribe({ query: `subscription {${query}}` }, {
+            unsubscribe = client.subscribe({ query: `subscription {${query}}` }, {
                 next: async (data) => {
                     if (data.data) {
                         await processVotes(data.data.votes as Subsquid.Vote[]);
-                        if (votes.length && !votes.filter(v => v.candidate === null).length)
+                        if (votes.length && !votes.filter(v => v.candidate === null).length) {
+                            unsubscribe();
                             client.dispose();
+                        }
                     }
                 },
                 error: (error) => {
@@ -94,6 +97,7 @@
     }
     
     onDestroy(() => {
+        unsubscribe();
         client.dispose();
         window.clearInterval(interval);
     });
