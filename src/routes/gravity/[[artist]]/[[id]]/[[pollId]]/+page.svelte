@@ -25,7 +25,7 @@
     let revealedVotes: number;
     let totalVotes: number;
     let totalComo: number;
-    let votesPerCandidates: number[];
+    let votesPerCandidates: bigint[];
 
     let _params: any;
     $: {
@@ -131,8 +131,10 @@
                         multicall.polls(pollId),
                         multicall.votesPerCandidates(pollId)
                     ]);
-                    revealedVotes = Number(pollData.revealedVotes);
-                    votesPerCandidates = votes;
+                    if (Number(pollData.revealedVotes) > revealedVotes) {
+                        revealedVotes = Number(pollData.revealedVotes);
+                        votesPerCandidates = votes;
+                    }
                 }
             }, 1000);
         }
