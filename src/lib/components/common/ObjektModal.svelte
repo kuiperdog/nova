@@ -367,7 +367,7 @@
         left: 0;
         width: 100%;
         height: calc(100% - 50px - env(safe-area-inset-top));
-        z-index: var(--nav-z-index);
+        z-index: var(--modal-z-index);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
         display: flex;
@@ -744,12 +744,20 @@
     }
 
     @media only screen and (max-width: 700px) {
+        .modalBackground {
+            top: 0;
+            height: 100%;
+            background-color: var(--item-color);
+        }
+
         .modal {
+            padding-top: calc(50px + env(safe-area-inset-top));
             width: 100%;
             height: 100%;
             border-radius: 0;
             display: initial;
             overflow-y: auto;
+            overscroll-behavior: contain;
         }
 
         .objektView, .detailView {

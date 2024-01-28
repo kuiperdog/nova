@@ -16,6 +16,7 @@
     --text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
     --blur-radius: 5px;
     --nav-z-index: 5;
+    --modal-z-index: 3;
     --dropdown-z-index: 1;
 }
 

@@ -13,6 +13,7 @@
     import Settings from '$lib/components/common/Settings.svelte';
 
     let innerWidth: number;
+    let scrollY: number;
     let navExpanded = false;
     let searchExpanded = false;
     let settingsOpen = false;
@@ -22,7 +23,7 @@
     });
 </script>
 
-<svelte:window bind:innerWidth/>
+<svelte:window bind:innerWidth bind:scrollY/>
 
 <svelte:head>
     {#key $page.route}
@@ -30,7 +31,7 @@
     {/key}
 </svelte:head>
 
-<nav class:expanded={navExpanded}>
+<nav class:expanded={navExpanded} class:scrolled={scrollY > 50}>
     <img src={logo} class="logo" alt="Nova logo">
 
     {#if innerWidth >= 650}
@@ -160,8 +161,11 @@
         color: #49565E;
     }
 
-    a.link.active {
+    .scrolled a.link, a.link.active {
         color: #FFFFFF;
+    }
+
+    a.link.active {
         border-bottom-color: #FFFFFF;
     }
 
