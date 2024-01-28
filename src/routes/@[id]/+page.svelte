@@ -129,7 +129,7 @@
     }
 
     onDestroy(page.subscribe(() => {
-        if (params !== $page.url.searchParams) {
+        if ([...params.entries()].toString() !== [...$page.url.searchParams.entries()].toString()) {
             params = $page.url.searchParams;
             total = null;
         }
