@@ -27,13 +27,6 @@
 }
 
 @font-face {
-	font-family: 'Pretendard';
-	font-weight: 900;
-	font-display: swap;
-	src: url('pretendard_black.woff2') format('woff2');
-}
-
-@font-face {
 	font-family: 'Helvetica Neue';
 	font-weight: normal;
 	font-display: swap;
