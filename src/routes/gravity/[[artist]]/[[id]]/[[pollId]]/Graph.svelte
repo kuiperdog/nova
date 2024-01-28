@@ -47,8 +47,11 @@
     <div class="bars" bind:clientWidth>
         {#if bars}
             {#each bars as bar, i}
-                <div class="bar" class:active={votes && revealedVotes/totalVotes >= i/bars.length}
-                    style:height="{votes ? bar / Math.max(...bars) * 100 : 10}%" title="{bar.toLocaleString('en-US')} COMO"/>
+                <div
+                    class="bar" title="{bar.toLocaleString('en-US')} COMO"
+                    class:active={votes && revealedVotes / totalVotes > i / bars.length}
+                    style:height="{votes ? bar / Math.max(...bars) * 100 : 10}%"
+                />
             {/each}
         {/if}
     </div>
