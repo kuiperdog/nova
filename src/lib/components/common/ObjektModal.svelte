@@ -16,6 +16,7 @@
 	import { likes } from "$lib/data/likes";
     import Objekt3DView from "./Objekt3DView.svelte";
     import { t, number } from 'svelte-i18n';
+    import { onDestroy } from "svelte";
 
     export let collection: Subsquid.Collection;
     export let objekt: Subsquid.Objekt | null = null;
@@ -154,6 +155,14 @@
     let view3d = false;
     if (objekt && objekt.serial)
         nextSerial = objekt.serial;
+    
+    const scroll = window.scrollY;
+    document.body.style.top = `-${scroll}px`;
+    document.body.style.position = 'fixed';
+    onDestroy(() => {
+        document.body.style.position = document.body.style.top = '';
+        window.scrollTo(0, scroll);
+    });
 </script>
 
 <svelte:head>
@@ -757,7 +766,6 @@
             border-radius: 0;
             display: initial;
             overflow-y: auto;
-            overscroll-behavior: contain;
         }
 
         .objektView, .detailView {

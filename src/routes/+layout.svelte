@@ -31,7 +31,7 @@
     {/key}
 </svelte:head>
 
-<nav class:expanded={navExpanded} class:scrolled={scrollY > 50}>
+<nav class:expanded={navExpanded} class:scrolled={scrollY > 50 || document.body.style.top}>
     <img src={logo} class="logo" alt="Nova logo">
 
     {#if innerWidth >= 650}
