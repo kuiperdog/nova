@@ -154,6 +154,14 @@
     onDestroy(() => window.clearInterval(interval));
 </script>
 
+<svelte:head>
+    {#if gravity}
+        {#key $page.route}
+            <title>Nova | {gravity.title.replaceAll('\n', ' ')}</title>
+        {/key}
+    {/if}
+</svelte:head>
+
 <div class="layout">
     <div class="main">
         <div class="header">
