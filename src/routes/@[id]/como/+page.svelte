@@ -8,7 +8,7 @@
 
     let artist: Cosmo.Artist;
     let selected: Cosmo.Artist | undefined;
-    let ranking: number | undefined;
+    let ranking: string | undefined;
     let days: number[] | undefined;
 
     const balances: Writable<Subsquid.Como[]> = getContext("como");
@@ -21,30 +21,35 @@
             const contract = artist.contracts.Como.toLowerCase();
             const balance = $balances.find(b => b.contract === contract);
 
-            fetch(Subsquid.URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    query: `
-                        query {
-                            comosConnection(orderBy: id_ASC, where: {contract_eq: "${contract}", AND: {balance_gt: "${balance?.balance}", OR: {balance_eq: "${balance?.balance}", id_gt: "${balance?.id}"}}}) {
-                                totalCount
+            if (balance) {
+                fetch(Subsquid.URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: `
+                            query {
+                                comosConnection(orderBy: id_ASC, where: {contract_eq: "${contract}", AND: {balance_gt: "${balance.balance}", OR: {balance_eq: "${balance.balance}", id_gt: "${balance.id}"}}}) {
+                                    totalCount
+                                }
+                                objekts(orderBy: id_ASC, limit: 9999, where: {owner_eq: "${balance.owner}", collection_isNull: false, collection: {class_eq: "Special", artists_containsAll: "${artist.name}"}}) {
+                                    minted
+                                }
                             }
-                            objekts(orderBy: id_ASC, limit: 9999, where: {owner_eq: "${balance?.owner}", collection_isNull: false, collection: {class_eq: "Special", artists_containsAll: "${artist.name}"}}) {
-                                minted
-                            }
-                        }
-                    `
-                })
-            }).then(async (res) => {
-                const data = await res.json();
-                ranking = data.data.comosConnection.totalCount + 1;
+                        `
+                    })
+                }).then(async (res) => {
+                    const data = await res.json();
+                    ranking = `#${(data.data.comosConnection.totalCount + 1).toLocaleString('en-US')}`;
 
-                let como = Array(month).fill(0);
-                for (const objekt of data.data.objekts)
-                    como[Math.min(new Date(Number(objekt.minted)).getDate() - 1, month)]++;
-                days = como;
-            });
+                    let como = Array(month).fill(0);
+                    for (const objekt of data.data.objekts)
+                        como[Math.min(new Date(Number(objekt.minted)).getDate() - 1, month)]++;
+                    days = como;
+                });
+            } else {
+                days = Array(month).fill(0);
+                ranking = 'N/A';
+            }
         }
     }
 
@@ -60,7 +65,7 @@
         <div class="ranking">
             <b>{$t('profile.como.rank')}</b>
             {#if ranking}
-                <p>#{ranking.toLocaleString('en-US')}</p>
+                <p>{ranking}</p>
             {:else}
                 <div class="placeholder"></div>
             {/if}
