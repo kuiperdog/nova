@@ -79,7 +79,7 @@
                     {#each { length: 7 } as _, day}
                         <td class:today={new Date().getDate() === week * 7 + day + 1 - offset}>
                             <div class="day">
-                                {#if day >= offset && week * 7 + day + 1 - offset <= month}
+                                {#if (week || day >= offset) && week * 7 + day + 1 - offset <= month}
                                     <p class="number">{ week * 7 + day + 1 - offset }</p>
                                     {#if days}
                                         {#if days[week * 7 + day - offset]}
