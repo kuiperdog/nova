@@ -49,27 +49,23 @@
             })
         });
         const data = await res.json();
-        await processVotes(data.data.votes);
 
-        if (!votes.length || votes.filter(v => v.candidate === null).length)
-            timeout = window.setTimeout(load, 30000);
-    }
-
-    async function processVotes(newVotes: Subsquid.Vote[]) {
-        const missingUsers = newVotes.filter(v => !users.find(u => u.address === v.from)).map(v => v.from);
+        const missingUsers = data.data.votes.filter((v: Subsquid.Vote) => !users.find(u => u.address === v.from)).map((v: Subsquid.Vote) => v.from);
         if (missingUsers.length) {
             const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${missingUsers.join(',')}`);
             const profileData: Cosmo.User[] = await profiles.json();
             users = [
                 ...users,
                 ...profileData,
-                ...missingUsers.filter(u => !profileData.find(p => p.address === u)).map(u => {
+                ...missingUsers.filter((u: string) => !profileData.find(p => p.address === u)).map((u: string) => {
                     return { nickname: '', address: u, profileImageUrl: '' }
                 })
             ];
         }
 
-        votes = newVotes;
+        votes = data.data.votes;
+        if (!votes.length || votes.filter(v => v.candidate === null).length)
+            timeout = window.setTimeout(load, 10000);
     }
 
     function pollTitle(poll: Cosmo.PollDetail, candidate: number) {
