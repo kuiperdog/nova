@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { createClient } from 'graphql-ws';
     import { onDestroy } from 'svelte';
     import { formatEther } from 'ethers';
     import { flip } from 'svelte/animate';
@@ -15,13 +14,7 @@
 
     let countdown = -1;
     let interval: number;
-    const client = createClient({ url: Subsquid.WS_URL });
-    let unsubscribe: () => void = () => {};
-    const query = `
-        votes(orderBy: amount_DESC, limit: 50, where: {contract_eq: "${contract.toLowerCase()}", poll_eq: "${pollId}"}) {
-            ${Object.keys(Subsquid.Vote).join('\n')}
-        }
-    `;
+    let timeout: number;
     let votes: Subsquid.Vote[] = [];
     let users: Cosmo.User[] = [];
     const como = getAssets(artist).como;
@@ -45,28 +38,21 @@
         const res = await fetch(Subsquid.URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query: `query {${query}}` })
+            body: JSON.stringify({
+                query: `
+                    query {
+                        votes(orderBy: amount_DESC, limit: 50, where: {contract_eq: "${contract.toLowerCase()}", poll_eq: "${pollId}"}) {
+                            ${Object.keys(Subsquid.Vote).join('\n')}
+                        }
+                    }
+                `
+            })
         });
         const data = await res.json();
         await processVotes(data.data.votes);
 
-        if (!votes.length || votes.filter(v => v.candidate === null).length) {
-            unsubscribe = client.subscribe({ query: `subscription {${query}}` }, {
-                next: async (data) => {
-                    if (data.data) {
-                        await processVotes(data.data.votes as Subsquid.Vote[]);
-                        if (votes.length && !votes.filter(v => v.candidate === null).length) {
-                            unsubscribe();
-                            client.dispose();
-                        }
-                    }
-                },
-                error: (error) => {
-                    console.error('WS error: ', error);
-                },
-                complete: () => {}
-            });
-        }
+        if (!votes.length || votes.filter(v => v.candidate === null).length)
+            timeout = window.setTimeout(load, 30000);
     }
 
     async function processVotes(newVotes: Subsquid.Vote[]) {
@@ -97,9 +83,8 @@
     }
     
     onDestroy(() => {
-        unsubscribe();
-        client.dispose();
         window.clearInterval(interval);
+        window.clearTimeout(timeout);
     });
 </script>
 
