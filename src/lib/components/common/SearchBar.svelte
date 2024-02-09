@@ -15,7 +15,7 @@
     function input() {
         if (timeout)
             window.clearTimeout(timeout);
-        timeout = window.setTimeout(search, 150);
+        timeout = window.setTimeout(search, 300);
         results = undefined;
     }
 
