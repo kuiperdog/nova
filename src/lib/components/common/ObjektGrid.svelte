@@ -678,7 +678,7 @@
         border: 1px var(--button-border) solid;
         border-radius: 10px;
         max-height: 400px;
-        overflow-y: scroll;
+        overflow-y: auto;
         animation: fade-in 0.1s;
     }
 

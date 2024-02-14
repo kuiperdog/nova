@@ -123,7 +123,7 @@
         box-shadow: var(--box-shadow);
         animation: fade-in 0.1s;
         max-height: 350px;
-        overflow-y: scroll;
+        overflow-y: auto;
         padding: 5px 0;
     }
 

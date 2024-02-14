@@ -322,7 +322,7 @@
 
     .main {
         flex: 1;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     .sidebar {

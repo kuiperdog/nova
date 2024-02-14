@@ -581,7 +581,7 @@
         display: flex;
         flex-direction: column;
         gap: 12.5px;
-        overflow-y: scroll;
+        overflow-y: auto;
         transition: background-color .1s;
     }
 

@@ -142,7 +142,7 @@
         background-color: var(--item-color);
         border-radius: 20px;
         flex: 2;
-        overflow: scroll;
+        overflow: auto;
         max-height: 90vh;
     }
 

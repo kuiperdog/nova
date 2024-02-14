@@ -65,7 +65,7 @@
         width: 100%;
         background-color: var(--item-color);
         border-radius: 20px;
-        overflow: scroll;
+        overflow: auto;
         flex: 1;
         max-height: 50vh;
         display: flex;
