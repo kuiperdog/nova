@@ -104,6 +104,7 @@
         border: 0;
         outline: none;
         font-size: 16px;
+        min-width: 220px;
     }
 
     ::placeholder {
