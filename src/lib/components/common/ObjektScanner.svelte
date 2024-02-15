@@ -3,18 +3,46 @@
     import { Cosmo, Subsquid } from '$lib/data/apis';
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
+    import { lastScan } from '$lib/data/limits';
     import QrScanner from 'qr-scanner';
+    import status_warning_icon from '$lib/assets/icons/status_warning.svg';
+    import { t } from 'svelte-i18n';
 
-    export let scanning = true;
+    export let scanning: boolean;
     let video: HTMLVideoElement;
     let qrScanner: QrScanner;
     let scanned = false;
+    let timeout = 0;
+    let interval: number;
+
+    function startTimeout(length: number) {
+        timeout = length;
+        interval = window.setInterval(() => {
+            timeout--;
+            if (!timeout) {
+                qrScanner.start();
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
 
     onMount(() => {
         qrScanner = new QrScanner(video, async (res) => {
             if (res.data.startsWith('https://link.cosmo.fans/mint') && !scanned) {
                 scanned = true;
-                const lookup = await fetch(`${Cosmo.URL}/objekt/v1/by-serial/${res.data.slice(-11)}`);
+                
+                let lookup;
+                try {
+                    lookup = await fetch(`${Cosmo.URL}/objekt/v1/by-serial/${res.data.slice(-11)}`);
+                    $lastScan = Date.now();
+                } catch {
+                    startTimeout(10);
+                    qrScanner.stop();
+                    $lastScan = Date.now();
+                    scanned = false;
+                    return;
+                }
+
                 const data = await lookup.json();
                 if (data && data.objekt) {
                     const id = data.objekt.collectionId.toLowerCase().replaceAll(' ', '-');
@@ -44,10 +72,14 @@
             highlightCodeOutline: true
         });
 
-        qrScanner.start();
+        if ($lastScan && $lastScan > Date.now() - 5000)
+            startTimeout(Math.ceil((Date.now() - $lastScan) / 1000));
+        else
+            qrScanner.start();
     });
 
     onDestroy(() => {
+        clearInterval(interval);
         qrScanner.stop();
     });
 </script>
@@ -55,8 +87,14 @@
 <div class="blur">
     <button on:click={() => scanning = false}></button>
     <div class="popup">
+        {#if timeout}
+            <div class="notice">
+                <img src={status_warning_icon} alt="Warning">
+                <p>{$t('objekt.scantimeout', { values: { seconds: timeout } })}</p>
+            </div>
+        {/if}
         <!-- svelte-ignore a11y-media-has-caption -->
-        <video bind:this={video}></video>
+        <video bind:this={video} class:hidden={timeout}></video>
     </div>
 </div>
 
@@ -87,8 +125,7 @@
     }
 
     .popup {
-        max-width: 100%;
-        max-height: 50%;
+        width: 100%;
         aspect-ratio: 1;
         margin: 20px;
         padding: 20px;
@@ -97,10 +134,33 @@
         box-shadow: var(--box-shadow);
     }
 
+    .notice {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .notice img {
+        height: 30px;
+    }
+
     video {
         height: 100%;
         width: 100%;
         object-fit: cover;
         border-radius: 10px;
+    }
+
+    video.hidden {
+        opacity: 0;
+        width: 0px;
+        height: 0px;
+        transform: scaleX(-1);
     }
 </style>

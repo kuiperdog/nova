@@ -43,6 +43,7 @@
     },
     "objekt": {
         "itemcount": "총 {items}개",
+        "scantimeout": "다음 Objekt를 스캔하려면 {seconds}초 기다려 주세요.",
         "filter": {
             "label": "필터",
             "only_liked": "좋아하는 Objekt만",

@@ -43,6 +43,7 @@
     },
     "objekt": {
         "itemcount": "{items} items",
+        "scantimeout": "Please wait {seconds} seconds to scan your next Objekt.",
         "filter": {
             "label": "Filter",
             "only_liked": "Liked Objekts only",

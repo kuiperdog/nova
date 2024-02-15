@@ -161,6 +161,10 @@
         <img src={copy_icon} alt="Copy" class="copy">
     </button>
     {/if}
+{:else if /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)}
+    <button on:click={() => scanning = true}>
+        <img src={camera_icon} alt="Scan">
+    </button>
 {/if}
 
 <slot/>
