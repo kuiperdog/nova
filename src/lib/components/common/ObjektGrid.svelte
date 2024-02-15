@@ -826,4 +826,20 @@
             margin: 10px;
         }
     }
+    
+    @media only screen and (max-width: 360px) {
+        .filtersPopup .filters {
+            padding: 20px 10px;
+            gap: 30px 10px;
+        }
+        
+        .filtersPopup .checkboxes {
+            margin: 0;
+            padding: 10px;
+        }
+
+        .filterContent {
+            max-height: 300px;
+        }
+    }
 </style>

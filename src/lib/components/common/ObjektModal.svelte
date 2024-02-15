@@ -789,4 +789,20 @@
             bottom: 12.5px;
         }
     }
+
+    @media only screen and (max-width: 350px) {
+        .findButton {
+            font-size: 0;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 15px;
+            margin-right: -15px;
+        }
+        
+        .findButton img {
+            height: 20px;
+            margin: 5px;
+        }
+    }
 </style>
