@@ -64,11 +64,19 @@
             return acc;
         }, []);
 
-        const details = await Promise.all(polls.map(async poll => {
-            const res = await fetch(`${Cosmo.URL}/gravity/v3/${poll.gravity.artist}/gravity/${poll.gravity.id}/polls/${poll.id}`);
-            const data = await res.json();
-            return data.pollDetail;
-        }));
+        const pollArtists = polls.reduce((acc: Cosmo.Poll[][], poll: Cosmo.Poll) => {
+            const polls = acc.find(a => a[0].artist === poll.artist);
+            if (polls)
+                polls.push(poll);
+            else
+                acc.push([poll]);
+            return acc;
+        }, []);
+
+        const details = (await Promise.all(pollArtists.map(async (polls) => {
+            const res = await fetch(`${Cosmo.URL}/gravity/v3.1/${polls[0].artist}/polls/${polls.map(p => p.id).join(',')}`);
+            return await res.json();
+        }))).flat();
 
         gravities = details.reduce((acc: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Subsquid.Vote[] })[] })[], detail: Cosmo.PollDetail) => {
             const entry = acc.find(g => g.id === detail.gravityId);
