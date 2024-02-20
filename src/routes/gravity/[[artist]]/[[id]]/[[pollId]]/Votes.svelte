@@ -109,7 +109,8 @@
                     <img src={como} alt="COMO">
                     <div class="details">
                         <span>
-                            {new Date(Number(vote.timestamp)).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: false})}
+                            {new Date(Number(vote.timestamp)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })},
+                            {new Date(Number(vote.timestamp)).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}
                         </span>
                         {#if vote.candidate !== null}
                             <p class="candidate">
@@ -128,7 +129,7 @@
                     <div class="placeholder" style:width="110px" style:margin-right="auto"></div>
                     <div class="placeholder" style:width="60px"></div>
                     <div class="details">
-                        <div class="placeholder" style:width="40px"></div>
+                        <div class="placeholder" style:width="80px"></div>
                         <div class="placeholder" style:width="110px"></div>
                     </div>
                 </div>
@@ -204,6 +205,11 @@
     .vote img {
         height: 20px;
         border-radius: 10px;
+    }
+
+    .candidate {
+        text-align: end;
+        word-break: keep-all;
     }
 
     .placeholder {
