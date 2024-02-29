@@ -57,7 +57,6 @@
                             }
                         }
                     }
-                    ${dateQueries}
                 }
             `
         })
@@ -74,9 +73,9 @@
     <SystemStatus {data}/>
     {#if windowWidth > 750}
         <Mints {data}/>
-        <ObjektSupply {data}/>
+        <ObjektSupply data={undefined}/>
     {:else}
-        <ObjektSupply {data}/>
+        <ObjektSupply data={undefined}/>
         <Mints {data}/>
     {/if}
     <Transfers {data}/>
