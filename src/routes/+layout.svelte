@@ -1,231 +1,346 @@
 <script lang="ts">
     import '$lib/assets/styles/base.css';
     import '$lib/i18n';
-    import { tabs } from '$lib/data/tabs';
     import { page } from '$app/stores';
-    import { goto, onNavigate } from '$app/navigation';
+    import { t, locale } from 'svelte-i18n';
+    import { onNavigate } from '$app/navigation';
+    import SearchBar from './SearchBar.svelte';
+    import ObjektModal from '$lib/components/common/ObjektModal.svelte';
     import logo from '$lib/assets/images/logo.svg';
-    import nav_expand_icon from '$lib/assets/icons/nav_expand.svg';
-    import find_icon from '$lib/assets/icons/find.svg';
-    import settings_icon from '$lib/assets/icons/settings.svg';
-    import SearchBar from '$lib/components/common/SearchBar.svelte';
-	import ObjektModal from '$lib/components/common/ObjektModal.svelte';
-    import Settings from '$lib/components/common/Settings.svelte';
+    import icon_menu from '$lib/assets/icons/menu.svg';
+    import icon_home from '$lib/assets/icons/home.svg';
+    import icon_objekts from '$lib/assets/icons/objekts.svg';
+    import icon_gravity from '$lib/assets/icons/gravity.svg';
+    import icon_users from '$lib/assets/icons/users.svg';
 
-    let innerWidth: number;
-    let scrollY: number;
-    let navExpanded = false;
-    let searchExpanded = false;
-    let settingsOpen = false;
-    
-    onNavigate(() => {
-        searchExpanded = settingsOpen = false;
-    });
+    const version = __VERSION__;
+    export const tabs = [
+        {
+            title: 'Home',
+            icon: icon_home,
+            path: '/',
+            matches: '^\/$'
+        },
+        {
+            title: 'Objekts',
+            icon: icon_objekts,
+            path: '/objekt',
+            matches: '^\/objekt'
+        },
+        {
+            title: 'Gravity',
+            icon: icon_gravity,
+            path: '/gravity',
+            matches: '^\/gravity'
+        },
+        {
+            title: 'Users',
+            icon: icon_users,
+            path: '/users',
+            matches: '^(\/users|\/@.+)$'
+        }
+    ];
+
+    let expanded = false;
+    onNavigate(() => { expanded = false });
+    $: currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname));
+
+    function toggleLanguage() {
+        let lang = 'kr';
+        if ($locale && $locale.startsWith('kr'))
+            lang = 'en';
+
+        window.localStorage.setItem('language', lang);
+        $locale = lang;
+    }
 </script>
-
-<svelte:window bind:innerWidth bind:scrollY/>
 
 <svelte:head>
     {#key $page.route}
-        <title>Nova | {(tabs.find(tab => RegExp(tab.matches).test($page.url.pathname)) || tabs[0]).title}</title>
+        <title>Nova{currentTab ? ` | ${currentTab.title}` : ''}</title>
     {/key}
 </svelte:head>
 
-<nav class:expanded={navExpanded} class:scrolled={scrollY > 50 || document.body.style.top}>
-    <img src={logo} class="logo" alt="Nova logo">
-
-    {#if innerWidth >= 650}
-        {#each tabs as tab}
-            <a class="link" href={tab.path} class:active={RegExp(tab.matches).test($page.url.pathname)}>{ tab.title }</a>
-        {/each}
-    {:else}
-        {@const currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname))}
-        <button class="link current" on:click={() => { navExpanded = !navExpanded; searchExpanded = settingsOpen = false; }}>
-            { currentTab?.title || 'Tabs' }
-            <img src={nav_expand_icon} class="expandIcon" alt="Expand">
-        </button>
-    {/if}
-
-    {#if innerWidth >= 900}
-        <SearchBar/>
-    {:else}
-        <button class="iconBtn search" class:active={searchExpanded} on:click={() => { searchExpanded = !searchExpanded; navExpanded = settingsOpen = false; }}>
-            <img src={find_icon} alt="Search">
-        </button>
-    {/if}
-    <button class="iconBtn" class:active={settingsOpen} on:click={() => { settingsOpen = !settingsOpen; navExpanded = searchExpanded = false; }}>
-        <img src={settings_icon} alt="Settings">
+<div class="topbar" class:expanded={expanded}>
+    <button class="expand" on:click={() => expanded = !expanded}>
+        <img alt="Expand" src={icon_menu}>
+        {#if !currentTab || currentTab === tabs[0]}
+            <img class="logo" src={logo} alt="Nova">
+        {:else}
+            {currentTab.title}
+        {/if}
     </button>
-</nav>
+    <div class="liveIndicator">
+        <div class="dot"></div>
+        <b>LIVE</b>
+    </div>
+</div>
+
+<div class="sidebar" class:expanded={expanded}>
+    <div class="header">
+        <img class="logo" src={logo} alt="Nova">
+        <div class="liveIndicator">
+            <div class="dot"></div>
+            <b>LIVE</b>
+        </div>
+        <div class="searchbar">
+            <SearchBar />
+        </div>
+    </div>
+    <hr>
+    {#each tabs as tab}
+        <a class="tab" class:active={RegExp(tab.matches).test($page.url.pathname)} href={tab.path}>
+            <img src={tab.icon} alt={tab.title}>
+            { tab.title }
+        </a>
+    {/each}
+    <hr>
+    <div class="placeholder"></div>
+    <hr>
+    <div class="footer">
+        <div>
+            <p>{$t('settings.language')}</p>
+            <button class="language" on:click={() => toggleLanguage()}>
+                {#if $locale && $locale.startsWith('kr')}
+                    🇰🇷 한국어
+                {:else}
+                    🇬🇧 English
+                {/if}
+            </button>
+        </div>
+        <div class="version">
+            <p>Version {version}</p>
+            <a href="https://github.com/kuiperdog/nova">{$t('settings.source')}</a>
+        </div>
+        <p>{$t('settings.disclaimer')}</p>
+    </div>
+</div>
 
 <main>
     {#if $page.state.collection}
         <ObjektModal collection={$page.state.collection} objekt={$page.state.objekt}/>
     {/if}
-    
-    <slot/>
+    {#if expanded}
+        <button class="close" on:click={() => expanded = false} />
+    {/if}
+    <slot />
 </main>
 
-{#if settingsOpen}
-    <div class="blur">
-        <button class="close" on:click={() => settingsOpen = false}/>
-        <Settings/>
-    </div>
-{/if}
-
-{#if innerWidth < 650 && navExpanded}
-{@const currentTab = tabs.find(tab => RegExp(tab.matches).test($page.url.pathname))}
-    <div class="blur">
-        <button class="close" on:click={() => navExpanded = false}/>
-        <div class="dropdown">
-            {#each tabs.filter(tab => tab !== currentTab) as tab}
-                <button class="link" on:click={() => { goto(tab.path); navExpanded = false; }}>
-                    { tab.title }
-                </button>
-            {/each}
-        </div>
-    </div>
-{/if}
-
-
-{#if innerWidth < 900 && searchExpanded}
-    <div class="blur searchDropdown">
-        <button class="close" on:click={() => searchExpanded = false}/>
-        <div class="dropdown" style:padding="20px">
-            <SearchBar/>
-        </div>
-    </div>
-{/if}
-
 <style>
-    nav {
+    .topbar, .sidebar {
         position: fixed;
         top: 0;
-        height: calc(50px + env(safe-area-inset-top));
+        left: 0;
+    }
+
+    .topbar {
+        display: none;
+        height: 50px;
         width: 100%;
-        padding: 0 20px;
-        padding-top: env(safe-area-inset-top);
-        z-index: var(--nav-z-index);
+        z-index: 1;
         background-color: var(--background-semitransparent);
         backdrop-filter: blur(var(--blur-radius));
         -webkit-backdrop-filter: blur(var(--blur-radius));
-        display: flex;
+        padding: 0 25px;
+        gap: 12.5px;
         align-items: center;
-        gap: 25px;
+        justify-content: space-between;
     }
 
-    main {
-        padding-top: calc(50px + env(safe-area-inset-top));
-        max-width: 1120px;
-        width: 100%;
-        margin: 0 auto;
-        height: 100%;
+    .topbar.expanded {
+        opacity: 0;
+        transition: opacity .5s;
     }
 
-    .blur {
-        position: fixed;
-        top: calc(50px + env(safe-area-inset-top));
-        left: 0;
-        width: 100%;
-        height: calc(100% - 50px - env(safe-area-inset-top));
-        z-index: var(--nav-z-index);
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
-        display: flex;
-        justify-content: center;
-        animation: 0.25s fade-in;
-    }
-
-    .close {
-        width: 100%;
-        height: 100%;
+    .expand {
         background: none;
         border: none;
         padding: 0;
-        position: absolute;
-        z-index: -1;
+        display: flex;
+        gap: 12.5px;
+        align-items: center;
+        color: inherit;
     }
 
-    .link {
+    .expand, .tab {
+        font-size: 24px;
         font-family: 'Halvar Breitschrift';
         font-weight: bold;
-        font-size: 24px;
     }
 
-    a.link {
-        text-decoration: none;
-        transition: color .2s, border-color .2s;
-        border-bottom: 2px solid #00000000;
-        margin-top: -2px;
-        line-height: 50px;
-        color: #49565E;
+    .sidebar {
+        height: 100%;
+        width: 300px;
+        background-color: var(--item-color);
+        display: flex;
+        flex-direction: column;
+        border-radius: 0 25px 25px 0;
     }
 
-    .scrolled a.link, a.link.active {
-        color: #FFFFFF;
+    .sidebar.expanded {
+        display: flex;
+        position: fixed;
+        z-index: 5;
+        animation: slide-in .5s;
     }
 
-    a.link.active {
-        border-bottom-color: #FFFFFF;
+    .header, .footer {
+        padding: 25px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12.5px;
     }
 
     .logo {
-        width: 60px
+        width: 60px;
     }
 
-    button.link {
-        background: none;
-        border: none;
-        padding: 0;
-        margin: 0 auto;
-        cursor: pointer;
-        color: #FFFFFF;
+    .liveIndicator {
         display: flex;
+        align-items: center;
+        gap: 5px;
+        color: var(--item-secondary);
+        transition: color .25s;
     }
 
-    .expandIcon {
-        margin-right: -5px;
-        transition: transform 0.25s ease-in-out;
+    .liveIndicator .dot {
+        height: 15px;
+        width: 15px;
+        border-radius: 7.5px;
+        background-color: var(--item-secondary);
+        transition: color .25s;
     }
 
-    .expanded .expandIcon {
-        transform: rotate(180deg);
+    .liveIndicator.active {
+        color: #FFFFFF;
     }
 
-    .dropdown {
+    .liveIndicator.active .dot {
+        background-color: #C8141D;
+        animation: pulse 1s infinite;
+    }
+
+    .searchbar {
+        flex-basis: 100%;
         width: 100%;
-        height: max-content;
+    }
+
+    .tab {
+        height: 40px;
+        margin: 5px;
+        padding: 0 20px;
+        text-decoration: none;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: background-color .25s;
+    }
+
+    .tab.active, .tab:hover {
+        background-color: #232A30;
+    }
+
+    .tab img {
+        height: 24px;
+    }
+
+    .placeholder {
+        flex: 1;
+    }
+
+    .footer div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .language {
+        background-color: var(--item-secondary);
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 0;
+        color: inherit;
+        font-weight: bold;
+    }
+
+    .version {
+        margin: 12.5px 0;
+    }
+
+    .close {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 4;
         background-color: var(--background-semitransparent);
-    }
-
-    .dropdown .link {
-        height: 50px;
-        line-height: 50px;
-    }
-
-    .iconBtn {
-        background: none;
         border: 0;
         padding: 0;
-        border-bottom: 2px solid #00000000;
-        margin-bottom: -2px;
-        transition: border-color .2s;
+        backdrop-filter: blur(var(--blur-radius));
+        -webkit-backdrop-filter: blur(var(--blur-radius));
+        animation: fade-in .5s;
     }
 
-    .iconBtn.active {
-        border-bottom-color: #FFFFFF;
+    main {
+        margin-left: 300px;
     }
 
-    .iconBtn img {
-        width: 25px;
+    hr {
+        border-color: #232A30;
     }
 
-    .iconBtn.search {
-        margin-left: auto;
-        margin-right: -15px;
+    a {
+        color: #FFFFFF;
     }
 
-    :has(.current) .iconBtn.search {
-        margin-left: 0;
+    @media only screen and (max-width: 600px) {
+        .topbar {
+            display: flex;
+        }
+
+        .sidebar, .sidebar .logo, .sidebar .liveIndicator {
+            display: none;
+        }
+
+        main {
+            margin-left: 0;
+            margin-top: 50px;
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 #C8141DBF;
+        }
+
+        100% {
+            box-shadow: 0 0 0 7.5px #C8141D00;
+        }
+    }
+
+    @keyframes slide-in {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(0%);
+        }
+    }
+
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
     }
 </style>

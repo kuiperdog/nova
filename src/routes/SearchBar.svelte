@@ -81,8 +81,9 @@
 <style>
     .searchBar {
         height: 30px;
-        border-radius: 15px;
-        background-color: var(--search-bar-color);
+        border-radius: 10px;
+        background-color: var(--item-secondary);
+        border-radius: 10px;
         margin-left: auto;
         display: flex;
         gap: 5px;
@@ -105,10 +106,11 @@
         outline: none;
         font-size: 16px;
         min-width: 220px;
+        color: inherit;
     }
 
     ::placeholder {
-        color: #000000;
+        color: inherit;
         opacity: .75;
     }
 
@@ -117,9 +119,9 @@
         top: calc(100% + 5px);
         left: 0;
         width: 100%;
-        background-color: var(--search-bar-color);
-        color: #000;
-        border-radius: 15px;
+        background-color: var(--item-secondary);
+        color: #FFFFFF;
+        border-radius: 10px;
         box-shadow: var(--box-shadow);
         animation: fade-in 0.1s;
         max-height: 350px;
