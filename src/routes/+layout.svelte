@@ -135,13 +135,14 @@
 
     .topbar {
         display: none;
-        height: 50px;
+        height: calc(50px + env(safe-area-inset-top));
         width: 100%;
         z-index: 1;
         background-color: var(--background-semitransparent);
         backdrop-filter: blur(var(--blur-radius));
         -webkit-backdrop-filter: blur(var(--blur-radius));
         padding: 0 25px;
+        padding-top: env(safe-area-inset-top);
         gap: 12.5px;
         align-items: center;
         justify-content: space-between;
@@ -310,7 +311,7 @@
 
         main {
             margin-left: 0;
-            margin-top: 50px;
+            margin-top: calc(50px + env(safe-area-inset-top));
         }
     }
 
