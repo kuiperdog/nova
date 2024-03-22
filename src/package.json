@@ -1,0 +1,4 @@
+{
+    "description": "This file is only used to ensure that Node doesn't treat Squid build files as ES modules and does not impact SvelteKit",
+    "type": "commonjs"
+}

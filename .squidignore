@@ -1,0 +1,17 @@
+node_modules
+.github
+.svelte-kit
+.vscode
+/build
+/builds
+/lib
+/static
+/src/lib
+/src/routes
+/src/polyfills
+/src/app.d.ts
+/src/app.html
+/CNAME
+/tsconfig.json
+/svelte.config.js
+/vite.config.ts

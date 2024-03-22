@@ -1,0 +1,50 @@
+type Collection @entity {
+  id: ID!
+  artists: [String!]!
+  member: String! @index
+  season: String! @index
+  class: String! @index
+  number: String! @index
+  thumbnail: String!
+  front: String!
+  back: String!
+  textColor: String!
+  backgroundColor: String!
+  timestamp: BigInt! @index
+}
+
+type Objekt @entity {
+  id: ID!
+  collection: Collection @index
+  serial: Int @index
+  transferrable: Boolean @index
+  owner: String @index
+  minted: BigInt @index
+  received: BigInt @index
+}
+
+type Transfer @entity {
+  id: ID!
+  objekt: Objekt! @index
+  from: String! @index
+  to: String! @index
+  timestamp: BigInt! @index
+}
+
+type Vote @entity {
+  id: ID!
+  from: String! @index
+  contract: String! @index
+  poll: BigInt! @index
+  index: BigInt! @index
+  amount: BigInt! @index
+  candidate: Int @index
+  timestamp: BigInt! @index
+}
+
+type Como @entity {
+  id: ID!
+  contract: String! @index
+  owner: String! @index
+  balance: BigInt! @index
+}

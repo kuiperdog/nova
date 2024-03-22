@@ -1,0 +1,23 @@
+manifestVersion: subsquid.io/v0.1
+name: cosmo
+version: 3
+description: 'An Objekt token, COMO balance, and Gravity vote indexer for Nova'
+deploy:
+  addons:
+    postgres:
+  processor:
+    cmd:
+      - node
+      - lib/squid/main
+  api:
+    cmd:
+      - npx
+      - squid-graphql-server
+      - '--dumb-cache'
+      - in-memory
+      - '--dumb-cache-ttl'
+      - '5000'
+      - '--dumb-cache-size'
+      - '100'
+      - '--dumb-cache-max-age'
+      - '5000'
