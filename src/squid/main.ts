@@ -11,7 +11,13 @@ import axiosRetry from 'axios-retry';
 import { ZeroAddress } from 'ethers';
 
 const MAX_REQUESTS = 500;
-const CREATOR_ADDRESS = '0xD5fc87DD8494d6B657bF0DE20111235d983CEC84';
+const nonUserAddresses = [
+    ZeroAddress,
+    '0xD5fc87DD8494d6B657bF0DE20111235d983CEC84',
+    ...contracts.Governor,
+    ...contracts.CommunityPool
+];
+
 const entities = new Map<string, Entity[]>();
 const client = axios.create({
     validateStatus: (status) => { return (status >= 200 && status < 300) || status == 404 }
@@ -59,16 +65,16 @@ async function processComoTransfer(log: Log, store: Store, logger: Logger) {
     if (!entities.has(Como.name))
         entities.set(Como.name, []);
     
-    if (event.from !== ZeroAddress && event.from !== CREATOR_ADDRESS && !contracts.Governor.includes(event.from.toLowerCase()) && !contracts.CommunityPool.includes(event.from.toLowerCase())) {
-        let entry = entities.get(Como.name)?.find(c => (c as Como).contract === log.address && (c as Como).owner === event.from);
+    if (!nonUserAddresses.includes(event.from.toLowerCase())) {
+        let entry = entities.get(Como.name)?.find(c => (c as Como).contract === log.address && (c as Como).owner === event.from) as Como | undefined;
 
         if (entry) {
-            (entry as Como).balance = BigInt(Math.max(0, Number((entry as Como).balance - event.value)));
+            entry.balance = BigInt(Math.max(0, Number(entry.balance - event.value)));
         } else {
             entry = await store.findOneBy(Como, { contract: log.address, owner: event.from });
 
             if (entry) {
-                (entry as Como).balance = BigInt(Math.max(0, Number((entry as Como).balance - event.value)));
+                entry.balance = BigInt(Math.max(0, Number(entry.balance - event.value)));
                 entities.get(Como.name)?.push(entry);
             } else { 
                 entities.get(Como.name)?.push(new Como({
@@ -81,16 +87,16 @@ async function processComoTransfer(log: Log, store: Store, logger: Logger) {
         }
     }
 
-    if (event.to !== ZeroAddress && event.to !== CREATOR_ADDRESS && !contracts.Governor.includes(event.to.toLowerCase()) && !contracts.CommunityPool.includes(event.to.toLowerCase())) {
-        let entry = entities.get(Como.name)?.find(c => (c as Como).contract === log.address && (c as Como).owner === event.to);
+    if (!nonUserAddresses.includes(event.to.toLowerCase())) {
+        let entry = entities.get(Como.name)?.find(c => (c as Como).contract === log.address && (c as Como).owner === event.to) as Como | undefined;
 
         if (entry) {
-            (entry as Como).balance = (entry as Como).balance + event.value;
+            entry.balance = entry.balance + event.value;
         } else {
             entry = await store.findOneBy(Como, { contract: log.address, owner: event.to });
 
             if (entry) {
-                (entry as Como).balance = (entry as Como).balance + event.value;
+                entry.balance = entry.balance + event.value;
                 entities.get(Como.name)?.push(entry);
             } else { 
                 entities.get(Como.name)?.push(new Como({
@@ -134,13 +140,13 @@ async function processTransferabilityUpdate(txn: Transaction & {input: string}, 
         entities.set(Objekt.name, []);
     
     for (let token of method.tokenIds) {
-        let objekt = entities.get(Objekt.name)?.find(o => o.id === Number(token).toString());
+        let objekt = entities.get(Objekt.name)?.find(o => o.id === Number(token).toString()) as Objekt | undefined;
         if (objekt) {
-            (objekt as Objekt).transferrable = method.transferrable;
+            objekt.transferrable = method.transferrable;
         } else {
             objekt = await store.get(Objekt, Number(token).toString());
             if (objekt) {
-                (objekt as Objekt).transferrable = method.transferrable;
+                objekt.transferrable = method.transferrable;
                 entities.get(Objekt.name)?.push(objekt);
             }
         }
@@ -160,10 +166,10 @@ async function processReveal(txn: Transaction & {input: string}, store: Store, l
             (v as Vote).contract === txn.to &&
             (v as Vote).index === method.offset + BigInt(i) &&
             (v as Vote).poll === method.pollId
-        );
+        ) as Vote | undefined;
 
         if (vote) {
-            (vote as Vote).candidate = Number(method.data[i].votedCandidateId);
+            vote.candidate = Number(method.data[i].votedCandidateId);
         } else {
             vote = await store.findOneBy(Vote, {
                 contract: txn.to,
@@ -171,7 +177,7 @@ async function processReveal(txn: Transaction & {input: string}, store: Store, l
                 poll: method.pollId
             });
             if (vote) {
-                (vote as Vote).candidate = Number(method.data[i].votedCandidateId);
+                vote.candidate = Number(method.data[i].votedCandidateId);
                 entities.get(Vote.name)?.push(vote);
             }
         }
@@ -235,10 +241,10 @@ async function processBatch(store: Store, log: Logger) {
                     transferrable: metadata.transferable
                 });
 
-                const transfers = entities.get(Transfer.name)?.filter(t => (t as Transfer).objekt.id === batch[i].id);
+                const transfers = entities.get(Transfer.name)?.filter(t => (t as Transfer).objekt.id === batch[i].id) as Transfer[] | undefined;
                 if (transfers) {
                     for (const transfer of transfers)
-                        (transfer as Transfer).objekt = objekt;
+                        transfer.objekt = objekt;
                 }
                 
                 entities.get(Objekt.name)![entities.get(Objekt.name)?.findIndex(o => o.id === batch[i].id)!] = objekt;
