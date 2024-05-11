@@ -1,9 +1,7 @@
 // Edit of @subsquid/http-client/src/client.ts replacing node-fetch with fetch()
 
 import type {Logger} from '@subsquid/logger'
-import {createLogger} from '@subsquid/logger'
 import {addErrorContext, ensureError, wait} from '@subsquid/util-internal'
-import * as http from 'http'
 import * as https from 'https'
 
 export interface HttpClientOptions {
@@ -47,17 +45,13 @@ export interface FetchRequest extends RequestInit {
 
 
 export interface AgentProvider {
-    getNativeAgent(url: string): http.Agent
+    getNativeAgent(url: string): https.Agent
 }
 
 
 export const defaultAgentProvider: AgentProvider = {
-    getNativeAgent(url: string): http.Agent {
-        if (url.startsWith('https://')) {
-            return https.globalAgent
-        } else {
-            return http.globalAgent
-        }
+    getNativeAgent(url: string): https.Agent {
+        return https.globalAgent
     }
 }
 
@@ -83,28 +77,21 @@ interface Nothing {
 
 
 export class HttpAgent implements AgentProvider {
-    private http?: http.Agent
     private https?: https.Agent
 
     constructor(private options: https.AgentOptions) {}
 
-    getNativeAgent(url: string): http.Agent {
-        if (url.startsWith('https://')) {
-            return this.https || (this.https = new https.Agent(this.options))
-        } else {
-            return this.http || (this.http = new http.Agent(this.options))
-        }
+    getNativeAgent(url: string): https.Agent {
+        return this.https || (this.https = new https.Agent(this.options))
     }
 
     close() {
-        this.http?.destroy()
         this.https?.destroy()
     }
 }
 
 
 export class HttpClient {
-    protected log?: Logger
     protected headers?: Record<string, string | number | bigint>
     private baseUrl?: string
     private retrySchedule: number[]
@@ -113,7 +100,6 @@ export class HttpClient {
     private requestCounter = 0
 
     constructor(options: HttpClientOptions = {}) {
-        this.log = options.log === null ? undefined : options.log || createLogger('sqd:http-client')
         this.headers = options.headers
         this.setBaseUrl(options.baseUrl)
         this.retrySchedule = options.retrySchedule || [10, 100, 500, 2000, 10000, 20000]
@@ -136,8 +122,6 @@ export class HttpClient {
     ): Promise<HttpResponse<T>> {
         let req = await this.prepareRequest(method, url, options)
 
-        this.beforeRequest(req)
-
         let retryAttempts = options.retryAttempts ?? this.retryAttempts
         let retrySchedule = options.retrySchedule ?? this.retrySchedule
         let retries = 0
@@ -150,7 +134,6 @@ export class HttpClient {
                         ? retrySchedule[Math.min(retries, retrySchedule.length - 1)]
                         : 1000
                     retries += 1
-                    this.beforeRetryPause(req, res, pause)
                     await wait(pause, req.signal)
                 } else if (res instanceof Error) {
                     throw addErrorContext(res, {httpRequestId: req.id})
@@ -160,64 +143,6 @@ export class HttpClient {
             } else {
                 return res
             }
-        }
-    }
-
-    protected beforeRequest(req: FetchRequest): void {
-        if (this.log?.isDebug()) {
-            this.log.debug({
-                httpRequestId: req.id,
-                httpRequestUrl: req.url,
-                httpRequestMethod: req.method,
-                httpRequestHeaders: Array.from(req.headers),
-                httpRequestBody: req.body
-            }, 'http request')
-        }
-    }
-
-    protected beforeRetryPause(req: FetchRequest, reason: Error | HttpResponse, pause: number): void {
-        if (this.log?.isWarn()) {
-            let info: any = {
-                httpRequestId: req.id,
-                httpRequestUrl: req.url,
-                httpRequestMethod: req.method
-            }
-            if (reason instanceof Error) {
-                info.reason = reason.toString()
-            } else {
-                info.reason = `got ${reason.status}`
-                info.httpResponseUrl = reason.url
-                info.httpResponseStatus = reason.status
-                info.httpResponseHeaders = Array.from(reason.headers)
-                info.httpResponseBody = reason.body
-            }
-            this.log.warn(info, `request will be retried in ${pause} ms`)
-        }
-    }
-
-    protected afterResponseHeaders(req: FetchRequest, url: string, status: number, headers: Headers): void {
-        if (this.log?.isDebug()) {
-            this.log.debug({
-                httpRequestId: req.id,
-                httpResponseUrl: url,
-                httpResponseStatus: status,
-                httpResponseHeaders: Array.from(headers)
-            }, 'http headers')
-        }
-    }
-
-    protected afterResponse(req: FetchRequest, res: HttpResponse): void {
-        if (!res.stream && this.log?.isDebug()) {
-            let httpResponseBody: any = res.body
-            if (typeof res.body == 'string' || res.body instanceof Uint8Array) {
-                if (res.body.length > 1024 * 1024) {
-                    httpResponseBody = '...body is too long to be logged'
-                }
-            }
-            this.log.debug({
-                httpRequestId: req.id,
-                httpResponseBody
-            }, 'http body')
         }
     }
 
@@ -328,7 +253,6 @@ export class HttpClient {
 
     private async performRequest(req: FetchRequest): Promise<HttpResponse> {
         let res = await fetch(req.url, req)
-        this.afterResponseHeaders(req, res.url, res.status, res.headers)
         let httpResponse
         if (req.stream && res.ok) {
            httpResponse = new HttpResponse(req.id, res.url, res.status, res.headers, res.body, res.body != null)
@@ -336,7 +260,6 @@ export class HttpClient {
             let body = await this.handleResponseBody(req, res)
             httpResponse = new HttpResponse(req.id, res.url, res.status, res.headers, body, false)
         }
-        this.afterResponse(req, httpResponse)
         return httpResponse
     }
 
