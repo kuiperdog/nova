@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { pushState } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { Subsquid } from '$lib/data/apis';
-	import { likes } from '$lib/data/likes';
+	import { likedObjekts } from '$lib/utils/stores';
+	import { Collection, Objekt } from '../../../model';
 	import filled_heart_icon from '$lib/assets/icons/filled_heart.svg';
 
-	export let collection: Subsquid.Collection;
-	export let objekt: Subsquid.Objekt | null = null;
+	export let collection: Collection;
+	export let objekt: Objekt | null = null;
 
 	let width: number;
 	let loaded = false;
@@ -20,11 +20,11 @@
 		<img src={collection.thumbnail} bind:this={img} on:load={() => loaded = true} alt={collection.id}>
 		<div class="sideBar" style="font-size: {width * 0.05}px; color: {collection.textColor};">
 			<p>{collection.number}</p>
-			{#if objekt}
+			{#if objekt && objekt.serial}
 				<p class="serial">#{objekt.serial.toString().padStart(5, '0')}</p>
 			{/if}
 		</div>
-		{#if $likes.find(c => c.id === collection.id)}
+		{#if $likedObjekts.find(c => c.id === collection.id)}
 			<img src={filled_heart_icon} alt="Liked" class="liked">
 		{/if}
 	</div>

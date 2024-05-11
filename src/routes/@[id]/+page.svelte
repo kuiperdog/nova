@@ -3,9 +3,11 @@
     import { page } from '$app/stores';
     import ObjektGrid from '$lib/components/common/ObjektGrid.svelte';
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
-    import { Subsquid, Cosmo } from '$lib/data/apis';
     import { type Writable } from 'svelte/store';
-    import { likes } from '$lib/data/likes';
+    import { likedObjekts } from '$lib/utils/stores';
+    import { getArtists, getUnit } from '$lib/utils/artists';
+    import { filterCollections } from '$lib/utils/filters';
+	import { Collection, Objekt } from '../../model';
 
     let total: number | null = null;
     let params = $page.url.searchParams;
@@ -15,7 +17,7 @@
         let collectionFilters: string[] = [];
         let objektFilters: string[] = [`owner_eq: "${$address}"`];
         let sort = 'received_DESC';
-        const artists = await Cosmo.artists();
+        const artists = await getArtists();
 
         params.forEach((value, key) => {
             switch (key) {
@@ -48,12 +50,12 @@
         });
 
         if (params.has('liked')) {
-            if (!$likes.length) {
+            if (!$likedObjekts.length) {
                 total = 0;
                 return [];
             }
 
-            const items = Subsquid.filterCollections($likes, params);
+            const items = await filterCollections($likedObjekts, params);
             collectionFilters.push(`id_eq: "${items[0].id}"` + items.slice(1).reduce((acc, item, i) =>
                 acc.slice(0, acc.length - i) + `, OR: {id_eq: "${item.id}"` + '}'.repeat(i + 1), ''));
         } else {
@@ -64,8 +66,8 @@
                             collectionFilters.push(`artists_containsAll: "${value}"`);
                         else if (artists.find(a => a.members.find(m => m.name === value)))
                             collectionFilters.push(`member_eq: "${value}"`);
-                        else if (Cosmo.unit(value))
-                            collectionFilters.push(`AND: {member_eq: "${Cosmo.unit(value)![0]}"` + Cosmo.unit(value)?.slice(1).reduce(
+                        else if (getUnit(value))
+                            collectionFilters.push(`AND: {member_eq: "${getUnit(value)![0]}"` + getUnit(value)?.slice(1).reduce(
                                 (acc, m, i) => acc.slice(0, acc.length - i) + `, OR: {member_eq: "${m}"` + '}'.repeat(i + 1), '') + '}');
                         break;
                     case 'season':
@@ -90,7 +92,7 @@
             });
         }
 
-        const res = await fetch(Subsquid.URL, {
+        const res = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -102,9 +104,9 @@
                             ` : `` }
                             edges {
                                 node {
-                                    ${Object.keys(Subsquid.Objekt).join('\n')}
+                                    ${Object.keys(new Objekt).filter(k => k !== 'collection').join('\n')}
                                     collection {
-                                        ${Object.keys(Subsquid.Collection).join('\n')}
+                                        ${Object.keys(new Collection).join('\n')}
                                     }
                                 }
                             }
@@ -135,9 +137,9 @@
         }
     }));
 
-    let _likes = $likes;
-    $: if (_likes !== $likes) {
-        _likes = $likes;
+    let _likes = $likedObjekts;
+    $: if (_likes !== $likedObjekts) {
+        _likes = $likedObjekts;
         if (params.has('liked'))
             total = null;
     }

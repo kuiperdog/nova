@@ -194,7 +194,7 @@ async function processBatch(store: Store, log: Logger) {
 
             const requests: AxiosResponse[] = [];
             requests.push(...await Promise.all(batch.map(o => {
-                return client.get(`https://api.cosmo.fans/objekt/v1/token/${o.id}`);
+                return client.get(`${__COSMO_API__}/v1/token/${o.id}`);
             })));
 
             for (let i = 0; i < requests.length; i++) {

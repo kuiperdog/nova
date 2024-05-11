@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { Cosmo } from "$lib/data/apis";
-    import { getAssets } from "$lib/data/assets";
+    import { getArtists, getAssets } from "$lib/utils/artists";
     
     export let selected: Cosmo.Artist | undefined = undefined;
     
     let artists: Cosmo.Artist[];
-    Cosmo.artists().then(a => {
+    getArtists().then(a => {
         artists = a;
 
         if (!selected) {

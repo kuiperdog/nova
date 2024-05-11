@@ -1,26 +1,26 @@
 <script lang="ts">
     import { getContext } from "svelte";
     import { type Writable } from "svelte/store";
-    import { Cosmo, Subsquid } from "$lib/data/apis";
     import { formatEther } from "ethers";
-    import { getAssets } from "$lib/data/assets";
+    import { getArtists, getAssets } from "$lib/utils/artists";
+    import { Vote } from "../../../model";
     import { t } from 'svelte-i18n';
 
     const address: Writable<string> = getContext("address");
-    let gravities: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Subsquid.Vote[] })[] })[];
+    let gravities: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Vote[] })[] })[];
     let artists: Cosmo.Artist[];
 
-    Cosmo.artists().then(a => {
+    getArtists().then(a => {
         artists = a;
         load();
     });
     
     async function load() {
-        const listRes = await fetch(`${Cosmo.URL}/gravity/v3`);
+        const listRes = await fetch(`${__COSMO_PROXY__}/gravity/v3`);
         const listData = await listRes.json();
         const list: Cosmo.Gravity[] = [ ...listData.upcoming, ...listData.ongoing, ...listData.past];
 
-        const votesRes = await fetch(Subsquid.URL, {
+        const votesRes = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -29,7 +29,7 @@
                         votesConnection(orderBy: timestamp_DESC, where: {from_eq: "${$address}"}) {
                             edges {
                                 node {
-                                    ${Object.keys(Subsquid.Vote).join('\n')}
+                                    ${Object.keys(new Vote).join('\n')}
                                 }
                             }
                         }
@@ -38,9 +38,9 @@
             })
         });
         const votesData = await votesRes.json();
-        const votes: Subsquid.Vote[] = votesData.data.votesConnection.edges.map((e: { node: Subsquid.Vote }) => e.node);
+        const votes: Vote[] = votesData.data.votesConnection.edges.map((e: { node: Vote }) => e.node);
 
-        const polls = votes.reduce((acc: (Cosmo.Poll & { votes: Subsquid.Vote[], gravity: Cosmo.Gravity })[], vote: Subsquid.Vote) => {
+        const polls = votes.reduce((acc: (Cosmo.Poll & { votes: Vote[], gravity: Cosmo.Gravity })[], vote: Vote) => {
             const entry = acc.find(poll => poll.votes.find(v => v.poll === vote.poll && v.contract === vote.contract));
 
             if (entry) {
@@ -74,11 +74,11 @@
         }, []);
 
         const details = (await Promise.all(pollArtists.map(async (polls) => {
-            const res = await fetch(`${Cosmo.URL}/gravity/v3.1/${polls[0].artist}/polls/${polls.map(p => p.id).join(',')}`);
+            const res = await fetch(`${__COSMO_PROXY__}/gravity/v3.1/${polls[0].artist}/polls/${polls.map(p => p.id).join(',')}`);
             return await res.json();
         }))).flat();
 
-        gravities = details.reduce((acc: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Subsquid.Vote[] })[] })[], detail: Cosmo.PollDetail) => {
+        gravities = details.reduce((acc: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Vote[] })[] })[], detail: Cosmo.PollDetail) => {
             const entry = acc.find(g => g.id === detail.gravityId);
             const votes = polls.find(p => p.id === detail.id)!.votes;
 
@@ -91,22 +91,22 @@
         }, []);
     }
 
-    function getPoll(vote: Subsquid.Vote, gravity: Cosmo.Gravity): Cosmo.Poll | undefined {
+    function getPoll(vote: Vote, gravity: Cosmo.Gravity): Cosmo.Poll | undefined {
             const inTimespan = (p: Cosmo.Poll) => (new Date(p.startDate).getTime() <= vote.timestamp && new Date(p.endDate).getTime() >= vote.timestamp);
 
-            const pollFromChain = gravity.polls.find(p => p.pollIdOnChain == vote.poll && inTimespan(p));
+            const pollFromChain = gravity.polls.find(p => p.pollIdOnChain == Number(vote.poll) && inTimespan(p));
             if (pollFromChain)
                 return pollFromChain;
 
-            const pollFromId = gravity.polls.find(p => p.id == vote.poll && inTimespan(p));
+            const pollFromId = gravity.polls.find(p => p.id == Number(vote.poll) && inTimespan(p));
             if (pollFromId)
                 return pollFromId;
 
-            const pollBeforeId = gravity.polls.find(p => p.id - 1 == vote.poll && inTimespan(p));
+            const pollBeforeId = gravity.polls.find(p => p.id - 1 == Number(vote.poll) && inTimespan(p));
             if (pollBeforeId)
                 return pollBeforeId;
 
-            return gravity.polls.find(p => p.id + 1 == vote.poll && inTimespan(p));
+            return gravity.polls.find(p => p.id + 1 == Number(vote.poll) && inTimespan(p));
     }
 
     function pollTitle(poll: Cosmo.PollDetail, candidate: number) {
@@ -149,7 +149,7 @@
                             <div class="choice">
                                 {#if vote.candidate === null}
                                     <p><i>{$t('profile.votes.unrevealed')}</i></p>
-                                {:else}
+                                {:else if vote.candidate !== undefined}
                                     <img src={poll.choices[vote.candidate].txImageUrl} alt={poll.choices[vote.candidate].title}>
                                     <p>{ poll.choices[vote.candidate].title || pollTitle(poll, vote.candidate) }</p>
                                 {/if}

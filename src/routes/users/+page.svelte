@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { Cosmo, Subsquid } from "$lib/data/apis";
     import { formatEther } from "ethers";
-    import { getAssets } from "$lib/data/assets";
+    import { getAssets } from "$lib/utils/artists";
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import find_icon from "$lib/assets/icons/find.svg";
+    import { Como } from "../../model";
     import { t } from 'svelte-i18n';
 
     let users: Cosmo.User[] | undefined;
-    let holders: Subsquid.Como[] | undefined;
+    let holders: Como[] | undefined;
     let artist: Cosmo.Artist;
     let selected: Cosmo.Artist | undefined;
 
@@ -15,7 +15,7 @@
         if (selected && artist !== selected) {
             artist = selected;
             users = holders = undefined;
-            fetch(Subsquid.URL, {
+            fetch(__SUBSQUID_API__, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -24,7 +24,7 @@
                             comosConnection(orderBy: balance_DESC, first: 100, where: {contract_eq: "${artist.contracts.Como.toLowerCase()}"}) {
                                 edges {
                                     node {
-                                        ${Object.keys(Subsquid.Como).join('\n')}
+                                        ${Object.keys(new Como).join('\n')}
                                     }
                                 }
                             }
@@ -33,9 +33,9 @@
                 )
             }).then(async res => {
                 const data = await res.json();
-                holders = data.data.comosConnection.edges.map((e: { node: Subsquid.Como }) => e.node);
+                holders = data.data.comosConnection.edges.map((e: { node: Como }) => e.node);
 
-                const mapping = await fetch(`${Cosmo.URL}/user/v1/by-address/${holders?.map((h: Subsquid.Como) => h.owner).join(',')}`);
+                const mapping = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${holders?.map((h: Como) => h.owner).join(',')}`);
                 users = await mapping.json();
             })
         }

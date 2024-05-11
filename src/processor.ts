@@ -18,7 +18,7 @@ export async function run(
     processReveal: (txn: Transaction & {input: string}, store: Store, logger: Logger) => Promise<void> = async () => {},
     processBatch: (store: Store, logger: Logger) => Promise<void> = async () => {}
 ) {
-    const res = await fetch('https://api.cosmo.fans/artist/v1');
+    const res = await fetch(`${__COSMO_API__}/artist/v1`);
     const artists = await res.json();
     contracts = artists.artists.reduce((acc: any, artist: any) => {
         Object.keys(artist.contracts).forEach(key => {
@@ -28,7 +28,7 @@ export async function run(
     }, {});
 
     const processor = new EvmBatchProcessor()
-        .setRpcEndpoint('https://rpc.ankr.com/polygon')
+        .setRpcEndpoint(__POLYGON_RPC__)
         .setFinalityConfirmation(300)
         .setBlockRange({ from: startBlock })
         .setFields({ evmLog: { topics: true, data: true }, transaction: { sighash: true, input: true } })
@@ -43,7 +43,7 @@ export async function run(
         processor.setGateway(lookupArchive('polygon'));
         database = new TypeormDatabase({ supportHotBlocks: true });
     } else {
-        const provider = new JsonRpcProvider('https://rpc.ankr.com/polygon');
+        const provider = new JsonRpcProvider(__POLYGON_RPC__);
         const blockData = await provider.getBlock(startBlock);
         database = {
             connect: async () => { return { height: startBlock, hash: blockData?.hash! } },

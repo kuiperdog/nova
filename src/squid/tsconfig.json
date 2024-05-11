@@ -16,6 +16,7 @@
         "../model",
         "../abi",
         "../package.json",
+        "../app.d.ts",
         "main.ts"
     ]
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Subsquid, Cosmo } from "$lib/data/apis";
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
-    import { getAssets } from "$lib/data/assets";
+    import { getAssets } from "$lib/utils/artists";
+    import { Como } from "../../../model";
     import { type Writable } from "svelte/store";
     import { getContext } from "svelte";
     import { t } from 'svelte-i18n';
@@ -11,7 +11,7 @@
     let ranking: string | undefined;
     let days: number[] | undefined;
 
-    const balances: Writable<Subsquid.Como[]> = getContext("como");
+    const balances: Writable<Como[]> = getContext("como");
     const month = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
 
     $: {
@@ -22,7 +22,7 @@
             const balance = $balances.find(b => b.contract === contract);
 
             if (balance) {
-                fetch(Subsquid.URL, {
+                fetch(__SUBSQUID_API__, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

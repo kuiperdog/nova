@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Subsquid } from '$lib/data/apis';
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
     import { t } from 'svelte-i18n';
+    import { formatObjekt } from '$lib/utils/formatting';
 
     export let data: any;
 </script>
@@ -19,7 +19,7 @@
             <div class="objekt">
                 <button on:click={() => pushState(`/objekt/${edge.node.collection.id}/${edge.node.serial}`, 
                     { collection: edge.node.collection, objekt: edge.node, previous: $page.url.href })}>
-                    { Subsquid.formatObjekt(edge.node.collection, edge.node) }
+                    { formatObjekt(edge.node.collection, edge.node) }
                 </button>
                 {#if objektAge < 60}
                     <p>{$t('general.seconds_past', { values: { seconds: Math.floor(objektAge) } })}</p>

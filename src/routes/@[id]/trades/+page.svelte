@@ -4,15 +4,16 @@
     import { type Writable } from 'svelte/store';
     import { pushState } from '$app/navigation';
     import { page } from '$app/stores';
-    import { Cosmo, Subsquid } from '$lib/data/apis';
     import Checkbox from '$lib/components/common/Checkbox.svelte';
     import cosmo_logo from '$lib/assets/images/cosmo.png';
+    import { Transfer, Objekt, Collection } from '../../../model';
+    import { formatObjekt } from '$lib/utils/formatting';
     import { t, number } from 'svelte-i18n';
 
     const limit = 25;
     const address: Writable<string> = getContext("address");
 
-    let items: (Subsquid.Transfer & { objekt: (Subsquid.Objekt & { collection: Subsquid.Collection }) })[] | undefined;
+    let items: (Transfer & { objekt: (Objekt & { collection: Collection }) })[] | undefined;
     let total: number | undefined;
     let checked: boolean;
     let mints = false;
@@ -21,7 +22,7 @@
 
     async function load() {
         loading = true;
-        const query = await fetch(Subsquid.URL, {
+        const query = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -34,11 +35,11 @@
                             ` : `` }
                             edges {
                                 node {
-                                    ${Object.keys(Subsquid.Transfer).join('\n')}
+                                    ${Object.keys(new Transfer).filter(k => k !== 'objekt').join('\n')}
                                     objekt {
-                                        ${Object.keys(Subsquid.Objekt).join('\n')}
+                                        ${Object.keys(new Objekt).filter(k => k !== 'collection').join('\n')}
                                         collection {
-                                            ${Object.keys(Subsquid.Collection).join('\n')}
+                                            ${Object.keys(new Collection).join('\n')}
                                         }
                                     }
                                 }
@@ -56,12 +57,12 @@
 
         if (queryData.data.transfersConnection.edges.length) {
             const addresses = new Set(
-                queryData.data.transfersConnection.edges.reduce((acc: string[], e: { node: Subsquid.Transfer }) => {
+                queryData.data.transfersConnection.edges.reduce((acc: string[], e: { node: Transfer }) => {
                     return [...acc, e.node.to, e.node.from];
                 }, [])
             );
 
-            const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${Array.from(addresses).join(',')}`);
+            const profiles = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${Array.from(addresses).join(',')}`);
             const profilesData = await profiles.json();
             users = Array.from(new Set([...users, ...profilesData]));
         }
@@ -118,7 +119,7 @@
                     </p>
                     <button on:click={() => pushState(`/objekt/${item.objekt.collection.id}/${item.objekt.serial}`, 
                         { collection: item.objekt.collection, objekt: item.objekt, previous: $page.url.href })}>
-                        { Subsquid.formatObjekt(item.objekt.collection, item.objekt) }
+                        { formatObjekt(item.objekt.collection, item.objekt) }
                     </button>
                     <div class="details">
                         <p class="type">

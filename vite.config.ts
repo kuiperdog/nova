@@ -10,7 +10,11 @@ export default defineConfig({
         nodePolyfills()
     ],
     define: {
-        __VERSION__: `"${pkg.version}"`
+        __VERSION__: `"${pkg.version}"`,
+        __SUBSQUID_API__: '"https://squid.subsquid.io/cosmo/graphql"',
+        __COSMO_API__: '"https://api.cosmo.fans"',
+        __COSMO_PROXY__: '"https://cache.nova.gd"',
+        __POLYGON_RPC__: '"https://rpc.ankr.com/polygon"'
     },
     resolve: {
         alias: {

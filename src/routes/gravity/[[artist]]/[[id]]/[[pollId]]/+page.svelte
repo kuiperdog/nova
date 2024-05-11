@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-    import { Cosmo, Polygon } from '$lib/data/apis';
-    import { Contract, formatEther } from 'ethers';
+    import { Contract, JsonRpcProvider, formatEther } from 'ethers';
     import { MulticallProvider } from '@ethers-ext/provider-multicall';
     import { flip } from 'svelte/animate';
     import ArtistSelector from '$lib/components/common/ArtistSelector.svelte';
@@ -10,7 +9,8 @@
     import Graph from './Graph.svelte';
     import History from './History.svelte';
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
-    import { getAssets } from '$lib/data/assets';
+    import { getArtists, getAssets } from '$lib/utils/artists';
+    import { ABI_JSON } from '../../../../../abi/Governor.abi';
     import { t } from 'svelte-i18n';
     import { onDestroy } from 'svelte'; 
 
@@ -26,6 +26,8 @@
     let totalVotes: number;
     let totalComo: number;
     let votesPerCandidates: bigint[];
+
+    const rpc = new JsonRpcProvider(__POLYGON_RPC__);
 
     let _params: any;
     $: {
@@ -56,11 +58,11 @@
             if (gravityList && gravityList.find(g => g.id === Number($page.params.id))) {
                 gravity = gravityList.find(g => g.id === Number($page.params.id));
             } else {
-                const res = await fetch(`${Cosmo.URL}/gravity/v3/${$page.params.artist}/gravity/${$page.params.id}`);
+                const res = await fetch(`${__COSMO_API__}/gravity/v3/${$page.params.artist}/gravity/${$page.params.id}`);
                 gravity = (await res.json()).gravity;
             }
         } else {
-            const res = await fetch(`${Cosmo.URL}/gravity/v3/${$page.params.artist || ''}`);
+            const res = await fetch(`${__COSMO_PROXY__}/gravity/v3/${$page.params.artist || ''}`);
             const gravities = await res.json() as { 
                 upcoming: Cosmo.Gravity[];
                 ongoing: Cosmo.Gravity[];
@@ -81,7 +83,7 @@
             ].filter(g => g.artist === gravity?.artist);
         }
 
-        artist = (await Cosmo.artists()).find(a => a.name === gravity?.artist);
+        artist = (await getArtists()).find(a => a.name === gravity?.artist);
         getPoll();
     }
 
@@ -90,17 +92,17 @@
 
         const sortedPolls = gravity?.polls.sort((a, b) => Date.parse(a.startDate) - Date.parse(b.startDate));
         const id = $page.params.pollId || (gravity?.polls.find(p => !p.finalized) || sortedPolls?.at(-1))?.id;
-        const res = await fetch(`${Cosmo.URL}/gravity/v3/${gravity?.artist}/gravity/${gravity?.id}/polls/${id}`);
+        const res = await fetch(`${__COSMO_PROXY__}/gravity/v3/${gravity?.artist}/gravity/${gravity?.id}/polls/${id}`);
         const pollDetail: Cosmo.PollDetail = (await res.json()).pollDetail;
 
-        contract = new Contract(artist!.contracts.Governor, Polygon.ABI.Governor, Polygon.RPC);
+        contract = new Contract(artist!.contracts.Governor, ABI_JSON, rpc);
 
         pollId = pollDetail.pollIdOnChain || pollDetail.id;
         const candidates = await contract.candidates(pollId);
         if (candidates.toString().replaceAll('\b', '') !== pollDetail.choices.map(c => c.id).toString().replaceAll('\b', ''))
             pollId -= 1;
 
-        const multicall = new Contract(artist!.contracts.Governor, Polygon.ABI.Governor, new MulticallProvider(Polygon.RPC));
+        const multicall = new Contract(artist!.contracts.Governor, ABI_JSON, new MulticallProvider(rpc));
         const [ pollData, total, votes ] = await Promise.all([
             multicall.polls(pollId),
             multicall.totalVotes(pollId),

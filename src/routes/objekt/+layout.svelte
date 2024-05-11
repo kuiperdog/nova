@@ -4,8 +4,10 @@
     import ObjektGrid from '$lib/components/common/ObjektGrid.svelte';
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
     import ObjektScanner from '$lib/components/common/ObjektScanner.svelte';
-    import { Subsquid, Cosmo } from '$lib/data/apis';
-    import { likes } from '$lib/data/likes';
+    import { likedObjekts } from '$lib/utils/stores';
+    import { filterCollections } from '$lib/utils/filters';
+    import { getArtists, getUnit } from '$lib/utils/artists';
+    import { Collection } from '../../model';
     import copy_icon from '$lib/assets/icons/copy.svg';
     import camera_icon from '$lib/assets/icons/camera.svg';
 
@@ -14,19 +16,19 @@
 
     async function load(offset: number, length: number): Promise<ComponentProps<ObjektPreview>[]> {
         if (params.has('liked')) {
-            if (!$likes.length) {
+            if (!$likedObjekts.length) {
                 total = 0;
                 return [];
             }
             
-            if (!$likes[0].backgroundColor) {
-                const res = await fetch(Subsquid.URL, {
+            if (!$likedObjekts[0].backgroundColor) {
+                const res = await fetch(__SUBSQUID_API__, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         query: `
                             query {
-                                ${$likes.map((collection, index) => `
+                                ${$likedObjekts.map((collection, index) => `
                                     bookmarks${index}: collectionsConnection(orderBy: id_ASC, where: {id_eq: "${collection.id}"}) {
                                         edges {
                                             node {
@@ -41,19 +43,19 @@
                 });
                 const data = await res.json();
 
-                $likes = $likes.map((c, i) => {
+                $likedObjekts = $likedObjekts.map((c, i) => {
                     return { ...c, backgroundColor: data.data[Object.keys(data.data)[i]].edges[0].node.backgroundColor }
                 });
             }
 
-            const items = Subsquid.filterCollections($likes, params);
+            const items = await filterCollections($likedObjekts, params);
             total = items.length;
             return items.map(c => { return { collection: c } });
         }
 
         let filters: string[] = [];
         let sort = 'timestamp_DESC';
-        const artists = await Cosmo.artists();
+        const artists = await getArtists();
 
         params.forEach((value, key) => {
             switch (key) {
@@ -62,8 +64,8 @@
                         filters.push(`artists_containsAll: "${value}"`);
                     else if (artists.find(a => a.members.find(m => m.name === value)))
                         filters.push(`member_eq: "${value}"`);
-                    else if (Cosmo.unit(value))
-                        filters.push(`AND: {member_eq: "${Cosmo.unit(value)![0]}"` + Cosmo.unit(value)?.slice(1).reduce(
+                    else if (getUnit(value))
+                        filters.push(`AND: {member_eq: "${getUnit(value)![0]}"` + getUnit(value)?.slice(1).reduce(
                             (acc, m, i) => acc.slice(0, acc.length - i) + `, OR: {member_eq: "${m}"` + '}'.repeat(i + 1), '') + '}')
                     break;
                 case 'season':
@@ -97,7 +99,7 @@
             }
         });
 
-        const res = await fetch(Subsquid.URL, {
+        const res = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -109,7 +111,7 @@
                             ` : `` }
                             edges {
                                 node {
-                                    ${Object.keys(Subsquid.Collection).join('\n')}
+                                    ${Object.keys(new Collection).join('\n')}
                                 }
                             }
                         }
@@ -124,7 +126,7 @@
         if (total === null)
             total = data.data.collectionsConnection.totalCount;
 
-        return data.data.collectionsConnection.edges.map((e: { node: Subsquid.Collection }): ComponentProps<ObjektPreview> => { return { collection: e.node } });
+        return data.data.collectionsConnection.edges.map((e: { node: Collection }): ComponentProps<ObjektPreview> => { return { collection: e.node } });
     }
 
     onDestroy(page.subscribe(() => {
@@ -134,18 +136,18 @@
         }
     }));
 
-    let _likes = $likes;
-    $: if (_likes !== $likes) {
+    let _likes = $likedObjekts;
+    $: if (_likes !== $likedObjekts) {
         if (params.has('liked') && _likes[0] && _likes[0].backgroundColor)
             total = null;
-        _likes = $likes;
+        _likes = $likedObjekts;
     }
 
     function copyLikes() {
-        navigator.clipboard.writeText(Object.values($likes.reduce((acc, c) => {
+        navigator.clipboard.writeText(Object.values($likedObjekts.reduce((acc, c) => {
             acc[c.member] = [ c, ...(acc[c.member] || []) ];
             return acc;
-        }, {} as {[member: string]: Subsquid.Collection[]})).map(m => {
+        }, {} as {[member: string]: Collection[]})).map(m => {
             return `${m[0].member}: ` + m.map(c => `${c.season.slice(0, 1)}${c.number.slice(0, 3)}`).join(', ');
         }).join('\n'));
     }

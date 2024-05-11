@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { Cosmo, Polygon } from "$lib/data/apis";
     import status_ok_icon from "$lib/assets/icons/status_ok.svg";
     import status_warning_icon from "$lib/assets/icons/status_warning.svg";
     import status_errror_icon from "$lib/assets/icons/status_error.svg";
     import { formatUnits } from "ethers";
+    import { JsonRpcProvider } from "ethers";
     import { t } from 'svelte-i18n';
 
     export let data: any;
@@ -12,10 +12,11 @@
     let nova: string;
     let message: string = $t('widget.status.no_errors');
     let gas: number;
+    const rpc = new JsonRpcProvider(__POLYGON_RPC__);
 
     async function checkCosmo() {
         try {
-            const res = await fetch(Cosmo.URL);
+            const res = await fetch(__COSMO_API__);
             const data = await res.json();
             if (!data)
                 throw new Error();
@@ -28,7 +29,7 @@
 
     async function checkPolygon() {
         try {
-            const fees = await Polygon.RPC.getFeeData();
+            const fees = await rpc.getFeeData();
             gas = Number(formatUnits(fees.gasPrice!, 'gwei'));
 
             if (gas > 400) {
@@ -48,7 +49,7 @@
             nova = status_errror_icon;
             message = $t('widget.status.db_unreachable');
         } else {
-            Polygon.RPC.getBlockNumber().then(height => {
+            rpc.getBlockNumber().then(height => {
                 if (data.data.squidStatus.height < height - 3800) {
                     nova = status_warning_icon;
                     message = $t('widget.status.db_unsynced');

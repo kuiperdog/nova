@@ -2,8 +2,8 @@
     import { onDestroy } from 'svelte';
     import { formatEther } from 'ethers';
     import { flip } from 'svelte/animate';
-    import { Subsquid, Cosmo } from '$lib/data/apis';
-    import { getAssets } from '$lib/data/assets';
+    import { getAssets } from '$lib/utils/artists';
+    import { Vote } from '../../../../../model';
     import { t } from 'svelte-i18n';
 
     export let voteStart: number;
@@ -15,7 +15,7 @@
     let countdown = -1;
     let interval: number;
     let timeout: number;
-    let votes: Subsquid.Vote[] = [];
+    let votes: Vote[] = [];
     let users: Cosmo.User[] = [];
     const como = getAssets(artist).como;
 
@@ -35,14 +35,14 @@
     }
 
     async function load() {
-        const res = await fetch(Subsquid.URL, {
+        const res = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 query: `
                     query {
                         votes(orderBy: amount_DESC, limit: 50, where: {contract_eq: "${contract.toLowerCase()}", poll_eq: "${pollId}"}) {
-                            ${Object.keys(Subsquid.Vote).join('\n')}
+                            ${Object.keys(new Vote).join('\n')}
                         }
                     }
                 `
@@ -50,9 +50,9 @@
         });
         const data = await res.json();
 
-        const missingUsers = data.data.votes.filter((v: Subsquid.Vote) => !users.find(u => u.address === v.from)).map((v: Subsquid.Vote) => v.from);
+        const missingUsers = data.data.votes.filter((v: Vote) => !users.find(u => u.address === v.from)).map((v: Vote) => v.from);
         if (missingUsers.length) {
-            const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${missingUsers.join(',')}`);
+            const profiles = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${missingUsers.join(',')}`);
             const profileData: Cosmo.User[] = await profiles.json();
             users = [
                 ...users,
@@ -112,7 +112,7 @@
                             {new Date(Number(vote.timestamp)).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })},
                             {new Date(Number(vote.timestamp)).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}
                         </span>
-                        {#if vote.candidate !== null}
+                        {#if vote.candidate !== null && vote.candidate !== undefined}
                             <p class="candidate">
                                 <img src={poll.choices[vote.candidate].txImageUrl} alt="Choice">
                                 { poll.choices[vote.candidate].title || pollTitle(poll, vote.candidate) }

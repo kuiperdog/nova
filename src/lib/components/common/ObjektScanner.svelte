@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount, onDestroy } from 'svelte';
-    import { Cosmo, Subsquid } from '$lib/data/apis';
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
     import QrScanner from 'qr-scanner';
+	import { Objekt } from '../../../model';
 
     export let scanning = true;
     let video: HTMLVideoElement;
@@ -14,7 +14,7 @@
         qrScanner = new QrScanner(video, async (res) => {
             if (res.data.startsWith('https://link.cosmo.fans/mint') && !scanned) {
                 scanned = true;
-                const lookup = await fetch(`${Cosmo.URL}/objekt/v1/by-serial/${res.data.slice(-11)}`);
+                const lookup = await fetch(`${__COSMO_PROXY__}/objekt/v1/by-serial/${res.data.slice(-11)}`);
                 const data = await lookup.json();
                 if (data && data.objekt) {
                     const id = data.objekt.collectionId.toLowerCase().replaceAll(' ', '-');
@@ -31,9 +31,9 @@
                             class: data.objekt.class,
                             textColor: data.objekt.textColor,
                             backgroundColor: data.objekt.backgroundColor,
-                            timestamp: 1
+                            timestamp: BigInt(0)
                         },
-                        objekt: { ...Subsquid.Objekt, serial: data.objekt.objektNo },
+                        objekt: { ...new Objekt, serial: data.objekt.objektNo },
                         previous: $page.url.href
                     });
                     scanning = false;

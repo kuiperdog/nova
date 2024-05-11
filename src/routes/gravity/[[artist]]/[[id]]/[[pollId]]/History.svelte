@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { Cosmo } from '$lib/data/apis';
     import { t } from 'svelte-i18n';
 
     export let artist: Cosmo.Artist;
     export let gravities: Cosmo.Gravity[] | undefined = undefined;
 
     if (!gravities) {
-        fetch(`${Cosmo.URL}/gravity/v3/${artist.name}`).then(async (res) => {
+        fetch(`${__COSMO_API__}/gravity/v3/${artist.name}`).then(async (res) => {
             const data = await res.json() as { 
                 upcoming: Cosmo.Gravity[];
                 ongoing: Cosmo.Gravity[];

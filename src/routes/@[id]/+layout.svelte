@@ -4,9 +4,9 @@
     import opensea_icon from '$lib/assets/icons/opensea.svg';
     import date_icon from '$lib/assets/icons/date.svg';
     import status_error_icon from '$lib/assets/icons/status_error.svg';
-    import { getAssets } from '$lib/data/assets';
+    import { getArtists, getAssets } from '$lib/utils/artists';
+    import { Como } from '../../model';
     import { isAddress, formatEther } from 'ethers';
-    import { Cosmo, Subsquid } from '$lib/data/apis';
 	import { replaceState } from '$app/navigation';
 	import { page } from '$app/stores';
     import { writable } from 'svelte/store';
@@ -17,15 +17,15 @@
 
     let profile: Cosmo.User | undefined;
     let joinDate: Date | undefined;
-    let balances: Subsquid.Como[] | undefined;
+    let balances: Como[] | undefined;
     let nonexistent = false;
     let artists: Cosmo.Artist[] | undefined;
-    Cosmo.artists().then(a => artists = a);
+    getArtists().then(a => artists = a);
 
 	const address = writable<string>();
     setContext("address", address);
 
-	const como = writable<Subsquid.Como[]>();
+	const como = writable<Como[]>();
     setContext("como", como);
 
     async function getProfile() {
@@ -36,7 +36,7 @@
 
         if (isAddress(data.id)) {
             address.set(data.id);
-            const res = await fetch(`${Cosmo.URL}/user/v1/by-address/${data.id}`);
+            const res = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${data.id}`);
             const users = await res.json();
             if (users[0]) {
                 profile = users[0];
@@ -49,7 +49,7 @@
                 };
             }
         } else {
-            const res = await fetch(`${Cosmo.URL}/user/v1/by-nickname/${data.id}`);
+            const res = await fetch(`${__COSMO_API__}/user/v1/by-nickname/${data.id}`);
             const user = await res.json();
             if (user && user.profile) {
                 address.set(user.profile.address);
@@ -62,14 +62,14 @@
             }
         }
 
-        const res = await fetch(Subsquid.URL, {
+        const res = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 query: `
                     query {
                         comos(orderBy: id_ASC, limit: 5, where: {owner_eq: "${profile?.address}"}) {
-                            ${Object.keys(Subsquid.Como).join('\n')}
+                            ${Object.keys(new Como).join('\n')}
                         }
                         objekts(limit: 1, orderBy: received_ASC, where: {owner_eq: "${profile?.address}"}) {
                             received

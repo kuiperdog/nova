@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { Cosmo } from '$lib/data/apis';
     import { isAddress } from 'ethers';
 	import { goto } from '$app/navigation';
     import search_icon from '$lib/assets/icons/search.svg';
@@ -26,12 +25,12 @@
         query = value;
 
         if (value && isAddress(value)) {
-            const res = await fetch(`${Cosmo.URL}/user/v1/by-address/${query}`);
+            const res = await fetch(`${__COSMO_API__}/user/v1/by-address/${query}`);
             const data = await res.json();
             if (value === query)
                 results = data;
         } else if (value.length >= 4 && value.length <= 15) {
-            const res = await fetch(`${Cosmo.URL}/user/v1/search?query=${query}`);
+            const res = await fetch(`${__COSMO_API__}/user/v1/search?query=${query}`);
             const data = await res.json();
             if (value === query)
                 results = data.results;

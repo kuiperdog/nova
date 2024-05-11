@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto, pushState } from "$app/navigation";
     import { page } from "$app/stores";
-    import { Subsquid, Cosmo } from "$lib/data/apis";
     import tap_icon from "$lib/assets/icons/tap.svg";
     import view_3d_icon from "$lib/assets/icons/3d.svg";
     import heart_icon from "$lib/assets/icons/heart.svg";
@@ -13,22 +12,25 @@
     import status_warning_icon from "$lib/assets/icons/status_warning.svg";
     import status_error_icon from "$lib/assets/icons/status_error.svg";
     import qr_image from "$lib/assets/images/qr.png";
-	import { likes } from "$lib/data/likes";
+	import { likedObjekts } from "$lib/utils/stores";
+    import { getArtists } from "$lib/utils/artists";
+    import { formatObjekt } from "$lib/utils/formatting";
+    import { Collection, Objekt, Transfer } from "../../../model";
     import Objekt3DView from "./Objekt3DView.svelte";
     import { t, number } from 'svelte-i18n';
     import { onDestroy } from "svelte";
 
-    export let collection: Subsquid.Collection;
-    export let objekt: Subsquid.Objekt | null = null;
+    export let collection: Collection;
+    export let objekt: Objekt | null = null;
 
     let artists: Cosmo.Artist[];
-    Cosmo.artists().then(a => artists = a);
+    getArtists().then(a => artists = a);
 
     let total: number;
-    let transfers: Subsquid.Transfer[];
+    let transfers: Transfer[];
     let users: Cosmo.User[];
 
-    fetch(Subsquid.URL, {
+    fetch(__SUBSQUID_API__, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -37,22 +39,22 @@
                     objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${collection.id}"}}) {
                         totalCount
                     }
-                    ${collection.timestamp ? '' : `
+                    ${collection.timestamp === undefined ? `
                         collectionById(id: "${collection.id}") {
-                            ${Object.keys(Subsquid.Collection).join('\n')}
+                            ${Object.keys(new Collection).join('\n')}
                         }
-                    `}
+                    ` : ''}
                     ${objekt ? `
                         transfersConnection(orderBy: timestamp_ASC, where: {objekt: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}}) {
                             edges {
                                 node {
-                                    ${Object.keys(Subsquid.Transfer).join('\n')}
+                                    ${Object.keys(new Transfer).join('\n')}
                                 }
                             }
                         }
                         ${!objekt.id ? `
                             objekts(where: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}, limit: 1) {
-                                ${Object.keys(Subsquid.Objekt).join('\n')}
+                                ${Object.keys(new Objekt).join('\n')}
                             }
                         ` : ''}
                     ` : ''}
@@ -64,20 +66,20 @@
 
         total = data.data.objektsConnection.totalCount;
 
-        if (!collection.timestamp)
+        if (data.data.collectionById)
             collection = data.data.collectionById;
 
         if (objekt) {
-            transfers = data.data.transfersConnection.edges.map((e: { node: Subsquid.Transfer }) => e.node);
+            transfers = data.data.transfersConnection.edges.map((e: { node: Transfer }) => e.node);
             
-            const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${transfers.map(t => t.to).join(',')}`);
+            const profiles = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${transfers.map(t => t.to).join(',')}`);
             users = await profiles.json();
 
             if (!objekt.id) {
                 if (data.data.objekts.length)
                     objekt = data.data.objekts[0];
                 else
-                    objekt.minted = -1;
+                    objekt.minted = undefined;
             }
         }
     });
@@ -95,18 +97,18 @@
 
         pushState(`/objekt/${collection.id}/${nextSerial}`, {
             collection: collection,
-            objekt: { ...Subsquid.Objekt, serial: nextSerial },
+            objekt: { ...new Objekt, serial: nextSerial },
             previous: $page.state.previous
         });
 
         if (!$page.state.previous)
-            objekt = { ...Subsquid.Objekt, serial: nextSerial };
+            objekt = { ...new Objekt, serial: nextSerial };
     }
 
     $: {
-        if ($page.state.objekt && objekt && objekt.minted === 0) {
-            objekt = { ...Subsquid.Objekt, serial: $page.state.objekt.serial, minted: 1 };
-            fetch(Subsquid.URL, {
+        if ($page.state.objekt && objekt && objekt.minted === undefined) {
+            objekt = { ...new Objekt, serial: $page.state.objekt.serial, minted: BigInt(0) };
+            fetch(__SUBSQUID_API__, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -115,14 +117,14 @@
                             objektsConnection(orderBy: id_ASC, where: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}) {
                                 edges {
                                     node {
-                                        ${Object.keys(Subsquid.Objekt).join('\n')}
+                                        ${Object.keys(new Objekt).join('\n')}
                                     }
                                 }
                             }
                             transfersConnection(orderBy: timestamp_ASC, where: {objekt: {collection: {id_eq: "${collection.id}"}, serial_eq: ${objekt.serial}}}) {
                                 edges {
                                     node {
-                                        ${Object.keys(Subsquid.Transfer).join('\n')}
+                                        ${Object.keys(new Transfer).join('\n')}
                                     }
                                 }
                             }
@@ -133,10 +135,10 @@
                 const data = await res.json();
 
                 if (!data.data.objektsConnection.edges.length && objekt) {
-                    objekt.minted = -1;
+                    objekt.minted = null;
                 } else {
-                    transfers = data.data.transfersConnection.edges.map((e: { node: Subsquid.Transfer }) => e.node);
-                    const profiles = await fetch(`${Cosmo.URL}/user/v1/by-address/${transfers.map(t => t.to).join(',')}`);
+                    transfers = data.data.transfersConnection.edges.map((e: { node: Transfer }) => e.node);
+                    const profiles = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${transfers.map(t => t.to).join(',')}`);
                     users = await profiles.json();
                     objekt = data.data.objektsConnection.edges[0].node;
                 }
@@ -167,7 +169,7 @@
 
 <svelte:head>
     {#key $page.route}
-        <title>Nova{collection ? ' | ' + Subsquid.formatObjekt(collection) : ''}</title>
+        <title>Nova{collection ? ' | ' + formatObjekt(collection) : ''}</title>
     {/key}
 </svelte:head>
 
@@ -188,11 +190,11 @@
                 <button class="objektPreview" bind:clientHeight={viewHeight} on:click={() => cardFlipped = !cardFlipped} class:objektFlipped={cardFlipped}>
                     <div class="objektFront" style="width: {viewHeight * 330.15/510}px;">
                         <div class="objektSide" style="opacity: {frontLoaded || frontImg && frontImg.complete ? '1' : '0'};">
-                            <img class="objektImage" bind:this={frontImg} on:load={() => frontLoaded = true} src={collection.front} alt={Subsquid.formatObjekt(collection)}>
+                            <img class="objektImage" bind:this={frontImg} on:load={() => frontLoaded = true} src={collection.front} alt={formatObjekt(collection)}>
                             <div class="sideBar" style="font-size: {viewHeight * 330.15/510 * 0.05}px; color: {collection.textColor};">
                                 <p>
                                     { collection.number }
-                                    {#if objekt}
+                                    {#if objekt && objekt.serial}
                                         <span class="previewSerial"> #{objekt.serial.toString().padStart(5, '0')}</span>
                                     {/if}
                                 </p>
@@ -201,11 +203,11 @@
                     </div>
                     <div class="objektBack" style="width: {viewHeight * 330.15/510}px;">
                         <div class="objektSide" style="opacity: {backLoaded || backImg && backImg.complete ? '1' : '0'};">
-                            <img class="objektImage" bind:this={backImg} on:load={() => backLoaded = true} src={collection.back} alt={Subsquid.formatObjekt(collection)}>
+                            <img class="objektImage" bind:this={backImg} on:load={() => backLoaded = true} src={collection.back} alt={formatObjekt(collection)}>
                             <div class="sideBar" style="font-size: {viewHeight * 330.15/510 * 0.05}px; color: {collection.textColor};">
                                 <p>
                                     { collection.number }
-                                    {#if objekt}
+                                    {#if objekt && objekt.serial}
                                         <span class="previewSerial"> #{objekt.serial.toString().padStart(5, '0')}</span>
                                     {/if}
                                 </p>
@@ -219,8 +221,8 @@
                 <button on:click={() => view3d = !view3d} class="view3dButton">
                     <img src={view_3d_icon} alt="3D View">
                 </button>
-                <button on:click={() => $likes = $likes.find(c => c.id === collection.id) ? $likes.filter(c => c.id !== collection.id) : [ collection, ...$likes ]}>
-                    <img src={$likes.find(c => c.id === collection.id) ? filled_heart_icon : heart_icon} alt="Like">
+                <button on:click={() => $likedObjekts = $likedObjekts.find(c => c.id === collection.id) ? $likedObjekts.filter(c => c.id !== collection.id) : [ collection, ...$likedObjekts ]}>
+                    <img src={$likedObjekts.find(c => c.id === collection.id) ? filled_heart_icon : heart_icon} alt="Like">
                 </button>
                 <button on:click={() => window.open(cardFlipped ? collection.back : collection.front, '_blank')}>
                     <img src={download_icon} alt="Download">
@@ -294,13 +296,13 @@
             {#if objekt}
                 {#if objekt.id && transfers && users}
                 {@const owner = users.find(u => u.address === objekt?.owner)}
-                    {@const objektAge = (Date.now() - objekt.minted) / 1000}
+                    {@const objektAge = (Date.now() - Number(objekt.minted)) / 1000}
                     <div class="objektDetails">
                         <div class="objektOwner">
                             <b>{$t('objekt.details.owner')}</b>
                             <a class="profile" href="/@{owner ? owner.nickname : objekt.owner}">
                                 <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt={objekt.owner}>
-                                { owner ? owner.nickname : objekt.owner.slice(0, 6) + '...' + objekt.owner.slice(-4) }
+                                { owner ? owner.nickname : objekt.owner?.slice(0, 6) + '...' + objekt.owner?.slice(-4) }
                             </a>
                         </div>
                         <hr>
@@ -349,7 +351,7 @@
                             {/if}
                         {/each}
                     </div>
-                {:else if objekt.minted < 0}
+                {:else if objekt.minted === null}
                     <div class="unmintedDetails">
                         <img src={status_warning_icon} alt="Unminted">
                         <p>{$t('objekt.details.unminted')}</p>

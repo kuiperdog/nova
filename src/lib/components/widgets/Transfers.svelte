@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { Subsquid, Cosmo } from '$lib/data/apis';
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
     import { t } from 'svelte-i18n';
+    import { Transfer } from '../../../model';
+    import { formatObjekt } from '$lib/utils/formatting';
 
     export let data: any;
     let users: Cosmo.User[];
@@ -10,12 +11,12 @@
     $: {
         if (data && data.data && !users) {
             const addresses = new Set(
-                data.data.transfersConnection.edges.reduce((acc: string[], e: { node: Subsquid.Transfer }) => {
+                data.data.transfersConnection.edges.reduce((acc: string[], e: { node: Transfer }) => {
                     return [...acc, e.node.to, e.node.from];
                 }, [])
             );
 
-            fetch(`${Cosmo.URL}/user/v1/by-address/${Array.from(addresses).join(',')}`)
+            fetch(`${__COSMO_PROXY__}/user/v1/by-address/${Array.from(addresses).join(',')}`)
                 .then(async (res) => users = await res.json());
         }
     }
@@ -53,10 +54,10 @@
                 <div class="objekt">
                     <button on:click={() => pushState(`/objekt/${edge.node.objekt.collection.id}/${edge.node.objekt.serial}`, 
                         { collection: edge.node.objekt.collection, objekt: edge.node.objekt, previous: $page.url.href })}>
-                        { Subsquid.formatObjekt(edge.node.objekt.collection, edge.node.objekt) }
+                        { formatObjekt(edge.node.objekt.collection, edge.node.objekt) }
                     </button>
                     <div class="spacer"></div>
-                    {#if objektAge < 60}
+                    {#if objektAge < 60}w
                         <p>{$t('general.seconds_past', { values: { seconds: Math.floor(objektAge) } })}</p>
                     {:else if objektAge < 3600}
                         <p>{$t('general.minutes_past', { values: { minutes: Math.floor(objektAge / 60) } })}</p>

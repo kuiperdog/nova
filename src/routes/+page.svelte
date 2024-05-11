@@ -4,8 +4,8 @@
     import ObjektSupply from "$lib/components/widgets/ObjektSupply.svelte";
     import Mints from "$lib/components/widgets/Mints.svelte";
     import Transfers from "$lib/components/widgets/Transfers.svelte";
-    import { Subsquid } from "$lib/data/apis";
     import { ZeroAddress } from "ethers";
+	import { Collection, Objekt, Transfer } from "../model";
 
     let data: any;
 
@@ -25,7 +25,7 @@
         `;
     }
 
-    fetch(Subsquid.URL, {
+    fetch(__SUBSQUID_API__, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -37,11 +37,11 @@
                     transfersConnection(orderBy: id_DESC, first: 5, where: {from_not_eq: "${ZeroAddress}", to_not_eq: "${ZeroAddress}"}) {
                         edges {
                             node {
-                                ${Object.keys(Subsquid.Transfer).join('\n')}
+                                ${Object.keys(new Transfer).filter(k => k !== 'objekt').join('\n')}
                                 objekt {
-                                    ${Object.keys(Subsquid.Objekt).join('\n')}
+                                    ${Object.keys(new Objekt).filter(k => k !== 'collection').join('\n')}
                                     collection {
-                                        ${Object.keys(Subsquid.Collection).join('\n')}
+                                        ${Object.keys(new Collection).join('\n')}
                                     }
                                 }
                             }
@@ -50,9 +50,9 @@
                     mints: objektsConnection(orderBy: minted_DESC, where: {collection_isNull: false}, first: 10) {
                         edges {
                             node {
-                                ${Object.keys(Subsquid.Objekt).join('\n')}
+                                ${Object.keys(new Objekt).filter(k => k !== 'collection').join('\n')}
                                 collection {
-                                    ${Object.keys(Subsquid.Collection).join('\n')}
+                                    ${Object.keys(new Collection).join('\n')}
                                 }
                             }
                         }

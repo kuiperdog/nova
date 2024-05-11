@@ -4,7 +4,7 @@
     import { onDestroy, type ComponentProps } from 'svelte';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
-    import { Cosmo } from '$lib/data/apis';
+    import { getArtists, getUnit } from '$lib/utils/artists';
     import clear_icon from '$lib/assets/icons/clear.svg';
     import sort_icon from '$lib/assets/icons/sort.svg';
     import filter_icon from '$lib/assets/icons/filter.svg';
@@ -13,7 +13,7 @@
     const batchSize = 30;
 
     let artists: Cosmo.Artist[];
-    Cosmo.artists().then(a => artists = a);
+    getArtists().then(a => artists = a);
 
     export let profile = false;
     export let total: number | null;
@@ -211,7 +211,7 @@
                             {@const member = artists.flatMap(a => a.members).find(m => m.name === $page.url.searchParams.get('artist'))}
                             <img src={member?.profileImageUrl} alt={member?.name}>
                             { member?.name }
-                        {:else if Cosmo.unit($page.url.searchParams.get('artist') ?? '')}
+                        {:else if getUnit($page.url.searchParams.get('artist') ?? '')}
                             { $page.url.searchParams.get('artist') }
                         {/if}
                     </button>
@@ -220,7 +220,7 @@
                             {#if $page.url.searchParams.has('artist')}
                                 {@const artist = artists.find(a => a.name === $page.url.searchParams.get('artist'))
                                     || artists.find(a => a.members.find(m => m.name === $page.url.searchParams.get('artist')))
-                                    || artists.find(a => a.members.find(m => m.name === (Cosmo.unit($page.url.searchParams.get('artist') ?? '') ?? [])[0]))}
+                                    || artists.find(a => a.members.find(m => m.name === (getUnit($page.url.searchParams.get('artist') ?? '') ?? [])[0]))}
                                 {@const units = artist ? new Set(artist.members.reduce((acc, m) =>[...acc, ...(m.units ?? [])
                                     .filter(u => $page.url.searchParams.get('artist') !== u)], new Array()).sort()) : new Set()}
                                 <div class="filterHeader">
@@ -242,7 +242,7 @@
                                     {#each artist ? artist.members : [] as member, index}
                                         <button class="artist" on:click={() => setFilter('artist', member.name)}>
                                             <img src={member.profileImageUrl} alt={member.name} class:activeArtist={$page.url.searchParams.get('artist') == member.name
-                                                || (Cosmo.unit($page.url.searchParams.get('artist') ?? '') ?? []).includes(member.name)}>
+                                                || (getUnit($page.url.searchParams.get('artist') ?? '') ?? []).includes(member.name)}>
                                             { member.name }
                                         </button>
                                         {#if artist && index < artist.members.length - 1}

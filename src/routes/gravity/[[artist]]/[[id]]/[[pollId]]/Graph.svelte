@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { Subsquid } from '$lib/data/apis';
     import { formatEther } from 'ethers';
     import { t, number } from 'svelte-i18n';
+    import { Vote } from '../../../../../model';
 
     export let contract: string;
     export let poll: number;
@@ -10,7 +10,7 @@
 
     let votes: number[];
 
-    fetch(Subsquid.URL, {
+    fetch(__SUBSQUID_API__, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -24,7 +24,7 @@
         })
     }).then(async (res) => {
         const data = await res.json();
-        votes = data.data.votes.map((v: Subsquid.Vote) => Number(formatEther(v.amount)));
+        votes = data.data.votes.map((v: Vote) => Number(formatEther(v.amount)));
     });
 
     let clientWidth: number;
