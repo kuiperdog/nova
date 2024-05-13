@@ -4,8 +4,8 @@ import governorAbi from './abi/Governor.json';
 let _artists: Cosmo.Artist[];
 
 export namespace Subsquid {
-    export const URL = 'https://squid.subsquid.io/cosmo/graphql';
-    export const WS_URL = 'wss://squid.subsquid.io/cosmo/graphql';
+    export const URL = 'https://nova.squids.live/cosmo/graphql';
+    export const WS_URL = 'wss://nova.squids.live/cosmo/graphql';
 
     export const Collection = {
         artists: [] as string[],
