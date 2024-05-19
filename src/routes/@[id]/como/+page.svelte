@@ -1,7 +1,7 @@
 <script lang="ts">
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import { getAssets } from "$lib/utils/artists";
-    import { Como } from "../../../model";
+    import { Como } from "$lib/utils/model";
     import { type Writable } from "svelte/store";
     import { getContext } from "svelte";
     import { t } from 'svelte-i18n';

@@ -1,4 +1,4 @@
-import { Collection } from "../../model";
+import { Collection } from "./model";
 import { getArtists, getUnit } from "./artists";
 
 export async function filterCollections(collections: Collection[], params: URLSearchParams): Promise<Collection[]> {

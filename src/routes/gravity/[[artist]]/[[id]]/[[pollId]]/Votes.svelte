@@ -3,7 +3,7 @@
     import { formatEther } from 'ethers';
     import { flip } from 'svelte/animate';
     import { getAssets } from '$lib/utils/artists';
-    import { Vote } from '../../../../../model';
+    import { Vote } from '$lib/utils/model';
     import { t } from 'svelte-i18n';
 
     export let voteStart: number;

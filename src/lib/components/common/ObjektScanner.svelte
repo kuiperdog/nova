@@ -3,7 +3,7 @@
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
     import QrScanner from 'qr-scanner';
-	import { Objekt } from '../../../model';
+	import { Objekt } from '$lib/utils/model';
 
     export let scanning = true;
     let video: HTMLVideoElement;

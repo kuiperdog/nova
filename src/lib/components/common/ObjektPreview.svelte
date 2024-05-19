@@ -2,7 +2,7 @@
 	import { pushState } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { likedObjekts } from '$lib/utils/stores';
-	import { Collection, Objekt } from '../../../model';
+	import { Collection, Objekt } from '$lib/utils/model';
 	import filled_heart_icon from '$lib/assets/icons/filled_heart.svg';
 
 	export let collection: Collection;

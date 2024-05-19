@@ -3,7 +3,7 @@
     import { getAssets } from "$lib/utils/artists";
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import find_icon from "$lib/assets/icons/find.svg";
-    import { Como } from "../../model";
+    import { Como } from "$lib/utils/model";
     import { t } from 'svelte-i18n';
 
     let users: Cosmo.User[] | undefined;

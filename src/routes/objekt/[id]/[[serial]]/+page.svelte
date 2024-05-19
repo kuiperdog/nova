@@ -1,6 +1,6 @@
 <script lang="ts">
     import ObjektModal from '$lib/components/common/ObjektModal.svelte';
-	import { Collection, Objekt } from '../../../../model';
+	import { Collection, Objekt } from '$lib/utils/model';
     
     export let data: { id: string, serial?: number };
 </script>

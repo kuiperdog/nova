@@ -6,7 +6,7 @@
     import { page } from '$app/stores';
     import Checkbox from '$lib/components/common/Checkbox.svelte';
     import cosmo_logo from '$lib/assets/images/cosmo.png';
-    import { Transfer, Objekt, Collection } from '../../../model';
+    import { Transfer, Objekt, Collection } from '$lib/utils/model';
     import { formatObjekt } from '$lib/utils/formatting';
     import { t, number } from 'svelte-i18n';
 

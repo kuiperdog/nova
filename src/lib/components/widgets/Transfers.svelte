@@ -2,7 +2,7 @@
     import { page } from '$app/stores';
     import { pushState } from '$app/navigation';
     import { t } from 'svelte-i18n';
-    import { Transfer } from '../../../model';
+    import { Transfer } from '$lib/utils/model';
     import { formatObjekt } from '$lib/utils/formatting';
 
     export let data: any;

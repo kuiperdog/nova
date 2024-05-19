@@ -3,7 +3,7 @@
     import { type Writable } from "svelte/store";
     import { formatEther } from "ethers";
     import { getArtists, getAssets } from "$lib/utils/artists";
-    import { Vote } from "../../../model";
+    import { Vote } from "$lib/utils/model";
     import { t } from 'svelte-i18n';
 
     const address: Writable<string> = getContext("address");

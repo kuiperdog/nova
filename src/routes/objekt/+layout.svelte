@@ -7,7 +7,7 @@
     import { likedObjekts } from '$lib/utils/stores';
     import { filterCollections } from '$lib/utils/filters';
     import { getArtists, getUnit } from '$lib/utils/artists';
-    import { Collection } from '../../model';
+    import { Collection } from '$lib/utils/model';
     import copy_icon from '$lib/assets/icons/copy.svg';
     import camera_icon from '$lib/assets/icons/camera.svg';
 

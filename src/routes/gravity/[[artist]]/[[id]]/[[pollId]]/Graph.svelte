@@ -1,7 +1,7 @@
 <script lang="ts">
     import { formatEther } from 'ethers';
     import { t, number } from 'svelte-i18n';
-    import { Vote } from '../../../../../model';
+    import { Vote } from '$lib/utils/model';
 
     export let contract: string;
     export let poll: number;
