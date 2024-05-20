@@ -10,6 +10,7 @@ import * as comoContract from './abi/ERC20';
 let env: { [key: string]: string | undefined };
 async function loadEnv() {
     try {
+        // @ts-ignore: Module doesn't exist when building Squid
         env = (await import('$env/dynamic/public')).env;
     } catch {
         require('dotenv').config();

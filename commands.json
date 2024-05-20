@@ -8,7 +8,7 @@
       "build": {
         "description": "Build the squid project",
         "deps": ["clean"],
-        "cmd": ["tsc", "-p", "./src/squid-tsconfig.json"]
+        "cmd": ["tsc", "-p", "./src/squid/tsconfig.json"]
       },
       "up": {
         "description": "Start a PG database",

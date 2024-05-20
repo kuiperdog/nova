@@ -12,14 +12,6 @@ import { ZeroAddress } from 'ethers';
 
 require('dotenv').config();
 
-const MAX_REQUESTS = 500;
-const nonUserAddresses = [
-    ZeroAddress,
-    '0xD5fc87DD8494d6B657bF0DE20111235d983CEC84',
-    ...contracts.Governor,
-    ...contracts.CommunityPool
-];
-
 const entities = new Map<string, Entity[]>();
 const client = axios.create({
     validateStatus: (status) => { return (status >= 200 && status < 300) || status == 404 }
@@ -66,6 +58,13 @@ async function processComoTransfer(log: Log, store: Store, logger: Logger) {
 
     if (!entities.has(Como.name))
         entities.set(Como.name, []);
+
+    const nonUserAddresses = [
+        ZeroAddress,
+        '0xD5fc87DD8494d6B657bF0DE20111235d983CEC84',
+        ...contracts.Governor,
+        ...contracts.CommunityPool
+    ];
     
     if (!nonUserAddresses.includes(event.from.toLowerCase())) {
         let entry = entities.get(Como.name)?.find(c => (c as Como).contract === log.address && (c as Como).owner === event.from) as Como | undefined;
@@ -187,16 +186,18 @@ async function processReveal(txn: Transaction & {input: string}, store: Store, l
 }
 
 async function processBatch(store: Store, log: Logger) {
+    const MAX_REQUESTS = 500;
+
     const unpopulated = (entities.get(Objekt.name) || []).filter(o => !(o as Objekt).collection);
-    if (!unpopulated.length) {
+    if (unpopulated.length) {
         log.info(`Populating metadata of ${unpopulated.length} Objekts`);
 
-        for (let r = 0; r < unpopulated!.length; r += MAX_REQUESTS) {
-            const batch = unpopulated!.slice(r, r + MAX_REQUESTS);
+        for (let r = 0; r < unpopulated.length; r += MAX_REQUESTS) {
+            const batch = unpopulated.slice(r, r + MAX_REQUESTS);
 
             const requests: AxiosResponse[] = [];
             requests.push(...await Promise.all(batch.map(o => {
-                return client.get(`${process.env.__COSMO_API__}/v1/token/${o.id}`);
+                return client.get(`${process.env.__COSMO_API__}/objekt/v1/token/${o.id}`);
             })));
 
             for (let i = 0; i < requests.length; i++) {
