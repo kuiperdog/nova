@@ -8,7 +8,7 @@ import * as governorContract from './abi/Governor';
 import * as comoContract from './abi/ERC20';
 
 let env: { [key: string]: string | undefined };
-export async function loadEnv() {
+async function loadEnv() {
     try {
         env = (await import('$env/dynamic/public')).env;
     } catch {
