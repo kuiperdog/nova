@@ -10,6 +10,8 @@ import axios, { type AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 import { ZeroAddress } from 'ethers';
 
+require('dotenv').config();
+
 const MAX_REQUESTS = 500;
 const nonUserAddresses = [
     ZeroAddress,
@@ -194,7 +196,7 @@ async function processBatch(store: Store, log: Logger) {
 
             const requests: AxiosResponse[] = [];
             requests.push(...await Promise.all(batch.map(o => {
-                return client.get(`${__COSMO_API__}/v1/token/${o.id}`);
+                return client.get(`${process.env.__COSMO_API__}/v1/token/${o.id}`);
             })));
 
             for (let i = 0; i < requests.length; i++) {

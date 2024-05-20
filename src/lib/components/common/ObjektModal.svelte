@@ -16,6 +16,7 @@
     import { getArtists } from "$lib/utils/artists";
     import { formatObjekt } from "$lib/utils/formatting";
     import { Collection, Objekt, Transfer } from "$lib/utils/model";
+    import { __SUBSQUID_API__, __COSMO_PROXY__ } from "$env/static/public";
     import Objekt3DView from "./Objekt3DView.svelte";
     import { t, number } from 'svelte-i18n';
     import { onDestroy } from "svelte";

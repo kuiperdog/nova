@@ -4,6 +4,7 @@
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import find_icon from "$lib/assets/icons/find.svg";
     import { Como } from "$lib/utils/model";
+    import { __SUBSQUID_API__, __COSMO_PROXY__ } from "$env/static/public";
     import { t } from 'svelte-i18n';
 
     let users: Cosmo.User[] | undefined;

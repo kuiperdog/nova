@@ -5,6 +5,7 @@
     import date_icon from '$lib/assets/icons/date.svg';
     import status_error_icon from '$lib/assets/icons/status_error.svg';
     import { getArtists, getAssets } from '$lib/utils/artists';
+    import { __SUBSQUID_API__, __COSMO_PROXY__, __COSMO_API__ } from '$env/static/public';
     import { Como } from '$lib/utils/model';
     import { isAddress, formatEther } from 'ethers';
 	import { replaceState } from '$app/navigation';

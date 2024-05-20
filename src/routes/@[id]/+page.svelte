@@ -8,6 +8,7 @@
     import { getArtists, getUnit } from '$lib/utils/artists';
     import { filterCollections } from '$lib/utils/filters';
 	import { Collection, Objekt } from '$lib/utils/model';
+    import { __SUBSQUID_API__ } from '$env/static/public';
 
     let total: number | null = null;
     let params = $page.url.searchParams;

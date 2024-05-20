@@ -2,6 +2,7 @@ import artms_logo from "$lib/assets/images/artms_logo.svg";
 import tripleS_logo from "$lib/assets/images/tripleS_logo.svg";
 import artms_como from "$lib/assets/images/artms_como.svg";
 import tripleS_como from "$lib/assets/images/tripleS_como.svg";
+import { __COSMO_PROXY__ } from "$env/static/public";
 
 interface ArtistAssets {
     logo: string;

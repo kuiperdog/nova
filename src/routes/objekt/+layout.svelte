@@ -8,6 +8,7 @@
     import { filterCollections } from '$lib/utils/filters';
     import { getArtists, getUnit } from '$lib/utils/artists';
     import { Collection } from '$lib/utils/model';
+    import { __SUBSQUID_API__ } from '$env/static/public';
     import copy_icon from '$lib/assets/icons/copy.svg';
     import camera_icon from '$lib/assets/icons/camera.svg';
 

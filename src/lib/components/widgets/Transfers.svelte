@@ -4,6 +4,7 @@
     import { t } from 'svelte-i18n';
     import { Transfer } from '$lib/utils/model';
     import { formatObjekt } from '$lib/utils/formatting';
+    import { __COSMO_PROXY__ } from '$env/static/public';
 
     export let data: any;
     let users: Cosmo.User[];

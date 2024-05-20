@@ -19,11 +19,7 @@ export default defineConfig({
         })
     ],
     define: {
-        __VERSION__: `"${pkg.version}"`,
-        __SUBSQUID_API__: '"https://nova.squids.live/cosmo/graphql"',
-        __COSMO_API__: '"https://api.cosmo.fans"',
-        __COSMO_PROXY__: '"https://cache.nova.gd"',
-        __POLYGON_RPC__: '"https://rpc.ankr.com/polygon"'
+        __VERSION__: `"${pkg.version}"`
     },
     resolve: {
         alias: {

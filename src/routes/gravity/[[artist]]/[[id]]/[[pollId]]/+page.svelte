@@ -10,6 +10,7 @@
     import History from './History.svelte';
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
     import { getArtists, getAssets } from '$lib/utils/artists';
+    import { __POLYGON_RPC__, __COSMO_API__, __COSMO_PROXY__ } from '$env/static/public';
     import { ABI_JSON } from '../../../../../abi/Governor.abi';
     import { t } from 'svelte-i18n';
     import { onDestroy } from 'svelte'; 

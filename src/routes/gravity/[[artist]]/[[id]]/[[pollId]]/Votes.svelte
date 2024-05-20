@@ -4,6 +4,7 @@
     import { flip } from 'svelte/animate';
     import { getAssets } from '$lib/utils/artists';
     import { Vote } from '$lib/utils/model';
+    import { __SUBSQUID_API__, __COSMO_PROXY__ } from '$env/static/public';
     import { t } from 'svelte-i18n';
 
     export let voteStart: number;

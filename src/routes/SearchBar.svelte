@@ -2,6 +2,7 @@
     import { isAddress } from 'ethers';
 	import { goto } from '$app/navigation';
     import search_icon from '$lib/assets/icons/search.svg';
+    import { __COSMO_API__ } from '$env/static/public';
 	import { page } from '$app/stores';
 	import { t } from 'svelte-i18n';
 

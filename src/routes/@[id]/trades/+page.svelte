@@ -8,6 +8,7 @@
     import cosmo_logo from '$lib/assets/images/cosmo.png';
     import { Transfer, Objekt, Collection } from '$lib/utils/model';
     import { formatObjekt } from '$lib/utils/formatting';
+    import { __SUBSQUID_API__, __COSMO_PROXY__ } from '$env/static/public';
     import { t, number } from 'svelte-i18n';
 
     const limit = 25;

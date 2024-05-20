@@ -108,8 +108,4 @@ declare global {
     }
     
     declare const __VERSION__: string;
-    declare const __SUBSQUID_API__: string;
-    declare const __COSMO_API__: string;
-    declare const __COSMO_PROXY__: string;
-    declare const __POLYGON_RPC__: string;
 }

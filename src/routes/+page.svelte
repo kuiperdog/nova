@@ -4,8 +4,9 @@
     import ObjektSupply from "$lib/components/widgets/ObjektSupply.svelte";
     import Mints from "$lib/components/widgets/Mints.svelte";
     import Transfers from "$lib/components/widgets/Transfers.svelte";
+	import { Collection, Objekt, Transfer } from "$lib/utils/model";
+    import { __SUBSQUID_API__ } from "$env/static/public";
     import { ZeroAddress } from "ethers";
-	import { Collection, Objekt, Transfer } from "../model";
 
     let data: any;
 

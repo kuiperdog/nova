@@ -2,6 +2,7 @@
     import ArtistSelector from "$lib/components/common/ArtistSelector.svelte";
     import { getAssets } from "$lib/utils/artists";
     import { Como } from "$lib/utils/model";
+    import { __SUBSQUID_API__ } from "$env/static/public";
     import { type Writable } from "svelte/store";
     import { getContext } from "svelte";
     import { t } from 'svelte-i18n';

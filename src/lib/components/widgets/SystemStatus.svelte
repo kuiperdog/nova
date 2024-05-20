@@ -2,6 +2,7 @@
     import status_ok_icon from "$lib/assets/icons/status_ok.svg";
     import status_warning_icon from "$lib/assets/icons/status_warning.svg";
     import status_errror_icon from "$lib/assets/icons/status_error.svg";
+    import { __POLYGON_RPC__, __COSMO_API__ } from "$env/static/public";
     import { formatUnits } from "ethers";
     import { JsonRpcProvider } from "ethers";
     import { t } from 'svelte-i18n';

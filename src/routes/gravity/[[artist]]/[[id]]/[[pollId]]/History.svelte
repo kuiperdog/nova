@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { __COSMO_API__ } from '$env/static/public';
     import { t } from 'svelte-i18n';
 
     export let artist: Cosmo.Artist;

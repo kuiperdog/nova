@@ -2,6 +2,7 @@
     import { formatEther } from 'ethers';
     import { t, number } from 'svelte-i18n';
     import { Vote } from '$lib/utils/model';
+    import { __SUBSQUID_API__ } from '$env/static/public';
 
     export let contract: string;
     export let poll: number;

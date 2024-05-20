@@ -4,6 +4,7 @@
     import { pushState } from '$app/navigation';
     import QrScanner from 'qr-scanner';
 	import { Objekt } from '$lib/utils/model';
+    import { __COSMO_PROXY__ } from '$env/static/public';
 
     export let scanning = true;
     let video: HTMLVideoElement;
