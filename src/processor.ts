@@ -18,10 +18,20 @@ async function loadEnv() {
     }
 }
 
+interface HashAndHeight {
+    height: number;
+    hash: string;
+}
+
+interface HotTxInfo {
+    finalizedHead: HashAndHeight;
+    baseHead: HashAndHeight;
+    newBlocks: HashAndHeight[];
+}
+
 export let contracts: any;
 export async function run(
-    startBlock: number,
-    archive: boolean,
+    startBlock: number | undefined = undefined,
     processObjektTransfer: (log: Log, store: Store, logger: Logger) => Promise<void> = async () => {},
     processComoTransfer: (log: Log, store: Store, logger: Logger) => Promise<void> = async () => {},
     processVote: (log: Log, store: Store, logger: Logger) => Promise<void> = async () => {},
@@ -41,10 +51,11 @@ export async function run(
         return acc;
     }, {});
 
+    const finality = startBlock ? 300 : 30;
+
     const processor = new EvmBatchProcessor()
         .setRpcEndpoint(env.__POLYGON_RPC__)
-        .setFinalityConfirmation(300)
-        .setBlockRange({ from: startBlock })
+        .setFinalityConfirmation(finality)
         .setFields({ evmLog: { topics: true, data: true }, transaction: { sighash: true, input: true } })
         .addLog({ address: contracts.Objekt, topic0: [ objektContract.events.Transfer.topic ] })
         .addLog({ address: contracts.Como, topic0: [ comoContract.events.Transfer.topic ] })
@@ -53,20 +64,35 @@ export async function run(
         .addTransaction({ to: contracts.Governor, sighash: [ governorContract.functions.reveal.sighash ]});
     
     let database;
-    if (archive) {
+    let currentBlock: number | undefined;
+
+    if (startBlock) {
         processor.setGateway(lookupArchive('polygon'));
         database = new TypeormDatabase({ supportHotBlocks: true });
     } else {
         const provider = new JsonRpcProvider(env.__POLYGON_RPC__);
+        currentBlock = await provider.getBlockNumber();
+        startBlock = currentBlock - finality - 1;
         const blockData = await provider.getBlock(startBlock);
         database = {
-            connect: async () => { return { height: startBlock, hash: blockData?.hash! } },
-            transact: async (info: any, cb: (store: Store) => Promise<void>) => {}
-        };
+            supportsHotBlocks: true,
+            connect: async () => { return { height: startBlock!, hash: blockData?.hash!, top: [] } },
+            transact: async (_: any, cb: (store: any) => Promise<void>) => cb(undefined),
+            transactHot: async (info: HotTxInfo, cb: (store: any, block: HashAndHeight) => Promise<void>) => {
+                cb(undefined, info.finalizedHead);
+            },
+            transactHot2: async (info: HotTxInfo, cb: (store: any, start: number, end: number) => Promise<void>) => {
+                cb(undefined, 0, info.newBlocks.length);
+            }
+        }
     }
+    processor.setBlockRange({ from: startBlock });
 
     processor.run(database, async (ctx) => {
         for (let block of ctx.blocks) {
+            if (currentBlock && block.header.height <= currentBlock)
+                continue;
+
             for (let log of block.logs) {
                 switch (log.topics[0]) {
                     case objektContract.events.Transfer.topic:

@@ -275,7 +275,6 @@ async function processBatch(store: Store, log: Logger) {
 
 run(
     31385244,
-    true,
     processObjektTransfer,
     processComoTransfer,
     processVote,
