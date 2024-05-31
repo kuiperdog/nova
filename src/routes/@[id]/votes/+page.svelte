@@ -1,13 +1,11 @@
 <script lang="ts">
-    import { getContext } from "svelte";
-    import { type Writable } from "svelte/store";
     import { formatEther } from "ethers";
     import { getArtists, getAssets } from "$lib/utils/artists";
     import { Vote } from "$lib/utils/model";
     import { __SUBSQUID_API__, __COSMO_PROXY__ } from "$env/static/public";
     import { t } from 'svelte-i18n';
 
-    const address: Writable<string> = getContext("address");
+    export let data;
     let gravities: (Cosmo.Gravity & { pollDetails: (Cosmo.PollDetail & { votes: Vote[] })[] })[];
     let artists: Cosmo.Artist[];
 
@@ -20,6 +18,7 @@
         const listRes = await fetch(`${__COSMO_PROXY__}/gravity/v3`);
         const listData = await listRes.json();
         const list: Cosmo.Gravity[] = [ ...listData.upcoming, ...listData.ongoing, ...listData.past];
+        const user = await data.user;
 
         const votesRes = await fetch(__SUBSQUID_API__, {
             method: 'POST',
@@ -27,7 +26,7 @@
             body: JSON.stringify({
                 query: `
                     query {
-                        votesConnection(orderBy: timestamp_DESC, where: {from_eq: "${$address}"}) {
+                        votesConnection(orderBy: timestamp_DESC, where: {from_eq: "${user.address}"}) {
                             edges {
                                 node {
                                     ${Object.keys(new Vote).join('\n')}

@@ -1,9 +1,8 @@
 <script lang="ts">
-    import { onDestroy, getContext, type ComponentProps } from 'svelte';
+    import { onDestroy, type ComponentProps } from 'svelte';
     import { page } from '$app/stores';
     import ObjektGrid from '$lib/components/common/ObjektGrid.svelte';
 	import type ObjektPreview from '$lib/components/common/ObjektPreview.svelte';
-    import { type Writable } from 'svelte/store';
     import { likedObjekts } from '$lib/utils/stores';
     import { getArtists, getUnit } from '$lib/utils/artists';
     import { filterCollections } from '$lib/utils/filters';
@@ -12,11 +11,13 @@
 
     let total: number | null = null;
     let params = $page.url.searchParams;
-    const address: Writable<string> = getContext("address");
+
+    export let data;
+    const user = data.user;
 
     async function load(offset: number, length: number) {
         let collectionFilters: string[] = [];
-        let objektFilters: string[] = [`owner_eq: "${$address}"`];
+        let objektFilters: string[] = [`owner_eq: "${(await user).address}"`];
         let sort = 'received_DESC';
         const artists = await getArtists();
 

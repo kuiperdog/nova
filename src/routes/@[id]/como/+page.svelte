@@ -3,24 +3,25 @@
     import { getAssets } from "$lib/utils/artists";
     import { Como } from "$lib/utils/model";
     import { __SUBSQUID_API__ } from "$env/static/public";
-    import { type Writable } from "svelte/store";
-    import { getContext } from "svelte";
     import { t } from 'svelte-i18n';
+
+    export let data;
 
     let artist: Cosmo.Artist;
     let selected: Cosmo.Artist | undefined;
     let ranking: string | undefined;
     let days: number[] | undefined;
 
-    const balances: Writable<Como[]> = getContext("como");
     const month = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+    let balances: Como[];
+    data.stats.then(stats => balances = stats.balances);
 
     $: {
-        if (selected && artist !== selected && $balances) {
+        if (selected && artist !== selected && balances) {
             artist = selected;
             ranking = days = undefined;
             const contract = artist.contracts.Como.toLowerCase();
-            const balance = $balances.find(b => b.contract === contract);
+            const balance = balances.find(b => b.contract === contract);
 
             if (balance) {
                 fetch(__SUBSQUID_API__, {

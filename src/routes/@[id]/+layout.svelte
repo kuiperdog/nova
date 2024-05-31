@@ -3,128 +3,31 @@
     import polygonscan_icon from '$lib/assets/icons/polygonscan.svg';
     import opensea_icon from '$lib/assets/icons/opensea.svg';
     import date_icon from '$lib/assets/icons/date.svg';
-    import status_error_icon from '$lib/assets/icons/status_error.svg';
     import { getArtists, getAssets } from '$lib/utils/artists';
-    import { __SUBSQUID_API__, __COSMO_PROXY__, __COSMO_API__ } from '$env/static/public';
-    import { Como } from '$lib/utils/model';
-    import { isAddress, formatEther } from 'ethers';
-	import { replaceState } from '$app/navigation';
+    import { formatEther } from 'ethers';
 	import { page } from '$app/stores';
-    import { writable } from 'svelte/store';
-    import { setContext } from 'svelte';
     import { t, number } from 'svelte-i18n';
+	import { replaceState } from '$app/navigation';
 
-    export let data: { id: string };
+    export let data;
 
-    let profile: Cosmo.User | undefined;
-    let joinDate: Date | undefined;
-    let balances: Como[] | undefined;
-    let nonexistent = false;
-    let artists: Cosmo.Artist[] | undefined;
-    getArtists().then(a => artists = a);
-
-	const address = writable<string>();
-    setContext("address", address);
-
-	const como = writable<Como[]>();
-    setContext("como", como);
-
-    async function getProfile() {
-        nonexistent = false;
-        profile = undefined;
-        joinDate = undefined;
-        balances = undefined;
-
-        if (isAddress(data.id)) {
-            address.set(data.id);
-            const res = await fetch(`${__COSMO_PROXY__}/user/v1/by-address/${data.id}`);
-            const users = await res.json();
-            if (users[0]) {
-                profile = users[0];
-                replaceState(`/@${profile?.nickname}`, $page.state);
-            } else {
-                profile = {
-                    address: data.id,
-                    nickname: '',
-                    profileImageUrl: ''
-                };
-            }
-        } else {
-            const res = await fetch(`${__COSMO_API__}/user/v1/by-nickname/${data.id}`);
-            const user = await res.json();
-            if (user && user.profile) {
-                address.set(user.profile.address);
-                profile = user.profile;
-                if (user.profile.nickname !== data.id)
-                    replaceState(`/@${user.profile.nickname}`, $page.state);
-            } else {
-                nonexistent = true;
-                return;
-            }
-        }
-
-        const res = await fetch(__SUBSQUID_API__, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                query: `
-                    query {
-                        comos(orderBy: id_ASC, limit: 5, where: {owner_eq: "${profile?.address}"}) {
-                            ${Object.keys(new Como).join('\n')}
-                        }
-                        objekts(limit: 1, orderBy: received_ASC, where: {owner_eq: "${profile?.address}"}) {
-                            received
-                        }
-                    }
-                `
-            })
-        });
-        const query = await res.json();
-
-        balances = query.data.comos;
-        como.set(balances!);
-        joinDate = new Date(Number(query.data.objekts[0].received));
-    }
-
-    let query: string;
-    $: if (query !== $page.params.id) {
-        getProfile();
-        query = $page.params.id;
-    }
+    data.user.then(user => {
+        if (user.nickname && $page.params.id !== user.nickname)
+            replaceState($page.url.pathname.replace($page.params.id, user.nickname) + $page.url.search, $page.state);
+    });
 </script>
 
 <svelte:head>
-    {#if profile}
+    {#await data.user then user}
         {#key $page.route}
-            <title>Nova | {profile.nickname || profile.address.slice(0, 6) + '...' + profile.address.slice(-4)}</title>
+            <title>Nova | {user.nickname || user.address.slice(0, 6) + '...' + user.address.slice(-4)}</title>
         {/key}
-    {/if}
+    {/await}
 </svelte:head>
 
 <div class="layout">
     <div class="header">
-        {#if profile}
-            <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt=''>
-            <div class="name">
-                {#if profile.nickname}
-                    <h1>{ profile.nickname }</h1>
-                {:else}
-                    <h1><i>{$t('profile.no_id')}</i></h1>
-                {/if}
-                <div class="address">
-                    <p>{ profile.address.slice(0, 6) }...{ profile.address.slice(-4) }</p>
-                    <button class="copy" on:click={() => navigator.clipboard.writeText(profile?.address || '')}>
-                        <img src={copy_icon} alt="Copy">
-                    </button>
-                    <a class="profileLink polygonscan" href="https://polygonscan.com/address/{profile.address}">
-                        <img src={polygonscan_icon} alt="PolygonScan">
-                    </a>
-                    <a class="profileLink opensea" href="https://opensea.io/{profile.address}">
-                        <img src={opensea_icon} alt="OpenSea">
-                    </a>
-                </div>
-            </div>
-        {:else}
+        {#await data.user}
             <div class="profileImage placeholder"></div>
             <div class="name">
                 <div class="placeholder" style:width="180px"></div>
@@ -135,50 +38,66 @@
                     <div class="placeholder" style:width="25px"></div>
                 </div>
             </div>
-        {/if}
+        {:then user}
+            <img class="profileImage" src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt=''>
+            <div class="name">
+                {#if user.nickname}
+                    <h1>{ user.nickname }</h1>
+                {:else}
+                    <h1><i>{$t('profile.no_id')}</i></h1>
+                {/if}
+                <div class="address">
+                    <p>{ user.address.slice(0, 6) }...{ user.address.slice(-4) }</p>
+                    <button class="copy" on:click={() => navigator.clipboard.writeText(user.address)}>
+                        <img src={copy_icon} alt="Copy">
+                    </button>
+                    <a class="profileLink polygonscan" href="https://polygonscan.com/address/{user.address}">
+                        <img src={polygonscan_icon} alt="PolygonScan">
+                    </a>
+                    <a class="profileLink opensea" href="https://opensea.io/{user.address}">
+                        <img src={opensea_icon} alt="OpenSea">
+                    </a>
+                </div>
+            </div>
+        {/await}
         <div class="details">
             <div class="balances">
-                {#if artists && balances}
-                    {#each balances as balance}
-                        <div class="como">
-                            <img src={getAssets(artists.find(a => a.contracts.Como.toLowerCase() === balance.contract) || artists[0]).como} alt="COMO">
-                            { $number(Number(formatEther(balance.balance))) }
-                        </div>
-                    {/each}
-                {:else}
+                {#await data.stats}
                     <div class="placeholder"></div>
                     <div class="placeholder"></div>
-                {/if}
+                {:then stats}
+                    {#await getArtists() then artists}
+                        {#each stats.balances as balance}
+                            <div class="como">
+                                <img src={getAssets(artists.find(a => a.contracts.Como.toLowerCase() === balance.contract) || artists[0]).como} alt="COMO">
+                                { $number(Number(formatEther(balance.balance))) }
+                            </div>
+                        {/each}
+                    {/await}
+                {/await}
             </div>
-            {#if joinDate}
+            {#await data.stats}
+                <div class="placeholder joinDatePlaceholder"></div>
+            {:then stats}
                 <div class="joinDate">
                     <img src={date_icon} alt="Joined">
-                    <p>{ $t('profile.joindate', { values: { date: joinDate.toLocaleDateString() } }) }</p>
+                    <p>{ $t('profile.joindate', { values: { date: stats.joinDate.toLocaleDateString() } }) }</p>
                 </div>
-            {:else}
-                <div class="placeholder joinDatePlaceholder"></div>
-            {/if}
+            {/await}
         </div>
     </div>
-    {#if nonexistent}
-        <div class="errorContainer">
-            <div class="error">
-                <img src={status_error_icon} alt="Error">
-                <p>{$t('profile.not_found')}</p>
-            </div>
-        </div>
-    {:else if profile}
-        <div class="tabs">
-            <a href="/@{profile.nickname || profile.address}" class:active={$page.route.id === '/@[id]'}>Objekts</a>
-            <a href="/@{profile.nickname || profile.address}/trades" class:active={$page.route.id === '/@[id]/trades'}>{$t('profile.trades.title')}</a>
-            <a href="/@{profile.nickname || profile.address}/votes" class:active={$page.route.id === '/@[id]/votes'}>{$t('profile.votes.title')}</a>
-            <a href="/@{profile.nickname || profile.address}/como" class:active={$page.route.id === '/@[id]/como'}>COMO</a>
-        </div>
-        <slot/>
-    {:else}
+    {#await data.user}
         <div class="placeholder tabsPlaceholder"></div>
         <div class="contentPlaceholder"></div>
-    {/if}
+    {:then user}
+        <div class="tabs">
+            <a href="/@{user.nickname || user.address}" class:active={$page.route.id === '/@[id]'}>Objekts</a>
+            <a href="/@{user.nickname || user.address}/trades" class:active={$page.route.id === '/@[id]/trades'}>{$t('profile.trades.title')}</a>
+            <a href="/@{user.nickname || user.address}/votes" class:active={$page.route.id === '/@[id]/votes'}>{$t('profile.votes.title')}</a>
+            <a href="/@{user.nickname || user.address}/como" class:active={$page.route.id === '/@[id]/como'}>COMO</a>
+        </div>
+        <slot/>
+    {/await}
 </div>
 
 <style>
@@ -322,27 +241,6 @@
         border-radius: 15px;
     }
 
-    .errorContainer {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .error {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 20px;
-        font-size: 20px;
-        background-color: var(--item-color);
-        border-radius: 24px;
-    }
-
-    .error img {
-        height: 30px;
-    }
-
     .tabs {
         display: flex;
         background-color: var(--item-color);
@@ -384,7 +282,7 @@
         background: linear-gradient(to bottom, var(--placeholder-color), var(--placeholder-transparent));
     }
 
-    .profileImage, .como, .joinDate, .name > *:not(.placeholder), .tabs, .error {
+    .profileImage, .como, .joinDate, .name > *:not(.placeholder), .tabs {
         animation: fade-in 0.1s;
     }
     

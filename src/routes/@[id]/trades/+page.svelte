@@ -1,7 +1,6 @@
 <script lang="ts">
     import { ZeroAddress } from 'ethers';
-    import { getContext, onDestroy } from 'svelte';
-    import { type Writable } from 'svelte/store';
+    import { onDestroy } from 'svelte';
     import { pushState } from '$app/navigation';
     import { page } from '$app/stores';
     import Checkbox from '$lib/components/common/Checkbox.svelte';
@@ -11,8 +10,11 @@
     import { __SUBSQUID_API__, __COSMO_PROXY__ } from '$env/static/public';
     import { t, number } from 'svelte-i18n';
 
+    export let data;
+    let address: string;
+    data.user.then(u => address = u.address);
+
     const limit = 25;
-    const address: Writable<string> = getContext("address");
 
     let items: (Transfer & { objekt: (Objekt & { collection: Collection }) })[] | undefined;
     let total: number | undefined;
@@ -23,6 +25,7 @@
 
     async function load() {
         loading = true;
+        await data.user;
         const query = await fetch(__SUBSQUID_API__, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -30,7 +33,7 @@
                 query: `
                     query {
                         transfersConnection(orderBy: timestamp_DESC, first: ${limit}, ${items ? `after: "${items.length}"` : ''}, where:
-                            { from_eq: "${$address}", OR: { to_eq: "${$address}"${mints ? '' : `, from_not_eq: "${ZeroAddress}"`} }}) {
+                            { from_eq: "${address}", OR: { to_eq: "${address}"${mints ? '' : `, from_not_eq: "${ZeroAddress}"`} }}) {
                             ${ total === undefined ? `
                                 totalCount
                             ` : `` }
@@ -111,7 +114,7 @@
     <div class="items">
         {#if items}
             {#each items as item}
-            {@const user = users.find(u => u.address === (item.to === $address ? item.from : item.to))}
+            {@const user = users.find(u => u.address === (item.to === address ? item.from : item.to))}
                 <div class="trade">
                     <p class="date">
                         {new Date(Number(item.timestamp)).toLocaleDateString('en-US', {year: '2-digit', month: '2-digit', day: '2-digit'})}
@@ -126,7 +129,7 @@
                         <p class="type">
                             {#if item.from === ZeroAddress}
                                 <span class="chip mint">{$t('profile.trades.chip.mint')}</span>
-                            {:else if item.to === $address}
+                            {:else if item.to === address}
                                 <span class="chip from">{$t('profile.trades.chip.from')}</span>
                             {:else}
                                 <span class="chip to">{$t('profile.trades.chip.to')}</span>
@@ -143,9 +146,9 @@
                                 Cosmo
                             </p>
                         {:else}
-                            <a class="user" href="/@{item.to === $address ? item.from : item.to}">
+                            <a class="user" href="/@{item.to === address ? item.from : item.to}">
                                 <img src="https://static.cosmo.fans/uploads/images/img_profile_gallag@3x.png" alt="User">
-                                {#if item.to === $address}
+                                {#if item.to === address}
                                     {item.from.slice(0, 6)}...{item.from.slice(-4)}
                                 {:else}
                                     {item.to.slice(0, 6)}...{item.to.slice(-4)}
