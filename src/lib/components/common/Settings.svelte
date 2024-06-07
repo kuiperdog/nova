@@ -30,12 +30,15 @@
 	<div class="setting">
 		<b>{$t('settings.language')}</b>
 		<div class="languageSelector">
-			<button class:active={$locale && $locale.startsWith('en')} on:click={() => setLanguage('en')}>
-                🇬🇧 English
+			<button title="English" class:active={$locale && $locale.startsWith('en')} on:click={() => setLanguage('en')}>
+                🇬🇧 
             </button>
-			<button class:active={$locale && $locale.startsWith('ko')} on:click={() => setLanguage('ko')}>
-                🇰🇷 한국어
+			<button title="한국어" class:active={$locale && $locale.startsWith('ko')} on:click={() => setLanguage('ko')}>
+                🇰🇷 
             </button>
+			<button title="ภาษาไทย" class:active={$locale === 'th'} on:click={() => setLanguage('th')}>
+				🇹🇭 
+			  </button>
 		</div>
 	</div>
 	<img class="logo" src={nova_logo} alt="Nova" />

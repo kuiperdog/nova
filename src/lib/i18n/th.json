@@ -1,0 +1,139 @@
+{
+    "general": {
+        "seconds_past": "{seconds} วินาทีที่แล้ว",
+        "minutes_past": "{minutes} นาทีที่แล้ว",
+        "hours_past": "{hours} ชั่วโมงที่แล้ว",
+        "days_past": "{days} วันที่แล้ว"
+    },
+    "widget": {
+        "status": {
+            "title": "สถานะระบบ",
+            "blockchain_congested": "บล็อกเชนหนาแน่นมาก",
+            "blockchain_unreachable": "ไม่สามารถเข้าถึงบล็อกเชนได้",
+            "cosmo_unreachable": "ไม่สามารถเข้าถึงคอสโมได้",
+            "db_unsynced": "ฐานข้อมูลไม่ซิงค์กับปัจจุบัน",
+            "db_unreachable": "ไม่สามารถเข้าถึงฐานข้อมูลได้",
+            "no_errors": "ทุกระบบทำงานปกติ"
+        },
+        "mints": {
+            "title": "มิ้นท์",
+            "subtitle": "แสดง 10 รายการล่าสุด"
+        },
+        "objektsupply": {
+            "title": "จำนวน Objekt",
+            "total": "{number} รายการ",
+            "weekly_supply": "สัปดาห์นี้:",
+            "daily_supply": "วันนี้:"
+        },
+        "transfers": {
+            "title": "การแลกเปลี่ยน",
+            "subtitle": "แสดง 5 รายการล่าสุด",
+            "sender": "ผู้ส่ง",
+            "receiver": "ผู้รับ"
+        }
+    },
+    "settings": {
+        "default_artist": "ศิลปิน:",
+        "language": "ภาษา:",
+        "version": "Nova เวอร์ชัน{version} โดย {author}",
+        "source": "ซอร์สโค้ด",
+        "donations": "โดเนท",
+        "bugs": "แจ้งบัค",
+        "disclaimer": "Nova ไม่ได้ถูกสร้าง รับรอง หรือเกี่ยวข้องกับ Modhaus Inc."
+    },
+    "objekt": {
+        "itemcount": "{items} รายการ",
+        "filter": {
+            "label": "ตัวกรอง",
+            "only_liked": "เฉพาะ Objekts ที่ชอบเท่านั้น",
+            "only_sendable": "เฉพาะ Objekts ที่ส่งได้เท่านั้น",
+            "artist": "ศิลปิน",
+            "members": "เมมเบอร์",
+            "units": "ยูนิต",
+            "season": "ซีซัน",
+            "class": "คลาส",
+            "type": "รูปแบบ",
+            "number": "หมายเลข",
+            "serial": "ซีเรียล",
+            "range": "ระยะ",
+            "exact": "ระบุ",
+            "range_from": "ตั้งแต่",
+            "range_to": "เท่านั้น",
+            "minimum": "ขั้นต่ำ",
+            "maximum": "ขั้นสูงสุด",
+            "maximum_value": "น้อยกว่า {value}",
+            "minimum_value": "มากกว่า {value}",
+            "clear": "คืนค่า",
+            "done": "เรียบร้อย"
+        },
+        "sort": {
+            "label": "จัดเรียง",
+            "newest": "ใหม่ที่สุด",
+            "oldest": "เก่าที่สุด",
+            "number": "หมายเลข",
+            "minted": "การมิ้นท์",
+            "serial": "ซีเรียล"
+        },
+        "details": {
+            "previewtooltip": "กดที่ Objekt เพื่อกลับด้าน",
+            "artist": "ศิลปิน:",
+            "member": "เมมเบอร์:",
+            "season": "ซีซัน",
+            "class": "คลาส",
+            "collection": "คอลเลกชัน:",
+            "serial": "ซีเรียล:",
+            "copies": "{count} รายการ",
+            "find": "ค้นหา",
+            "owner": "เจ้าของ:",
+            "minted": "มิ้นแล้ว:",
+            "sendable": "ส่งได้:",
+            "history": "ประวัติ",
+            "transfers": "แลกเปลี่ยนแล้ว {count} ครั้ง",
+            "unminted": "Objekt ยังไม่ได้มิ้นท์"
+        }
+    },
+    "users": {
+        "title": "อันดับ 100 คนแรกผู้ครอบครอง",
+        "hint": "ค้นหาผู้ใช้ด้วยไอดีหรือวอลเลตของผู้ใช้ที่แถบค้นหา",
+        "search": {
+            "placeholder": "ค้นหาผู้ใช้ด้วยไอดีหรือวอลเลต"
+        }
+    },
+    "profile": {
+        "no_id": "ไม่พบไอดีนี้",
+        "not_found": "ไม่พบผู้ใช้นี้",
+        "joindate": "เข้าร่วมเมื่อ {date}",
+        "trades": {
+            "title": "การแลกเปลี่ยน",
+            "total": "{total} ครั้ง",
+            "showmints": "แสดงการมิ้นท์",
+            "chip": {
+                "from": "ได้รับจาก",
+                "to": "ส่งไปให้",
+                "mint": "มิ้นท์"
+            }
+        },
+        "votes": {
+            "title": "โหวต",
+            "unrevealed": "ไม่เปิดเผย"
+        },
+        "como": {
+            "rank": "อันดับ:"
+        }
+    },
+    "gravity": {
+        "totalcomo": "COMO ทั้งหมด:",
+        "totalvotes": "{votes} โหวต",
+        "counting_countdown": "จะเริ่มนับในอีก:",
+        "history": {
+            "title": "ประวัติ",
+            "subtitle": "{count} Gravities"
+        },
+        "votes": {
+            "title": "การโหวต",
+            "subtitle": "แสดง 50 อันดับแรก",
+            "unrevealed": "ไม่เปิดเผย",
+            "countdown": "การโหวตจะเริ่มในอีก:"
+        }
+    }
+}
