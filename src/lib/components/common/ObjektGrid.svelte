@@ -264,8 +264,8 @@
                     {/if}
                 </div>
                 {#each [
-                    {name: 'season', title: $t('objekt.filter.season'), options: ['Atom01', 'Binary01', 'Cream01', 'Divine01']},
-                    {name: 'class', title: $t('objekt.filter.class'), options: ['First', 'Special', 'Welcome', 'Double', 'Zero']},
+                    {name: 'season', title: $t('objekt.filter.season'), options: ['Atom01', 'Binary01', 'Cream01', 'Divine01','Ever01']}
+                    {name: 'class', title: $t('objekt.filter.class'), options: ['First', 'Special', 'Welcome', 'Double', 'Zero','Premier']},
                     {name: 'type', title: $t('objekt.filter.type'), options: ['A', 'Z']}
                 ] as filter}
                     <div class="filter">
